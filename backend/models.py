@@ -182,3 +182,4 @@ class TokenResponse(BaseModel):
     token: str
     user_type: str
     user_data: dict
+    reseller_id: Optional[str] = None
