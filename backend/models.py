@@ -174,6 +174,7 @@ class NoticeBase(BaseModel):
     kind: MessageKind
     text: Optional[str] = ""
     file_url: Optional[str] = ""
+    reseller_id: Optional[str] = None  # Tenant isolation
 
 class NoticeCreate(NoticeBase):
     pass
