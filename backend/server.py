@@ -629,9 +629,11 @@ app.include_router(api_router)
 try:
     from reseller_routes import reseller_router
     app.include_router(reseller_router)
-    logger.info("Reseller routes loaded successfully")
+    print("✅ Reseller routes loaded successfully")
 except Exception as e:
-    logger.error(f"Failed to load reseller routes: {e}")
+    print(f"❌ Failed to load reseller routes: {e}")
+    import traceback
+    traceback.print_exc()
 
 # Serve uploads
 app.mount("/api/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
