@@ -91,6 +91,11 @@ const ClientChat = () => {
   const handleSendMessage = async () => {
     if (!messageText.trim()) return;
     
+    if (!userData?.id) {
+      toast.error('Erro: Dados do usuário não carregados');
+      return;
+    }
+    
     try {
       // Get first available agent
       const agents = await api.get('/agents');
@@ -99,6 +104,8 @@ const ClientChat = () => {
         return;
       }
       const agentId = agents.data[0].id;
+      
+      console.log('Sending message:', { from_id: userData.id, to_id: agentId });
       
       // Send message (backend will create ticket automatically if needed)
       await api.post('/messages', {
