@@ -519,6 +519,16 @@ const ClientChat = () => {
           </div>
         </DialogContent>
       </Dialog>
+      
+      {/* Alert Modal */}
+      <AlertModal
+        isOpen={alertModal.isOpen}
+        onClose={() => setAlertModal({ ...alertModal, isOpen: false })}
+        title={alertModal.title}
+        message={alertModal.message}
+        icon={alertModal.icon}
+        autoCloseDelay={30000}
+      />
     </div>
   );
 };
