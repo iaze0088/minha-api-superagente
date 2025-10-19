@@ -38,5 +38,11 @@ export default api;
 // WebSocket connection
 export const createWebSocket = (userId) => {
   const wsUrl = API_URL.replace('http', 'ws');
-  return new WebSocket(`${wsUrl}/ws/${userId}`);
+  // Gera session ID único
+  let sessionId = localStorage.getItem('session_id');
+  if (!sessionId) {
+    sessionId = Date.now().toString() + Math.random().toString(36);
+    localStorage.setItem('session_id', sessionId);
+  }
+  return new WebSocket(`${wsUrl}/ws/${userId}/${sessionId}`);
 };
