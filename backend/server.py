@@ -751,9 +751,12 @@ async def get_notices(request: Request, current_user: dict = Depends(get_current
     return notices
 
 @api_router.post("/notices")
-async def create_notice(data: NoticeCreate, current_user: dict = Depends(get_current_user)):
-    if current_user["user_type"] != "admin":
+async def create_notice(data: NoticeCreate, request: Request, current_user: dict = Depends(get_current_user)):
+    if current_user["user_type"] not in ["admin", "reseller"]:
         raise HTTPException(status_code=403, detail="Não autorizado")
+    
+    tenant = get_request_tenant(request)
+    reseller_id = tenant.reseller_id or current_user.get("reseller_id")
     
     notice_id = str(uuid.uuid4())
     notice = {
@@ -761,6 +764,7 @@ async def create_notice(data: NoticeCreate, current_user: dict = Depends(get_cur
         "kind": data.kind,
         "text": data.text or "",
         "file_url": data.file_url or "",
+        "reseller_id": reseller_id,
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     await db.notices.insert_one(notice)
