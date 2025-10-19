@@ -46,18 +46,37 @@ api_router = APIRouter(prefix="/api")
 class ConnectionManager:
     def __init__(self):
         self.active_connections: Dict[str, Set[WebSocket]] = {}
+        self.user_sessions: Dict[str, str] = {}  # user_id -> session_id
     
-    async def connect(self, websocket: WebSocket, user_id: str):
+    async def connect(self, websocket: WebSocket, user_id: str, session_id: str):
         await websocket.accept()
+        
+        # Se já existe outra sessão, desconectar a antiga
+        if user_id in self.user_sessions and self.user_sessions[user_id] != session_id:
+            await self.disconnect_user(user_id)
+        
         if user_id not in self.active_connections:
             self.active_connections[user_id] = set()
         self.active_connections[user_id].add(websocket)
+        self.user_sessions[user_id] = session_id
+    
+    async def disconnect_user(self, user_id: str):
+        if user_id in self.active_connections:
+            for conn in list(self.active_connections[user_id]):
+                try:
+                    await conn.send_json({"type": "force_logout", "reason": "Nova sessão iniciada"})
+                    await conn.close()
+                except:
+                    pass
+            del self.active_connections[user_id]
     
     def disconnect(self, websocket: WebSocket, user_id: str):
         if user_id in self.active_connections:
             self.active_connections[user_id].discard(websocket)
             if not self.active_connections[user_id]:
                 del self.active_connections[user_id]
+                if user_id in self.user_sessions:
+                    del self.user_sessions[user_id]
     
     async def send_to_user(self, user_id: str, message: dict):
         if user_id in self.active_connections:
