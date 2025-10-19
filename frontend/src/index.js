@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "@/index.css";
 import App from "@/App";
+import { registerServiceWorker } from './register-sw';
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -9,3 +10,6 @@ root.render(
     <App />
   </React.StrictMode>,
 );
+
+// Registrar Service Worker para PWA
+registerServiceWorker();
