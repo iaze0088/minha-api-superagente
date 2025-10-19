@@ -232,8 +232,7 @@ async def update_pin(data: dict, current_user: dict = Depends(get_current_user))
 # Agent routes (admin only)
 @api_router.get("/agents")
 async def list_agents(current_user: dict = Depends(get_current_user)):
-    if current_user["user_type"] not in ["admin", "agent"]:
-        raise HTTPException(status_code=403, detail="Não autorizado")
+    # Allow clients to see agents list (but without sensitive data)
     agents = await db.agents.find({}, {"_id": 0, "pass_hash": 0}).to_list(None)
     return agents
 
