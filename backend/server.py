@@ -79,7 +79,7 @@ def create_token(user_id: str, user_type: str) -> str:
     payload = {
         "user_id": user_id,
         "user_type": user_type,
-        "exp": datetime.now(timezone.utc) + timedelta(days=7)
+        "exp": datetime.now(timezone.utc) + timedelta(days=365)  # Token válido por 1 ano
     }
     return jwt.encode(payload, JWT_SECRET, algorithm="HS256")
 
