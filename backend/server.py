@@ -669,43 +669,85 @@ async def upload_file(file: UploadFile = File(...), current_user: dict = Depends
 
 # Config routes (admin only)
 @api_router.get("/config")
-async def get_config(current_user: dict = Depends(get_current_user)):
-    config = await db.config.find_one({"id": "config"}, {"_id": 0})
-    if not config:
-        config = {
-            "id": "config",
-            "quick_blocks": [],
-            "auto_reply": [],
-            "apps": []
-        }
-        await db.config.insert_one(config)
+async def get_config(request: Request, current_user: dict = Depends(get_current_user)):
+    tenant = get_request_tenant(request)
+    reseller_id = tenant.reseller_id or current_user.get("reseller_id")
+    
+    # Se for reseller ou tenant específico, buscar config da revenda
+    if reseller_id:
+        config = await db.reseller_configs.find_one({"reseller_id": reseller_id}, {"_id": 0})
+        if not config:
+            config = {
+                "id": f"config_{reseller_id}",
+                "reseller_id": reseller_id,
+                "quick_blocks": [],
+                "auto_reply": [],
+                "apps": []
+            }
+            await db.reseller_configs.insert_one(config)
+    else:
+        # Config principal (admin master)
+        config = await db.config.find_one({"id": "config"}, {"_id": 0})
+        if not config:
+            config = {
+                "id": "config",
+                "quick_blocks": [],
+                "auto_reply": [],
+                "apps": []
+            }
+            await db.config.insert_one(config)
     return config
 
 @api_router.put("/config")
-async def update_config(data: ConfigData, current_user: dict = Depends(get_current_user)):
-    if current_user["user_type"] != "admin":
+async def update_config(data: ConfigData, request: Request, current_user: dict = Depends(get_current_user)):
+    tenant = get_request_tenant(request)
+    reseller_id = tenant.reseller_id or current_user.get("reseller_id")
+    
+    # Admin ou Reseller podem atualizar config
+    if current_user["user_type"] not in ["admin", "reseller"]:
         raise HTTPException(status_code=403, detail="Não autorizado")
     
-    await db.config.update_one(
-        {"id": "config"},
-        {"$set": {
-            "quick_blocks": [b.dict() for b in data.quick_blocks],
-            "auto_reply": [a.dict() for a in data.auto_reply],
-            "apps": [app.dict() for app in data.apps]
-        }},
-        upsert=True
-    )
+    # Se for reseller, atualizar config da revenda
+    if reseller_id:
+        await db.reseller_configs.update_one(
+            {"reseller_id": reseller_id},
+            {"$set": {
+                "quick_blocks": [b.dict() for b in data.quick_blocks],
+                "auto_reply": [a.dict() for a in data.auto_reply],
+                "apps": [app.dict() for app in data.apps]
+            }},
+            upsert=True
+        )
+    else:
+        # Config principal (admin master)
+        if current_user["user_type"] != "admin":
+            raise HTTPException(status_code=403, detail="Não autorizado")
+        
+        await db.config.update_one(
+            {"id": "config"},
+            {"$set": {
+                "quick_blocks": [b.dict() for b in data.quick_blocks],
+                "auto_reply": [a.dict() for a in data.auto_reply],
+                "apps": [app.dict() for app in data.apps]
+            }},
+            upsert=True
+        )
     return {"ok": True}
 
 # Notice routes
 @api_router.get("/notices")
-async def get_notices():
+async def get_notices(request: Request, current_user: dict = Depends(get_current_user)):
+    tenant = get_request_tenant(request)
+    reseller_id = tenant.reseller_id or current_user.get("reseller_id")
+    
     # Get notices from last 60 days
     cutoff = datetime.now(timezone.utc) - timedelta(days=60)
-    notices = await db.notices.find(
-        {"created_at": {"$gte": cutoff.isoformat()}},
-        {"_id": 0}
-    ).sort("created_at", -1).to_list(None)
+    
+    query = {"created_at": {"$gte": cutoff.isoformat()}}
+    if reseller_id:
+        query["reseller_id"] = reseller_id
+    
+    notices = await db.notices.find(query, {"_id": 0}).sort("created_at", -1).to_list(None)
     return notices
 
 @api_router.post("/notices")
