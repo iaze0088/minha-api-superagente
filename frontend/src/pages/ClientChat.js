@@ -13,7 +13,8 @@ import { clearAuth, getAuth } from '../lib/auth';
 
 const ClientChat = () => {
   const navigate = useNavigate();
-  const { userData } = getAuth();
+  const auth = getAuth();
+  const [userData, setUserData] = useState(auth.userData);
   const [messages, setMessages] = useState([]);
   const [messageText, setMessageText] = useState('');
   const [credentials, setCredentials] = useState({ pinned_user: '', pinned_pass: '' });
