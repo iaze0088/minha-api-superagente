@@ -396,10 +396,18 @@ async def delete_agent(agent_id: str, request: Request, current_user: dict = Dep
 
 # Ticket routes
 @api_router.get("/tickets")
-async def list_tickets(status: Optional[str] = None, current_user: dict = Depends(get_current_user)):
+async def list_tickets(status: Optional[str] = None, request: Request = None, current_user: dict = Depends(get_current_user)):
+    tenant = get_request_tenant(request)
+    
     query = {}
     if status:
         query["status"] = status
+    
+    # Aplicar filtro de tenant
+    if tenant.reseller_id:
+        query["reseller_id"] = tenant.reseller_id
+    elif current_user["user_type"] == "reseller":
+        query["reseller_id"] = current_user.get("reseller_id")
     
     tickets = await db.tickets.find(query, {"_id": 0}).to_list(None)
     
@@ -428,6 +436,24 @@ async def list_tickets(status: Optional[str] = None, current_user: dict = Depend
     return tickets
 
 @api_router.get("/tickets/counts")
+async def get_ticket_counts(request: Request, current_user: dict = Depends(get_current_user)):
+    tenant = get_request_tenant(request)
+    
+    # Filtro baseado no tenant
+    base_query = {}
+    if tenant.reseller_id:
+        base_query["reseller_id"] = tenant.reseller_id
+    elif current_user["user_type"] == "reseller":
+        base_query["reseller_id"] = current_user.get("reseller_id")
+    
+    em_espera = await db.tickets.count_documents({**base_query, "status": "EM_ESPERA"})
+    atendendo = await db.tickets.count_documents({**base_query, "status": "ATENDENDO"})
+    finalizadas = await db.tickets.count_documents({**base_query, "status": "FINALIZADAS"})
+    return {
+        "EM_ESPERA": em_espera,
+        "ATENDENDO": atendendo,
+        "FINALIZADAS": finalizadas
+    }
 async def get_ticket_counts(current_user: dict = Depends(get_current_user)):
     em_espera = await db.tickets.count_documents({"status": "EM_ESPERA"})
     atendendo = await db.tickets.count_documents({"status": "ATENDENDO"})
