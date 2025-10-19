@@ -1,4 +1,6 @@
-import { Card, Button, Input } from '@/components/ui';
+import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Users, Trash2, ArrowRightLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '../lib/api';
