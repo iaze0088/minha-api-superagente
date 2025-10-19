@@ -352,20 +352,23 @@ const AgentDashboard = () => {
               </ScrollArea>
 
               {/* Quick Messages */}
-              {config.quick_blocks.length > 0 && (
-                <div className="bg-white border-t border-slate-200 p-2 flex flex-wrap gap-2">
-                  {config.quick_blocks.map((block, idx) => (
-                    <Button
-                      key={idx}
-                      data-testid={`quick-block-${idx}`}
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setMessageText(block.text)}
-                      className="text-xs"
-                    >
-                      {block.name}
-                    </Button>
-                  ))}
+              {config.quick_blocks && config.quick_blocks.length > 0 && (
+                <div className="bg-white border-t border-slate-200 p-2">
+                  <p className="text-xs font-medium text-slate-600 mb-2">Mensagens Rápidas:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {config.quick_blocks.map((block, idx) => (
+                      <Button
+                        key={idx}
+                        data-testid={`quick-block-${idx}`}
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setMessageText(block.text)}
+                        className="text-xs hover:bg-indigo-50 hover:border-indigo-300"
+                      >
+                        {block.name}
+                      </Button>
+                    ))}
+                  </div>
                 </div>
               )}
 
