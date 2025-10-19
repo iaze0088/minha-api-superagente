@@ -34,12 +34,14 @@ const AdminDashboard = () => {
 
   const loadData = async () => {
     try {
-      const [agentsRes, configRes, noticesRes] = await Promise.all([
+      const [agentsRes, resellersRes, configRes, noticesRes] = await Promise.all([
         api.get('/agents'),
+        api.get('/resellers').catch(() => ({ data: [] })),
         api.get('/config'),
         api.get('/notices')
       ]);
       setAgents(agentsRes.data);
+      setResellers(resellersRes.data);
       setConfig(configRes.data);
       setNotices(noticesRes.data);
     } catch (error) {
