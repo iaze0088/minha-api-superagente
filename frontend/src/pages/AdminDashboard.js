@@ -23,6 +23,10 @@ const AdminDashboard = () => {
   // Agent form
   const [newAgent, setNewAgent] = useState({ name: '', login: '', password: '', avatar: '' });
   const [editingAgent, setEditingAgent] = useState(null);
+  
+  // Reseller form
+  const [newReseller, setNewReseller] = useState({ name: '', email: '', password: '', domain: '' });
+  const [editingReseller, setEditingReseller] = useState(null);
 
   useEffect(() => {
     loadData();
