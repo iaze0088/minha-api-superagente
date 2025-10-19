@@ -236,6 +236,13 @@ async def list_agents(current_user: dict = Depends(get_current_user)):
     agents = await db.agents.find({}, {"_id": 0, "pass_hash": 0}).to_list(None)
     return agents
 
+@api_router.get("/agents/online-status")
+async def get_online_status():
+    # Check how many agents are connected via WebSocket
+    online_count = len([uid for uid in manager.active_connections.keys() 
+                       if uid.startswith('agent') or await db.agents.find_one({"id": uid})])
+    return {"online": online_count, "status": "online" if online_count > 0 else "offline"}
+
 @api_router.post("/agents")
 async def create_agent(data: AgentCreate, current_user: dict = Depends(get_current_user)):
     if current_user["user_type"] != "admin":
