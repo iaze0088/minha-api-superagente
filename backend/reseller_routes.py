@@ -1,11 +1,34 @@
-from fastapi import APIRouter, HTTPException, Depends
-from typing import List
+from fastapi import APIRouter, HTTPException, Depends, Header
+from typing import List, Optional
 import uuid
 from datetime import datetime, timezone
 import bcrypt
 from models import *
+import jwt
 
-reseller_router = APIRouter(prefix="/resellers", tags=["resellers"])
+reseller_router = APIRouter(prefix="/api/resellers", tags=["resellers"])
+
+JWT_SECRET = "sua-chave-secreta-super-segura-aqui-2024"
+
+def create_token(user_id: str, user_type: str) -> str:
+    payload = {
+        "user_id": user_id,
+        "user_type": user_type,
+        "exp": datetime.now(timezone.utc) + timedelta(days=7)
+    }
+    return jwt.encode(payload, JWT_SECRET, algorithm="HS256")
+
+def verify_token(token: str) -> dict:
+    try:
+        return jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+    except:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+async def get_current_user(authorization: Optional[str] = Header(None)):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    token = authorization.split(" ")[1]
+    return verify_token(token)
 
 # Reseller authentication
 @reseller_router.post("/login")
