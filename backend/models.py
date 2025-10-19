@@ -132,6 +132,7 @@ class ConfigData(BaseModel):
     quick_blocks: List[QuickBlock] = []
     auto_reply: List[AutoReply] = []
     apps: List[AppItem] = []
+    reseller_id: Optional[str] = None  # Tenant isolation - cada revenda tem suas configs
 
 # Reseller Models
 class ResellerBase(BaseModel):
