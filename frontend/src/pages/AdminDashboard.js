@@ -15,6 +15,7 @@ import { clearAuth } from '../lib/auth';
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [agents, setAgents] = useState([]);
+  const [resellers, setResellers] = useState([]);
   const [config, setConfig] = useState({ quick_blocks: [], auto_reply: [], apps: [] });
   const [notices, setNotices] = useState([]);
   const [loading, setLoading] = useState(true);
