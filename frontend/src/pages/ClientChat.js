@@ -37,6 +37,25 @@ const ClientChat = () => {
     loadMessages();
     loadNotices();
     loadUserData();
+    checkOnlineStatus();
+    
+    // Check notices every 30 seconds
+    const noticesInterval = setInterval(() => {
+      checkForNewNotices();
+    }, 30000);
+    
+    // Check online status every minute
+    const statusInterval = setInterval(() => {
+      checkOnlineStatus();
+    }, 60000);
+    
+    return () => {
+      clearInterval(noticesInterval);
+      clearInterval(statusInterval);
+      if (queueTimerRef.current) {
+        clearTimeout(queueTimerRef.current);
+      }
+    };
   }, []);
 
   useEffect(() => {
