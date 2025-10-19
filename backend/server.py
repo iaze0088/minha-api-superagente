@@ -274,11 +274,28 @@ async def update_pin(data: dict, current_user: dict = Depends(get_current_user))
     await db.users.update_one({"id": current_user["user_id"]}, {"$set": {"pin_hash": pin_hash}})
     return {"ok": True}
 
-# Agent routes (admin only)
+# Agent routes (admin/reseller)
 @api_router.get("/agents")
-async def list_agents(current_user: dict = Depends(get_current_user)):
-    # Allow clients to see agents list (but without sensitive data)
-    agents = await db.agents.find({}, {"_id": 0, "pass_hash": 0}).to_list(None)
+async def list_agents(request: Request, current_user: dict = Depends(get_current_user)):
+    tenant = get_request_tenant(request)
+    
+    # Filtro baseado no tenant
+    query = {}
+    
+    # Admin master vê todos, reseller vê apenas seus agentes
+    if current_user["user_type"] == "admin" and not tenant.is_master:
+        # Admin master acessando domínio de revenda específica
+        if tenant.reseller_id:
+            query["reseller_id"] = tenant.reseller_id
+    elif current_user["user_type"] == "reseller":
+        # Reseller vê apenas seus agentes
+        query["reseller_id"] = current_user.get("reseller_id")
+    elif current_user["user_type"] == "client":
+        # Client vê lista geral (sem filtro sensível)
+        if tenant.reseller_id:
+            query["reseller_id"] = tenant.reseller_id
+    
+    agents = await db.agents.find(query, {"_id": 0, "pass_hash": 0}).to_list(None)
     return agents
 
 @api_router.get("/agents/online-status")
