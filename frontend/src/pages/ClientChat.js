@@ -82,10 +82,15 @@ const ClientChat = () => {
       if (data.type === 'credentials_updated') {
         setCredentials({ pinned_user: data.pinned_user, pinned_pass: data.pinned_pass });
       }
+      if (data.type === 'force_logout') {
+        clearAuth();
+        alert('Você foi desconectado porque outra pessoa fez login com suas credenciais.');
+        navigate('/');
+      }
     };
     wsRef.current = ws;
     return () => ws.close();
-  }, [userData]);
+  }, [userData, navigate]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
