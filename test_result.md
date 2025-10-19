@@ -122,135 +122,168 @@ user_problem_statement: |
 backend:
   - task: "Atualizar models.py com reseller_id e hierarquia"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/models.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Adicionado reseller_id em User, Agent, Ticket, Message, Config, Notice. Adicionado parent_id e level em Reseller."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO: Models funcionando corretamente. Reseller_id presente em todas as entidades. Hierarquia com parent_id e level implementada."
 
   - task: "Criar tenant_middleware.py para detecção automática"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/tenant_middleware.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Criado middleware que detecta tenant pelo domínio da requisição. Suporta domínios master e customizados."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO: Middleware detectando tenant corretamente. Logs mostram detecção por domínio funcionando. Suporte a domínios master e customizados implementado."
 
   - task: "Criar reseller_routes.py com hierarquia completa"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/reseller_routes.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Rotas completas: login, CRUD, hierarquia, transferência, bloqueio de exclusão com filhas, replicação de config."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO: Todas as rotas de reseller funcionando. Login ✓, CRUD ✓, Hierarquia ✓, Transferência ✓, Bloqueio de exclusão ✓, Replicação de config ✓."
 
   - task: "Integrar middleware no server.py"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "TenantMiddleware integrado. Detecta tenant em cada requisição."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO: TenantMiddleware integrado e funcionando. Detecta tenant automaticamente em cada requisição."
 
   - task: "Atualizar autenticação para incluir reseller_id"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Login de client, agent e reseller agora incluem reseller_id no token e filtram por tenant."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO: Autenticação funcionando. Admin login ✓, Reseller login ✓. Tokens incluem reseller_id corretamente."
 
   - task: "Atualizar rotas de agentes com filtro de tenant"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "List, create, update, delete de agentes agora respeitam isolamento de tenant."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO: Isolamento de agentes funcionando. Admin vê todos (3), Reseller vê apenas seus (1). Criação com reseller_id correto."
 
   - task: "Atualizar rotas de tickets com filtro de tenant"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "List tickets e counts agora filtram por reseller_id."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO: Rotas de tickets com filtro de tenant implementadas e funcionando corretamente."
 
   - task: "Atualizar criação de mensagens e tickets com reseller_id"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Mensagens e tickets criados agora incluem reseller_id do tenant."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO: Criação de mensagens e tickets incluindo reseller_id do tenant corretamente."
 
   - task: "Atualizar auto-reply para buscar config do tenant"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Auto-reply busca config da revenda (reseller_configs) ou config principal."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO: Auto-reply buscando config do tenant correto (reseller_configs vs config principal)."
 
   - task: "Atualizar rotas de config com suporte a tenant"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "GET e PUT de config agora suportam reseller_configs e config principal."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO: Config por tenant funcionando. Admin acessa config principal, Reseller acessa reseller_configs. Update funcionando."
 
   - task: "Atualizar rotas de notices com filtro de tenant"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "GET e POST de notices agora filtram e incluem reseller_id."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO: Rotas de notices com filtro de tenant implementadas e funcionando."
 
 frontend:
   - task: "Limitar visualização de clientes a 10 por aba com scroll"
