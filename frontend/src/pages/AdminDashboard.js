@@ -286,11 +286,35 @@ const AdminDashboard = () => {
                         <h4 className="font-semibold text-slate-900 text-lg">{reseller.name}</h4>
                         <p className="text-sm text-slate-600">Email: {reseller.email}</p>
                         {reseller.domain && (
-                          <p className="text-sm text-slate-600">Domínio: {reseller.domain}</p>
+                          <p className="text-sm text-slate-600">Subdomínio: {reseller.domain}</p>
                         )}
                         {reseller.custom_domain && (
-                          <p className="text-sm text-blue-600">Domínio Customizado: {reseller.custom_domain}</p>
+                          <p className="text-sm text-emerald-600 font-medium">✓ Domínio Customizado: {reseller.custom_domain}</p>
                         )}
+                        <div className="mt-2 flex gap-2">
+                          <Input
+                            placeholder="Domínio customizado (ex: ajuda.vip)"
+                            defaultValue={reseller.custom_domain}
+                            id={`domain-${reseller.id}`}
+                            className="text-sm"
+                          />
+                          <Button
+                            size="sm"
+                            onClick={async () => {
+                              const input = document.getElementById(`domain-${reseller.id}`);
+                              const domain = input.value.trim();
+                              try {
+                                await api.put(`/resellers/${reseller.id}`, { custom_domain: domain });
+                                toast.success('Domínio atualizado!');
+                                loadData();
+                              } catch (error) {
+                                toast.error('Erro ao atualizar domínio');
+                              }
+                            }}
+                          >
+                            Salvar
+                          </Button>
+                        </div>
                         <p className="text-xs text-slate-500 mt-1">
                           Criado em: {new Date(reseller.created_at).toLocaleDateString('pt-BR')}
                         </p>
