@@ -22,7 +22,7 @@ const AgentLogin = () => {
       const { data } = await api.post('/auth/agent/login', { login, password });
       setAuth(data.token, data.user_type, data.user_data);
       toast.success(`Bem-vindo, ${data.user_data.name}!`);
-      navigate('/agent');
+      navigate('/atendente');
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Login ou senha inválidos');
     } finally {
