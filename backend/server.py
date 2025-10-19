@@ -626,25 +626,12 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
 app.include_router(api_router)
 
 # Include reseller routes
-from reseller_routes import reseller_router
-
-# Create dependency injection wrapper for reseller routes
-async def get_db():
-    return db
-
-async def get_current_user_wrapper(authorization: Optional[str] = Header(None)):
-    return await get_current_user(authorization)
-
-# Configure reseller router with dependencies
-for route in reseller_router.routes:
-    if hasattr(route, 'dependant'):
-        # Inject db and current_user dependencies
-        route.dependencies = [
-            Depends(get_db),
-            Depends(get_current_user_wrapper)
-        ]
-
-app.include_router(reseller_router)
+try:
+    from reseller_routes import reseller_router
+    app.include_router(reseller_router)
+    logger.info("Reseller routes loaded successfully")
+except Exception as e:
+    logger.error(f"Failed to load reseller routes: {e}")
 
 # Serve uploads
 app.mount("/api/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
