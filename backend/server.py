@@ -436,7 +436,7 @@ async def send_message(data: MessageCreate, current_user: dict = Depends(get_cur
     }
     await db.messages.insert_one(message)
     
-    # Check auto-reply
+    # Check auto-reply (exact match only)
     if data.from_type == "client" and data.kind == "text":
         config = await db.config.find_one({"id": "config"})
         if config:
@@ -444,7 +444,8 @@ async def send_message(data: MessageCreate, current_user: dict = Depends(get_cur
             text_lower = text.lower().strip()
             for rule in auto_replies:
                 q = rule.get("q", "").lower().strip()
-                if q and (text_lower == q or q in text_lower):
+                # EXACT match only
+                if q and text_lower == q:
                     # Send auto reply
                     agents = await db.agents.find({}).to_list(1)
                     if agents:
