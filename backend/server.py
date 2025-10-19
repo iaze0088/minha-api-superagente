@@ -356,8 +356,6 @@ async def update_agent(agent_id: str, data: dict, request: Request, current_user
     if not agent:
         raise HTTPException(status_code=404, detail="Agente não encontrado")
     
-    tenant = get_request_tenant(request)
-    
     # Reseller só pode editar seus próprios agentes
     if current_user["user_type"] == "reseller":
         if agent.get("reseller_id") != current_user.get("reseller_id"):
