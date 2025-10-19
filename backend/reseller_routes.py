@@ -114,13 +114,15 @@ async def create_reseller(data: ResellerCreate, current_user: dict = Depends(get
 
 # Update reseller
 @reseller_router.put("/{reseller_id}")
-async def update_reseller(reseller_id: str, data: dict, db, current_user: dict):
+async def update_reseller(reseller_id: str, data: dict, current_user: dict = Depends(get_current_user)):
     if current_user["user_type"] not in ["admin", "reseller"]:
         raise HTTPException(status_code=403, detail="Não autorizado")
     
     # Revendedor só pode atualizar seus próprios dados
     if current_user["user_type"] == "reseller" and current_user["user_id"] != reseller_id:
         raise HTTPException(status_code=403, detail="Não autorizado")
+    
+    db = get_db_dep()
     
     update_data = {}
     if "name" in data:
