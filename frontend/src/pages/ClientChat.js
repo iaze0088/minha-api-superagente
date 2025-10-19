@@ -128,13 +128,15 @@ const ClientChat = () => {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       
-      const ticketsRes = await api.get('/tickets', { params: { status: null } });
-      const myTicket = ticketsRes.data.find(t => t.client_id === userData.id);
       const agents = await api.get('/agents');
-      const agentId = agents.data[0]?.id || 'agent1';
+      if (!agents.data || agents.data.length === 0) {
+        toast.error('Nenhum atendente disponível');
+        return;
+      }
+      const agentId = agents.data[0].id;
       
       await api.post('/messages', {
-        ticket_id: myTicket?.id || '',
+        ticket_id: '',  // Backend creates ticket automatically
         from_type: 'client',
         from_id: userData.id,
         to_type: 'agent',
@@ -147,7 +149,8 @@ const ClientChat = () => {
       toast.success('Arquivo enviado!');
       setTimeout(loadMessages, 500);
     } catch (error) {
-      toast.error('Erro ao enviar arquivo');
+      console.error('Upload error:', error);
+      toast.error(error.response?.data?.detail || 'Erro ao enviar arquivo');
     }
   };
 
