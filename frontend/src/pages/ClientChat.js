@@ -530,6 +530,9 @@ const ClientChat = () => {
         icon={alertModal.icon}
         autoCloseDelay={30000}
       />
+      
+      {/* PWA Install Prompt */}
+      <InstallPWA />
     </div>
   );
 };
