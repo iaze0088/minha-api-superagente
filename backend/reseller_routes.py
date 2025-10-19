@@ -30,9 +30,15 @@ async def get_current_user(authorization: Optional[str] = Header(None)):
     token = authorization.split(" ")[1]
     return verify_token(token)
 
+# Get db dependency
+def get_db_dep():
+    from server import db
+    return db
+
 # Reseller authentication
 @reseller_router.post("/login")
-async def reseller_login(data: ResellerLogin, db):
+async def reseller_login(data: ResellerLogin):
+    db = get_db_dep()
     reseller = await db.resellers.find_one({"email": data.email})
     if not reseller or not bcrypt.checkpw(data.password.encode(), reseller["pass_hash"].encode()):
         raise HTTPException(status_code=401, detail="Email ou senha inválidos")
@@ -40,8 +46,6 @@ async def reseller_login(data: ResellerLogin, db):
     if not reseller.get("is_active", True):
         raise HTTPException(status_code=403, detail="Revenda desativada")
     
-    # Import create_token from main server
-    from server import create_token
     token = create_token(reseller["id"], "reseller")
     
     return TokenResponse(
