@@ -95,11 +95,17 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
+# Tenant helper
+def get_request_tenant(request: Request) -> TenantContext:
+    """Obtém o tenant context do request"""
+    return getattr(request.state, "tenant", TenantContext())
+
 # Auth helpers
-def create_token(user_id: str, user_type: str) -> str:
+def create_token(user_id: str, user_type: str, reseller_id: Optional[str] = None) -> str:
     payload = {
         "user_id": user_id,
         "user_type": user_type,
+        "reseller_id": reseller_id,
         "exp": datetime.now(timezone.utc) + timedelta(days=365)  # Token válido por 1 ano
     }
     return jwt.encode(payload, JWT_SECRET, algorithm="HS256")
