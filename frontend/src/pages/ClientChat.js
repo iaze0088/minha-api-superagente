@@ -68,8 +68,16 @@ const ClientChat = () => {
       const data = JSON.parse(event.data);
       if (data.type === 'message') {
         setMessages(prev => [...prev, data.message]);
-        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBTGH0fPTgjMGHm7A7+OZURE');
-        audio.play().catch(() => {});
+        // Som de notificação
+        try {
+          const audio = new Audio('/notification.mp3');
+          audio.volume = 0.7;
+          audio.play().catch(() => {});
+        } catch (e) {}
+        // Vibração
+        if ('vibrate' in navigator) {
+          navigator.vibrate([200, 100, 200]);
+        }
       }
       if (data.type === 'credentials_updated') {
         setCredentials({ pinned_user: data.pinned_user, pinned_pass: data.pinned_pass });
