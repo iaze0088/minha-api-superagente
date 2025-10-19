@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { GitBranch, Settings, Plus, Users, Trash2, ArrowRightLeft } from 'lucide-react';
+import { GitBranch, Settings, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -8,7 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import api from '../lib/api';
-import ResellerTreeNode from './ResellerTreeNode';
+import ResellerList from './ResellerList';
+import ResellerTree from './ResellerTree';
 
 const ResellerManagement = ({ resellers, hierarchy, loadData, handleReplicateConfig }) => {
   const [newReseller, setNewReseller] = useState({ name: '', email: '', password: '', domain: '', parent_id: null });
