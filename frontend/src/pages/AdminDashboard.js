@@ -26,14 +26,6 @@ const AdminDashboard = () => {
   // Agent form
   const [newAgent, setNewAgent] = useState({ name: '', login: '', password: '', avatar: '' });
   const [editingAgent, setEditingAgent] = useState(null);
-  
-  // Reseller form
-  const [newReseller, setNewReseller] = useState({ name: '', email: '', password: '', domain: '', parent_id: null });
-  const [editingReseller, setEditingReseller] = useState(null);
-  const [hierarchy, setHierarchy] = useState({ hierarchy: [] });
-  const [expandedResellers, setExpandedResellers] = useState(new Set());
-  const [transferModal, setTransferModal] = useState({ open: false, reseller: null });
-  const [viewMode, setViewMode] = useState('list'); // 'list' or 'tree'
 
   useEffect(() => {
     loadData();
