@@ -155,6 +155,20 @@ const ClientChat = () => {
       return;
     }
     
+    // Check business hours
+    if (!isWithinBusinessHours()) {
+      toast.error('Estamos fora do horário de atendimento (9h às 23h). Sua mensagem será respondida assim que possível.', {
+        duration: 5000
+      });
+    }
+    
+    // Check if agents are online
+    if (onlineStatus === 'Ausente' && isWithinBusinessHours()) {
+      toast.info('Estamos ausentes no momento. Em breve retornaremos e responderemos sua mensagem.', {
+        duration: 5000
+      });
+    }
+    
     try {
       // Get first available agent
       const agents = await api.get('/agents');
@@ -181,6 +195,22 @@ const ClientChat = () => {
       setMessageText('');
       toast.success('Mensagem enviada!');
       setTimeout(loadMessages, 500);
+      
+      // Show queue popup after 10 seconds (once per day)
+      if (shouldShowQueuePopup()) {
+        queueTimerRef.current = setTimeout(async () => {
+          try {
+            const { data } = await api.get('/tickets/counts');
+            const queueCount = data.EM_ESPERA || 0;
+            toast.info(`Você está na fila de espera. ${queueCount} pessoa(s) aguardando atendimento. Em breve você será atendido!`, {
+              duration: 7000
+            });
+            markQueuePopupShown();
+          } catch (error) {
+            console.error('Error getting queue count:', error);
+          }
+        }, 10000);
+      }
     } catch (error) {
       console.error('Send error:', error);
       toast.error(error.response?.data?.detail || 'Erro ao enviar mensagem');
