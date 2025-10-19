@@ -167,8 +167,16 @@ async def agent_login(data: AgentLogin):
     })
 
 @api_router.post("/auth/client/login")
-async def client_login(data: UserLogin):
-    user = await db.users.find_one({"whatsapp": data.whatsapp})
+async def client_login(data: UserLogin, request: Request):
+    tenant = get_request_tenant(request)
+    reseller_id = tenant.reseller_id
+    
+    # Buscar usuário com filtro de tenant
+    query = {"whatsapp": data.whatsapp}
+    if reseller_id:
+        query["reseller_id"] = reseller_id
+    
+    user = await db.users.find_one(query)
     
     if not user:
         # First time - create user
@@ -187,6 +195,7 @@ async def client_login(data: UserLogin):
             "gender": "",
             "pinned_user": "",
             "pinned_pass": "",
+            "reseller_id": reseller_id,
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         await db.users.insert_one(new_user)
@@ -204,7 +213,7 @@ async def client_login(data: UserLogin):
             await db.users.update_one({"id": user["id"]}, {"$set": {"pin_hash": pin_hash}})
             user["pin_hash"] = pin_hash
     
-    token = create_token(user["id"], "client")
+    token = create_token(user["id"], "client", reseller_id)
     return TokenResponse(token=token, user_type="client", user_data={
         "id": user["id"],
         "whatsapp": user["whatsapp"],
@@ -212,7 +221,7 @@ async def client_login(data: UserLogin):
         "avatar": user.get("custom_avatar") or user.get("avatar", ""),
         "pinned_user": user.get("pinned_user", ""),
         "pinned_pass": user.get("pinned_pass", "")
-    })
+    }, reseller_id=reseller_id)
 
 # User routes
 @api_router.get("/users/me")
