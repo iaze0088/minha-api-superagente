@@ -175,6 +175,13 @@ const AgentDashboard = () => {
         pinned_user: pinnedUser,
         pinned_pass: pinnedPass
       });
+      
+      // Update local state
+      setClientCredentials({
+        pinned_user: pinnedUser,
+        pinned_pass: pinnedPass
+      });
+      
       toast.success('Credenciais fixadas!');
       setPinnedUser('');
       setPinnedPass('');
