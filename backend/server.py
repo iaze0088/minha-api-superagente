@@ -1,8 +1,9 @@
-from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, WebSocket, WebSocketDisconnect, Depends, Header
+from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, WebSocket, WebSocketDisconnect, Depends, Header, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
@@ -14,6 +15,7 @@ import bcrypt
 import jwt
 import aiofiles
 from models import *
+from tenant_middleware import detect_tenant, get_current_tenant, apply_tenant_filter, TenantContext, tenant_context as global_tenant_context
 import mimetypes
 import re
 
