@@ -570,6 +570,7 @@ async def send_message(data: MessageCreate, request: Request, current_user: dict
         "kind": data.kind,
         "text": text,
         "file_url": data.file_url or "",
+        "reseller_id": reseller_id,
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     await db.messages.insert_one(message)
