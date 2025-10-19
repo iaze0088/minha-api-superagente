@@ -81,6 +81,7 @@ const ClientChat = () => {
   const loadUserData = async () => {
     try {
       const { data } = await api.get('/users/me');
+      setUserData(data);  // Update userData with fresh data from server
       setCredentials({ pinned_user: data.pinned_user, pinned_pass: data.pinned_pass });
     } catch (error) {
       console.error('Error loading user data:', error);
