@@ -34,9 +34,12 @@ const ClientLogin = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md p-8 space-y-6 bg-white shadow-2xl">
         <div className="flex flex-col items-center space-y-4">
-          <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center">
-            <MessageCircle className="w-8 h-8 text-white" />
-          </div>
+          <img 
+            src="/logo-cybertv.jpg" 
+            alt="CYBERTV" 
+            className="w-32 h-32 object-contain rounded-2xl"
+            style={{backgroundColor: 'transparent'}}
+          />
           <h2 className="text-3xl font-bold text-slate-900" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
             Área do Cliente
           </h2>
