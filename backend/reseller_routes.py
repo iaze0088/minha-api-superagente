@@ -175,9 +175,11 @@ async def get_reseller_config(reseller_id: str, current_user: dict = Depends(get
 
 # Update reseller config
 @reseller_router.put("/{reseller_id}/config")
-async def update_reseller_config(reseller_id: str, data: ConfigData, db, current_user: dict):
+async def update_reseller_config(reseller_id: str, data: ConfigData, current_user: dict = Depends(get_current_user)):
     if current_user["user_type"] == "reseller" and current_user["user_id"] != reseller_id:
         raise HTTPException(status_code=403, detail="Não autorizado")
+    
+    db = get_db_dep()
     
     await db.reseller_configs.update_one(
         {"reseller_id": reseller_id},
