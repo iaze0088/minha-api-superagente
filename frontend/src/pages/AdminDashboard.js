@@ -154,10 +154,14 @@ const AdminDashboard = () => {
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         <Tabs defaultValue="agents" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
             <TabsTrigger value="agents" data-testid="tab-agents">
               <Users className="w-4 h-4 mr-2" />
               Atendentes
+            </TabsTrigger>
+            <TabsTrigger value="resellers" data-testid="tab-resellers">
+              <Users className="w-4 h-4 mr-2" />
+              Revendas
             </TabsTrigger>
             <TabsTrigger value="quick" data-testid="tab-quick">
               <MessageSquare className="w-4 h-4 mr-2" />
