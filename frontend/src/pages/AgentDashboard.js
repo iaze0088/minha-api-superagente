@@ -11,6 +11,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import api, { createWebSocket } from '../lib/api';
 import { clearAuth, getAuth } from '../lib/auth';
+import { formatWhatsApp } from '../utils/formatters';
 
 const AgentDashboard = () => {
   const navigate = useNavigate();
