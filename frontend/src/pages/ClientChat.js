@@ -210,8 +210,11 @@ const ClientChat = () => {
           try {
             const { data } = await api.get('/tickets/counts');
             const queueCount = data.EM_ESPERA || 0;
-            toast.info(`Você está na fila de espera. ${queueCount} pessoa(s) aguardando atendimento. Em breve você será atendido!`, {
-              duration: 7000
+            setAlertModal({
+              isOpen: true,
+              title: 'Fila de Espera',
+              message: `Você está na fila de espera. ${queueCount} pessoa(s) aguardando atendimento. Em breve você será atendido!`,
+              icon: 'queue'
             });
             markQueuePopupShown();
           } catch (error) {
