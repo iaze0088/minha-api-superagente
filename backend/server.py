@@ -155,16 +155,25 @@ async def admin_login(data: AdminLogin):
     return TokenResponse(token=token, user_type="admin", user_data={"id": "admin"})
 
 @api_router.post("/auth/agent/login")
-async def agent_login(data: AgentLogin):
-    agent = await db.agents.find_one({"login": data.login})
+async def agent_login(data: AgentLogin, request: Request):
+    tenant = get_request_tenant(request)
+    reseller_id = tenant.reseller_id
+    
+    # Buscar agente com filtro de tenant
+    query = {"login": data.login}
+    if reseller_id:
+        query["reseller_id"] = reseller_id
+    
+    agent = await db.agents.find_one(query)
     if not agent or not bcrypt.checkpw(data.password.encode(), agent["pass_hash"].encode()):
         raise HTTPException(status_code=401, detail="Login ou senha inválidos")
-    token = create_token(agent["id"], "agent")
+    
+    token = create_token(agent["id"], "agent", agent.get("reseller_id"))
     return TokenResponse(token=token, user_type="agent", user_data={
         "id": agent["id"],
         "name": agent["name"],
         "avatar": agent.get("custom_avatar") or agent.get("avatar", "")
-    })
+    }, reseller_id=agent.get("reseller_id"))
 
 @api_router.post("/auth/client/login")
 async def client_login(data: UserLogin, request: Request):
