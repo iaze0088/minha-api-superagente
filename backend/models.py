@@ -54,6 +54,7 @@ class AgentBase(BaseModel):
     login: str
     avatar: Optional[str] = ""
     custom_avatar: Optional[str] = ""
+    reseller_id: Optional[str] = None  # Tenant isolation
 
 class AgentCreate(BaseModel):
     name: str
