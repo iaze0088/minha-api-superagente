@@ -279,9 +279,9 @@ const AgentDashboard = () => {
                       )}
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-sm text-slate-900 truncate">
-                          {ticket.client_name || ticket.client_whatsapp}
+                          {ticket.client_name || formatWhatsApp(ticket.client_whatsapp)}
                         </p>
-                        <p className="text-xs text-slate-500 truncate">{ticket.client_whatsapp}</p>
+                        <p className="text-xs text-slate-500 truncate">{formatWhatsApp(ticket.client_whatsapp)}</p>
                       </div>
                     </div>
                   </Card>
