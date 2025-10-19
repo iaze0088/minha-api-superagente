@@ -86,7 +86,7 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 ❌ ERRADO:
 ```javascript
-const API_URL = "https://php-refactor-1.preview.emergentagent.com";
+const API_URL = "https://cybertv-support.preview.emergentagent.com";
 ```
 
 ---
