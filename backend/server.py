@@ -507,12 +507,16 @@ async def get_messages(ticket_id: str, limit: int = 50, offset: int = 0, current
     return messages
 
 @api_router.post("/messages")
-async def send_message(data: MessageCreate, current_user: dict = Depends(get_current_user)):
+async def send_message(data: MessageCreate, request: Request, current_user: dict = Depends(get_current_user)):
     # Validate sender
     logger.info(f"Message from: {data.from_id}, User: {current_user['user_id']}, Type: {current_user['user_type']}")
     if str(data.from_id) != str(current_user["user_id"]):
         logger.error(f"Authorization failed: from_id={data.from_id}, user_id={current_user['user_id']}")
         raise HTTPException(status_code=403, detail=f"Não autorizado - ID não corresponde")
+    
+    # Pegar tenant do request ou do token
+    tenant = get_request_tenant(request)
+    reseller_id = tenant.reseller_id or current_user.get("reseller_id")
     
     # Agent text validation
     if data.from_type == "agent" and data.kind == "text":
@@ -522,13 +526,19 @@ async def send_message(data: MessageCreate, current_user: dict = Depends(get_cur
     
     # Create or get ticket
     if data.from_type == "client":
-        ticket = await db.tickets.find_one({"client_id": data.from_id})
+        # Buscar ticket do cliente com filtro de tenant
+        query = {"client_id": data.from_id}
+        if reseller_id:
+            query["reseller_id"] = reseller_id
+        
+        ticket = await db.tickets.find_one(query)
         if not ticket:
             ticket_id = str(uuid.uuid4())
             ticket = {
                 "id": ticket_id,
                 "client_id": data.from_id,
                 "status": "EM_ESPERA",
+                "reseller_id": reseller_id,
                 "created_at": datetime.now(timezone.utc).isoformat(),
                 "updated_at": datetime.now(timezone.utc).isoformat()
             }
