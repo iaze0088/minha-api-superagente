@@ -35,9 +35,9 @@ const ClientLogin = () => {
       <Card className="w-full max-w-md p-8 space-y-6 bg-white shadow-2xl">
         <div className="flex flex-col items-center space-y-4">
           <img 
-            src="/logo.png" 
+            src="/logo-cybertv-final.png" 
             alt="CYBERTV" 
-            className="w-48 h-48 object-contain"
+            className="w-56 h-56 object-contain"
           />
           <h2 className="text-3xl font-bold text-slate-900" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
             Área do Cliente
