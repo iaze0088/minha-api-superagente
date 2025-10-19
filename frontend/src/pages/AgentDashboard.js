@@ -95,9 +95,22 @@ const AgentDashboard = () => {
     }
   };
 
-  const handleSelectTicket = (ticket) => {
+  const handleSelectTicket = async (ticket) => {
     setSelectedTicket(ticket);
     loadMessages(ticket.id);
+    
+    // Load client credentials
+    try {
+      const { data } = await api.get(`/users/me`, {
+        headers: { 'X-User-Id': ticket.client_id }
+      });
+      setClientCredentials({
+        pinned_user: data.pinned_user || '',
+        pinned_pass: data.pinned_pass || ''
+      });
+    } catch (error) {
+      console.error('Error loading client credentials:', error);
+    }
   };
 
   const handleSendMessage = async (newStatus = null) => {
