@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import api from '../lib/api';
 import { clearAuth } from '../lib/auth';
+import ResellerManagement from '../components/ResellerManagement';
 import ResellerTreeNode from '../components/ResellerTreeNode';
 
 const AdminDashboard = () => {
