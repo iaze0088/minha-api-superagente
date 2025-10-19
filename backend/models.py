@@ -129,6 +129,33 @@ class ConfigData(BaseModel):
     auto_reply: List[AutoReply] = []
     apps: List[AppItem] = []
 
+# Reseller Models
+class ResellerBase(BaseModel):
+    name: str
+    email: str
+    domain: Optional[str] = ""
+    custom_domain: Optional[str] = ""
+    is_active: bool = True
+
+class ResellerCreate(BaseModel):
+    name: str
+    email: str
+    password: str
+    domain: Optional[str] = ""
+
+class ResellerLogin(BaseModel):
+    email: str
+    password: str
+
+class ResellerInDB(ResellerBase):
+    id: str
+    pass_hash: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class ResellerResponse(ResellerBase):
+    id: str
+    created_at: datetime
+
 # Notice Models
 class NoticeBase(BaseModel):
     kind: MessageKind
