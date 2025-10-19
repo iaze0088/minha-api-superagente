@@ -375,8 +375,10 @@ async def get_messages(ticket_id: str, limit: int = 50, offset: int = 0, current
 @api_router.post("/messages")
 async def send_message(data: MessageCreate, current_user: dict = Depends(get_current_user)):
     # Validate sender
-    if data.from_id != current_user["user_id"]:
-        raise HTTPException(status_code=403, detail="Não autorizado")
+    logger.info(f"Message from: {data.from_id}, User: {current_user['user_id']}, Type: {current_user['user_type']}")
+    if str(data.from_id) != str(current_user["user_id"]):
+        logger.error(f"Authorization failed: from_id={data.from_id}, user_id={current_user['user_id']}")
+        raise HTTPException(status_code=403, detail=f"Não autorizado - ID não corresponde")
     
     # Agent text validation
     if data.from_type == "agent" and data.kind == "text":
