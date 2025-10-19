@@ -12,6 +12,7 @@ import api, { createWebSocket } from '../lib/api';
 import { clearAuth, getAuth } from '../lib/auth';
 import { formatWhatsApp, isWithinBusinessHours, shouldShowQueuePopup, markQueuePopupShown } from '../utils/formatters';
 import AlertModal from '../components/AlertModal';
+import InstallPWA from '../components/InstallPWA';
 
 const ClientChat = () => {
   const navigate = useNavigate();
