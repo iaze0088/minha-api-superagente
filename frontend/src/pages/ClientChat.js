@@ -159,15 +159,21 @@ const ClientChat = () => {
     
     // Check business hours
     if (!isWithinBusinessHours()) {
-      toast.error('Estamos fora do horário de atendimento (9h às 23h). Sua mensagem será respondida assim que possível.', {
-        duration: 5000
+      setAlertModal({
+        isOpen: true,
+        title: 'Fora do Horário',
+        message: 'Estamos fora do horário de atendimento (9h às 23h). Sua mensagem será respondida assim que possível.',
+        icon: 'clock'
       });
     }
     
     // Check if agents are online
-    if (onlineStatus === 'Ausente' && isWithinBusinessHours()) {
-      toast.info('Estamos ausentes no momento. Em breve retornaremos e responderemos sua mensagem.', {
-        duration: 5000
+    else if (onlineStatus === 'Ausente' && isWithinBusinessHours()) {
+      setAlertModal({
+        isOpen: true,
+        title: 'Ausente',
+        message: 'Estamos ausentes no momento. Em breve retornaremos e responderemos sua mensagem.',
+        icon: 'warning'
       });
     }
     
