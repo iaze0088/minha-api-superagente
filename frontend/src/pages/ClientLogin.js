@@ -22,7 +22,7 @@ const ClientLogin = () => {
       const { data } = await api.post('/auth/client/login', { whatsapp, pin });
       setAuth(data.token, data.user_type, data.user_data);
       toast.success('Bem-vindo ao chat!');
-      navigate('/client');
+      navigate('/chat');
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Erro ao fazer login');
     } finally {
