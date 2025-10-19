@@ -195,9 +195,11 @@ async def update_reseller_config(reseller_id: str, data: ConfigData, current_use
 
 # Replicate main config to all resellers (admin only)
 @reseller_router.post("/replicate-config")
-async def replicate_config_to_resellers(db, current_user: dict):
+async def replicate_config_to_resellers(current_user: dict = Depends(get_current_user)):
     if current_user["user_type"] != "admin":
         raise HTTPException(status_code=403, detail="Não autorizado")
+    
+    db = get_db_dep()
     
     # Get main config
     main_config = await db.config.find_one({"id": "config"})
