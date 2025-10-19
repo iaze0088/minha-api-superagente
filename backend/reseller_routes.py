@@ -154,9 +154,11 @@ async def delete_reseller(reseller_id: str, current_user: dict = Depends(get_cur
 
 # Get reseller config
 @reseller_router.get("/{reseller_id}/config")
-async def get_reseller_config(reseller_id: str, db, current_user: dict):
+async def get_reseller_config(reseller_id: str, current_user: dict = Depends(get_current_user)):
     if current_user["user_type"] == "reseller" and current_user["user_id"] != reseller_id:
         raise HTTPException(status_code=403, detail="Não autorizado")
+    
+    db = get_db_dep()
     
     config = await db.reseller_configs.find_one({"reseller_id": reseller_id}, {"_id": 0})
     if not config:
