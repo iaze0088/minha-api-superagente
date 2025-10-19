@@ -50,10 +50,15 @@ const AgentDashboard = () => {
         }
         loadTickets();
       }
+      if (data.type === 'force_logout') {
+        clearAuth();
+        alert('Você foi desconectado porque outra pessoa fez login com suas credenciais.');
+        navigate('/');
+      }
     };
     wsRef.current = ws;
     return () => ws.close();
-  }, [userData, selectedTicket]);
+  }, [userData, selectedTicket, navigate]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
