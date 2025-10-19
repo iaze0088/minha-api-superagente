@@ -280,7 +280,7 @@ const AgentDashboard = () => {
               </TabsTrigger>
             </TabsList>
 
-            <ScrollArea className="flex-1">
+            <div className="flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 250px)' }}>
               <div className="p-2 space-y-2">
                 {tickets.map(ticket => (
                   <Card
@@ -305,7 +305,7 @@ const AgentDashboard = () => {
                   </Card>
                 ))}
               </div>
-            </ScrollArea>
+            </div>
           </Tabs>
         </div>
 
