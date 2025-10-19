@@ -141,9 +141,11 @@ async def update_reseller(reseller_id: str, data: dict, current_user: dict = Dep
 
 # Delete reseller (admin only)
 @reseller_router.delete("/{reseller_id}")
-async def delete_reseller(reseller_id: str, db, current_user: dict):
+async def delete_reseller(reseller_id: str, current_user: dict = Depends(get_current_user)):
     if current_user["user_type"] != "admin":
         raise HTTPException(status_code=403, detail="Não autorizado")
+    
+    db = get_db_dep()
     
     await db.resellers.delete_one({"id": reseller_id})
     await db.reseller_configs.delete_one({"reseller_id": reseller_id})
