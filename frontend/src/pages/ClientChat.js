@@ -90,14 +90,17 @@ const ClientChat = () => {
     if (!messageText.trim()) return;
     
     try {
-      const ticketsRes = await api.get('/tickets', { params: { status: null } });
-      let myTicket = ticketsRes.data.find(t => t.client_id === userData.id);
-      
+      // Get first available agent
       const agents = await api.get('/agents');
-      const agentId = agents.data[0]?.id || 'agent1';
+      if (!agents.data || agents.data.length === 0) {
+        toast.error('Nenhum atendente disponível no momento');
+        return;
+      }
+      const agentId = agents.data[0].id;
       
+      // Send message (backend will create ticket automatically if needed)
       await api.post('/messages', {
-        ticket_id: myTicket?.id || '',
+        ticket_id: '',  // Backend creates ticket for new clients
         from_type: 'client',
         from_id: userData.id,
         to_type: 'agent',
@@ -108,9 +111,11 @@ const ClientChat = () => {
       });
       
       setMessageText('');
+      toast.success('Mensagem enviada!');
       setTimeout(loadMessages, 500);
     } catch (error) {
-      toast.error('Erro ao enviar mensagem');
+      console.error('Send error:', error);
+      toast.error(error.response?.data?.detail || 'Erro ao enviar mensagem');
     }
   };
 
