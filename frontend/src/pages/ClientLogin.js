@@ -35,10 +35,9 @@ const ClientLogin = () => {
       <Card className="w-full max-w-md p-8 space-y-6 bg-white shadow-2xl">
         <div className="flex flex-col items-center space-y-4">
           <img 
-            src="/logo-cybertv.jpg" 
+            src="/logo-cybertv.png" 
             alt="CYBERTV" 
-            className="w-32 h-32 object-contain rounded-2xl"
-            style={{backgroundColor: 'transparent'}}
+            className="w-40 h-40 object-contain"
           />
           <h2 className="text-3xl font-bold text-slate-900" style={{fontFamily: 'Space Grotesk, sans-serif'}}>
             Área do Cliente
