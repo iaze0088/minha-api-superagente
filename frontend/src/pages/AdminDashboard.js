@@ -217,6 +217,116 @@ const AdminDashboard = () => {
             </TabsTrigger>
           </TabsList>
 
+          {/* Resellers Tab */}
+          <TabsContent value="resellers" className="space-y-6">
+            <Card className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Gerenciar Revendas</h3>
+                <Button onClick={handleReplicateConfig} variant="outline" className="bg-blue-600 text-white hover:bg-blue-700">
+                  <Settings className="w-4 h-4 mr-2" />
+                  Replicar Configurações para Todas
+                </Button>
+              </div>
+              
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <p className="text-sm text-blue-900">
+                  <strong>📌 O que são Revendas?</strong><br />
+                  Cada revenda é um painel independente com suas próprias configurações (mensagens rápidas, auto-resposta, aplicativos).
+                  As revendas podem ter seus próprios domínios personalizados.
+                </p>
+              </div>
+              
+              <h4 className="font-semibold mb-3">Criar Nova Revenda</h4>
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
+                <Input
+                  data-testid="reseller-name-input"
+                  placeholder="Nome da Revenda"
+                  value={newReseller.name}
+                  onChange={(e) => setNewReseller({ ...newReseller, name: e.target.value })}
+                />
+                <Input
+                  data-testid="reseller-email-input"
+                  placeholder="Email (login)"
+                  type="email"
+                  value={newReseller.email}
+                  onChange={(e) => setNewReseller({ ...newReseller, email: e.target.value })}
+                />
+                <Input
+                  data-testid="reseller-password-input"
+                  type="password"
+                  placeholder="Senha"
+                  value={newReseller.password}
+                  onChange={(e) => setNewReseller({ ...newReseller, password: e.target.value })}
+                />
+                <Input
+                  data-testid="reseller-domain-input"
+                  placeholder="Domínio (opcional, ex: revenda1.suporte.help)"
+                  value={newReseller.domain}
+                  onChange={(e) => setNewReseller({ ...newReseller, domain: e.target.value })}
+                />
+              </div>
+              <Button data-testid="create-reseller-btn" onClick={handleCreateReseller} className="bg-purple-600 hover:bg-purple-700">
+                <Plus className="w-4 h-4 mr-2" />
+                Criar Revenda
+              </Button>
+            </Card>
+
+            <div className="grid gap-4">
+              {resellers.length === 0 ? (
+                <Card className="p-8 text-center">
+                  <Users className="w-16 h-16 mx-auto text-slate-300 mb-4" />
+                  <p className="text-slate-600">Nenhuma revenda criada ainda</p>
+                  <p className="text-sm text-slate-500 mt-2">Crie sua primeira revenda acima</p>
+                </Card>
+              ) : (
+                resellers.map((reseller) => (
+                  <Card key={reseller.id} className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-slate-900 text-lg">{reseller.name}</h4>
+                        <p className="text-sm text-slate-600">Email: {reseller.email}</p>
+                        {reseller.domain && (
+                          <p className="text-sm text-slate-600">Domínio: {reseller.domain}</p>
+                        )}
+                        {reseller.custom_domain && (
+                          <p className="text-sm text-blue-600">Domínio Customizado: {reseller.custom_domain}</p>
+                        )}
+                        <p className="text-xs text-slate-500 mt-1">
+                          Criado em: {new Date(reseller.created_at).toLocaleDateString('pt-BR')}
+                        </p>
+                        <div className="mt-2">
+                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                            reseller.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                          }`}>
+                            {reseller.is_active ? '✓ Ativa' : '✗ Inativa'}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          data-testid={`view-reseller-${reseller.id}-btn`}
+                          variant="outline"
+                          size="sm"
+                          onClick={() => window.open(`/revenda/login?email=${reseller.email}`, '_blank')}
+                        >
+                          Ver Painel
+                        </Button>
+                        <Button
+                          data-testid={`delete-reseller-${reseller.id}-btn`}
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteReseller(reseller.id)}
+                        >
+                          <Trash2 className="w-4 h-4 text-red-600" />
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                ))
+              )}
+            </div>
+          </TabsContent>
+
           {/* Agents Tab */}
           <TabsContent value="agents" className="space-y-6">
             <Card className="p-6">
