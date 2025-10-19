@@ -577,7 +577,12 @@ async def send_message(data: MessageCreate, request: Request, current_user: dict
     
     # Check auto-reply (exact match only)
     if data.from_type == "client" and data.kind == "text":
-        config = await db.config.find_one({"id": "config"})
+        # Buscar config do reseller ou config principal
+        if reseller_id:
+            config = await db.reseller_configs.find_one({"reseller_id": reseller_id})
+        else:
+            config = await db.config.find_one({"id": "config"})
+        
         if config:
             auto_replies = config.get("auto_reply", [])
             text_lower = text.lower().strip()
@@ -585,8 +590,11 @@ async def send_message(data: MessageCreate, request: Request, current_user: dict
                 q = rule.get("q", "").lower().strip()
                 # EXACT match only
                 if q and text_lower == q:
-                    # Send auto reply
-                    agents = await db.agents.find({}).to_list(1)
+                    # Buscar agente do mesmo tenant
+                    agent_query = {}
+                    if reseller_id:
+                        agent_query["reseller_id"] = reseller_id
+                    agents = await db.agents.find(agent_query).to_list(1)
                     if agents:
                         agent = agents[0]
                         reply_id = str(uuid.uuid4())
@@ -600,6 +608,7 @@ async def send_message(data: MessageCreate, request: Request, current_user: dict
                             "kind": "text",
                             "text": rule.get("a", ""),
                             "file_url": "",
+                            "reseller_id": reseller_id,
                             "created_at": datetime.now(timezone.utc).isoformat()
                         }
                         await db.messages.insert_one(reply)
