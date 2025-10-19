@@ -15,12 +15,11 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/agent/login" element={<AgentLogin />} />
-          <Route path="/client/login" element={<ClientLogin />} />
+          <Route path="/" element={<ClientLogin />} />
+          <Route path="/atendente/login" element={<AgentLogin />} />
+          <Route path="/" element={<AdminLogin />} />
           
-          <Route path="/admin" element={
+          <Route path="/atendente" element={
             <PrivateRoute requiredType="admin">
               <AdminDashboard />
             </PrivateRoute>
