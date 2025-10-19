@@ -454,15 +454,6 @@ async def get_ticket_counts(request: Request, current_user: dict = Depends(get_c
         "ATENDENDO": atendendo,
         "FINALIZADAS": finalizadas
     }
-async def get_ticket_counts(current_user: dict = Depends(get_current_user)):
-    em_espera = await db.tickets.count_documents({"status": "EM_ESPERA"})
-    atendendo = await db.tickets.count_documents({"status": "ATENDENDO"})
-    finalizadas = await db.tickets.count_documents({"status": "FINALIZADAS"})
-    return {
-        "EM_ESPERA": em_espera,
-        "ATENDENDO": atendendo,
-        "FINALIZADAS": finalizadas
-    }
 
 @api_router.get("/tickets/{ticket_id}")
 async def get_ticket(ticket_id: str, current_user: dict = Depends(get_current_user)):
