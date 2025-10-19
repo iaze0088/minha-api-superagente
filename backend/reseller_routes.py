@@ -63,18 +63,21 @@ async def reseller_login(data: ResellerLogin):
 
 # List all resellers (admin only)
 @reseller_router.get("")
-async def list_resellers(db, current_user: dict):
+async def list_resellers(current_user: dict = Depends(get_current_user)):
     if current_user["user_type"] != "admin":
         raise HTTPException(status_code=403, detail="Não autorizado")
     
+    db = get_db_dep()
     resellers = await db.resellers.find({}, {"_id": 0, "pass_hash": 0}).to_list(None)
     return resellers
 
 # Create reseller (admin only)
 @reseller_router.post("")
-async def create_reseller(data: ResellerCreate, db, current_user: dict):
+async def create_reseller(data: ResellerCreate, current_user: dict = Depends(get_current_user)):
     if current_user["user_type"] != "admin":
         raise HTTPException(status_code=403, detail="Não autorizado")
+    
+    db = get_db_dep()
     
     # Check if email exists
     existing = await db.resellers.find_one({"email": data.email})
