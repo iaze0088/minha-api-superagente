@@ -42,20 +42,33 @@ const AgentDashboard = () => {
   useEffect(() => {
     if (!userData?.id) return;
     const ws = createWebSocket(userData.id);
+    
+    ws.onopen = () => {
+      console.log('✅ WebSocket conectado - Atendente');
+    };
+    
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
+      console.log('📩 Mensagem recebida:', data);
+      
       if (data.type === 'message') {
         if (selectedTicket && data.message.ticket_id === selectedTicket.id) {
-          setMessages(prev => [...prev, data.message]);
+          setMessages(prev => {
+            const exists = prev.some(m => m.id === data.message.id);
+            if (exists) return prev;
+            return [...prev, data.message];
+          });
         }
         loadTickets();
       }
+      
       if (data.type === 'force_logout') {
         clearAuth();
         alert('Você foi desconectado porque outra pessoa fez login com suas credenciais.');
         navigate('/');
       }
     };
+    
     wsRef.current = ws;
     return () => ws.close();
   }, [userData, selectedTicket, navigate]);
