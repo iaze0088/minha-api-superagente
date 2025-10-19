@@ -136,12 +136,15 @@ class ResellerBase(BaseModel):
     domain: Optional[str] = ""
     custom_domain: Optional[str] = ""
     is_active: bool = True
+    parent_id: Optional[str] = None  # ID da revenda pai (None se for raiz)
+    level: int = 0  # Profundidade na hierarquia (0 = raiz)
 
 class ResellerCreate(BaseModel):
     name: str
     email: str
     password: str
     domain: Optional[str] = ""
+    parent_id: Optional[str] = None
 
 class ResellerLogin(BaseModel):
     email: str
@@ -155,6 +158,11 @@ class ResellerInDB(ResellerBase):
 class ResellerResponse(ResellerBase):
     id: str
     created_at: datetime
+    children_count: int = 0  # Número de sub-revendas
+
+class ResellerTransfer(BaseModel):
+    reseller_id: str
+    new_parent_id: Optional[str] = None  # None = tornar raiz
 
 # Notice Models
 class NoticeBase(BaseModel):
