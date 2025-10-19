@@ -24,10 +24,14 @@ const ClientChat = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [newPin, setNewPin] = useState('');
   const [isRecording, setIsRecording] = useState(false);
+  const [hasNewNotices, setHasNewNotices] = useState(false);
+  const [onlineStatus, setOnlineStatus] = useState('Carregando...');
+  const [lastNoticeCount, setLastNoticeCount] = useState(0);
   const wsRef = useRef(null);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
   const mediaRecorderRef = useRef(null);
+  const queueTimerRef = useRef(null);
 
   useEffect(() => {
     loadMessages();
