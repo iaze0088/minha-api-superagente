@@ -659,6 +659,25 @@ except Exception as e:
 # Serve uploads
 app.mount("/api/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 
+# Tenant Detection Middleware
+class TenantMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        # Detectar tenant pelo domínio
+        tenant_ctx = await detect_tenant(request, db)
+        
+        # Armazenar no contexto global
+        global_tenant_context.reseller_id = tenant_ctx.reseller_id
+        global_tenant_context.reseller_data = tenant_ctx.reseller_data
+        global_tenant_context.is_master = tenant_ctx.is_master
+        
+        # Adicionar ao request state para acesso nas rotas
+        request.state.tenant = tenant_ctx
+        
+        response = await call_next(request)
+        return response
+
+app.add_middleware(TenantMiddleware)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
