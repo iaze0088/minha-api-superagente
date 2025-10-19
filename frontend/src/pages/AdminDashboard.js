@@ -26,9 +26,6 @@ const AdminDashboard = () => {
   // Agent form
   const [newAgent, setNewAgent] = useState({ name: '', login: '', password: '', avatar: '' });
   const [editingAgent, setEditingAgent] = useState(null);
-  
-  // Reseller hierarchy
-  const [hierarchy, setHierarchy] = useState({ hierarchy: [] });
 
   useEffect(() => {
     loadData();
