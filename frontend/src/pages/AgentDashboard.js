@@ -296,15 +296,27 @@ const AgentDashboard = () => {
           {selectedTicket ? (
             <>
               {/* Chat Header */}
-              <div className="bg-white border-b border-slate-200 p-4 flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold text-slate-900">
-                    {selectedTicket.client_name || selectedTicket.client_whatsapp}
-                  </h3>
-                  <p className="text-sm text-slate-600">
-                    Usuário: <span className="font-mono">{selectedTicket.client_whatsapp}</span>
-                  </p>
+              <div className="bg-white border-b border-slate-200 p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-semibold text-slate-900">
+                      {selectedTicket.client_name || formatWhatsApp(selectedTicket.client_whatsapp)}
+                    </h3>
+                    <p className="text-sm text-slate-600">
+                      WhatsApp: <span className="font-mono">{formatWhatsApp(selectedTicket.client_whatsapp)}</span>
+                    </p>
+                  </div>
                 </div>
+                
+                {/* Credenciais fixadas */}
+                {(clientCredentials.pinned_user || clientCredentials.pinned_pass) && (
+                  <div className="mt-3 p-2 bg-cyan-50 border border-cyan-200 rounded-lg text-sm">
+                    <span className="font-medium text-cyan-900">Credenciais: </span>
+                    <span className="font-mono text-cyan-700">
+                      Usuário: {clientCredentials.pinned_user} • Senha: {clientCredentials.pinned_pass}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Messages */}
