@@ -347,9 +347,21 @@ async def create_agent(data: AgentCreate, request: Request, current_user: dict =
     return {"ok": True, "id": agent_id}
 
 @api_router.put("/agents/{agent_id}")
-async def update_agent(agent_id: str, data: dict, current_user: dict = Depends(get_current_user)):
-    if current_user["user_type"] != "admin":
+async def update_agent(agent_id: str, data: dict, request: Request, current_user: dict = Depends(get_current_user)):
+    if current_user["user_type"] not in ["admin", "reseller"]:
         raise HTTPException(status_code=403, detail="Não autorizado")
+    
+    # Verificar permissão de tenant
+    agent = await db.agents.find_one({"id": agent_id})
+    if not agent:
+        raise HTTPException(status_code=404, detail="Agente não encontrado")
+    
+    tenant = get_request_tenant(request)
+    
+    # Reseller só pode editar seus próprios agentes
+    if current_user["user_type"] == "reseller":
+        if agent.get("reseller_id") != current_user.get("reseller_id"):
+            raise HTTPException(status_code=403, detail="Não autorizado")
     
     update_data = {}
     if "name" in data:
@@ -365,9 +377,20 @@ async def update_agent(agent_id: str, data: dict, current_user: dict = Depends(g
     return {"ok": True}
 
 @api_router.delete("/agents/{agent_id}")
-async def delete_agent(agent_id: str, current_user: dict = Depends(get_current_user)):
-    if current_user["user_type"] != "admin":
+async def delete_agent(agent_id: str, request: Request, current_user: dict = Depends(get_current_user)):
+    if current_user["user_type"] not in ["admin", "reseller"]:
         raise HTTPException(status_code=403, detail="Não autorizado")
+    
+    # Verificar permissão de tenant
+    agent = await db.agents.find_one({"id": agent_id})
+    if not agent:
+        raise HTTPException(status_code=404, detail="Agente não encontrado")
+    
+    # Reseller só pode deletar seus próprios agentes
+    if current_user["user_type"] == "reseller":
+        if agent.get("reseller_id") != current_user.get("reseller_id"):
+            raise HTTPException(status_code=403, detail="Não autorizado")
+    
     await db.agents.delete_one({"id": agent_id})
     return {"ok": True}
 
