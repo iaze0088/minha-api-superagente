@@ -306,13 +306,29 @@ async def get_online_status():
     return {"online": online_count, "status": "online" if online_count > 0 else "offline"}
 
 @api_router.post("/agents")
-async def create_agent(data: AgentCreate, current_user: dict = Depends(get_current_user)):
-    if current_user["user_type"] != "admin":
+async def create_agent(data: AgentCreate, request: Request, current_user: dict = Depends(get_current_user)):
+    # Admin ou Reseller podem criar agentes
+    if current_user["user_type"] not in ["admin", "reseller"]:
         raise HTTPException(status_code=403, detail="Não autorizado")
     
-    existing = await db.agents.find_one({"login": data.login})
+    # Determinar reseller_id
+    tenant = get_request_tenant(request)
+    reseller_id = None
+    
+    if current_user["user_type"] == "reseller":
+        reseller_id = current_user.get("reseller_id")
+    elif current_user["user_type"] == "admin":
+        # Admin pode estar criando para uma revenda específica
+        reseller_id = tenant.reseller_id
+    
+    # Verificar se login já existe no mesmo tenant
+    query = {"login": data.login}
+    if reseller_id:
+        query["reseller_id"] = reseller_id
+    
+    existing = await db.agents.find_one(query)
     if existing:
-        raise HTTPException(status_code=400, detail="Login já existe")
+        raise HTTPException(status_code=400, detail="Login já existe nesta revenda")
     
     agent_id = str(uuid.uuid4())
     pass_hash = bcrypt.hashpw(data.password.encode(), bcrypt.gensalt()).decode()
@@ -324,6 +340,7 @@ async def create_agent(data: AgentCreate, current_user: dict = Depends(get_curre
         "pass_hash": pass_hash,
         "avatar": data.avatar,
         "custom_avatar": "",
+        "reseller_id": reseller_id,
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     await db.agents.insert_one(agent)
