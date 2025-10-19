@@ -310,7 +310,7 @@ const ClientChat = () => {
             </div>
             <div>
               <h1 className="font-semibold">Suporte</h1>
-              <p className="text-xs opacity-90">Online</p>
+              <p className="text-xs opacity-90">{onlineStatus}</p>
             </div>
           </div>
           <div className="flex gap-2">
@@ -318,10 +318,17 @@ const ClientChat = () => {
               data-testid="notices-btn"
               variant="ghost"
               size="icon"
-              onClick={() => setShowNotices(true)}
-              className="text-white hover:bg-white/20"
+              onClick={() => {
+                setShowNotices(true);
+                setHasNewNotices(false);
+                localStorage.setItem('last_notice_count', lastNoticeCount.toString());
+              }}
+              className={`text-white hover:bg-white/20 relative ${hasNewNotices ? 'pulse' : ''}`}
             >
-              <Bell className="w-5 h-5" />
+              <Bell className={`w-5 h-5 ${hasNewNotices ? 'text-red-300' : ''}`} />
+              {hasNewNotices && (
+                <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+              )}
             </Button>
             <Button
               data-testid="settings-btn"
