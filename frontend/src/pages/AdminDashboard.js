@@ -100,7 +100,7 @@ const AdminDashboard = () => {
     try {
       await api.post('/resellers', newReseller);
       toast.success('Revenda criada com sucesso!');
-      setNewReseller({ name: '', email: '', password: '', domain: '' });
+      setNewReseller({ name: '', email: '', password: '', domain: '', parent_id: null });
       loadData();
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Erro ao criar revenda');
@@ -114,8 +114,32 @@ const AdminDashboard = () => {
       toast.success('Revenda excluída!');
       loadData();
     } catch (error) {
-      toast.error('Erro ao excluir revenda');
+      toast.error(error.response?.data?.detail || 'Erro ao excluir revenda');
     }
+  };
+  
+  const handleTransferReseller = async () => {
+    try {
+      await api.post('/resellers/transfer', {
+        reseller_id: transferModal.reseller.id,
+        new_parent_id: transferModal.new_parent_id
+      });
+      toast.success('Revenda transferida com sucesso!');
+      setTransferModal({ open: false, reseller: null });
+      loadData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Erro ao transferir revenda');
+    }
+  };
+  
+  const toggleExpand = (resellerId) => {
+    const newExpanded = new Set(expandedResellers);
+    if (newExpanded.has(resellerId)) {
+      newExpanded.delete(resellerId);
+    } else {
+      newExpanded.add(resellerId);
+    }
+    setExpandedResellers(newExpanded);
   };
   
   const handleReplicateConfig = async () => {
