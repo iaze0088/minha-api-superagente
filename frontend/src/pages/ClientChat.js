@@ -97,8 +97,43 @@ const ClientChat = () => {
     try {
       const { data } = await api.get('/notices');
       setNotices(data);
+      
+      // Check if there are new notices
+      const stored = parseInt(localStorage.getItem('last_notice_count') || '0');
+      if (data.length > stored) {
+        setHasNewNotices(true);
+      }
+      setLastNoticeCount(data.length);
     } catch (error) {
       console.error('Error loading notices:', error);
+    }
+  };
+  
+  const checkForNewNotices = async () => {
+    try {
+      const { data } = await api.get('/notices');
+      const stored = parseInt(localStorage.getItem('last_notice_count') || '0');
+      if (data.length > stored) {
+        setHasNewNotices(true);
+      }
+    } catch (error) {
+      console.error('Error checking notices:', error);
+    }
+  };
+  
+  const checkOnlineStatus = async () => {
+    try {
+      const { data } = await api.get('/agents/online-status');
+      if (data.online > 0) {
+        setOnlineStatus('Online');
+      } else if (isWithinBusinessHours()) {
+        setOnlineStatus('Ausente');
+      } else {
+        setOnlineStatus('Fora de horário');
+      }
+    } catch (error) {
+      // Fallback: check business hours
+      setOnlineStatus(isWithinBusinessHours() ? 'Ausente' : 'Fora de horário');
     }
   };
 
