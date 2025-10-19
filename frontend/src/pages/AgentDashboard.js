@@ -26,6 +26,7 @@ const AgentDashboard = () => {
   const [pinnedUser, setPinnedUser] = useState('');
   const [pinnedPass, setPinnedPass] = useState('');
   const [resetPhone, setResetPhone] = useState('');
+  const [clientCredentials, setClientCredentials] = useState({ pinned_user: '', pinned_pass: '' });
   const wsRef = useRef(null);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
