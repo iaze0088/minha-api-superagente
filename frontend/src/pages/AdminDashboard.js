@@ -88,6 +88,39 @@ const AdminDashboard = () => {
       toast.error('Erro ao excluir atendente');
     }
   };
+  
+  // Reseller functions
+  const handleCreateReseller = async () => {
+    try {
+      await api.post('/resellers', newReseller);
+      toast.success('Revenda criada com sucesso!');
+      setNewReseller({ name: '', email: '', password: '', domain: '' });
+      loadData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Erro ao criar revenda');
+    }
+  };
+  
+  const handleDeleteReseller = async (resellerId) => {
+    if (!window.confirm('Tem certeza que deseja excluir esta revenda?')) return;
+    try {
+      await api.delete(`/resellers/${resellerId}`);
+      toast.success('Revenda excluída!');
+      loadData();
+    } catch (error) {
+      toast.error('Erro ao excluir revenda');
+    }
+  };
+  
+  const handleReplicateConfig = async () => {
+    if (!window.confirm('Isso vai sobrescrever as configurações de TODAS as revendas. Continuar?')) return;
+    try {
+      const { data } = await api.post('/resellers/replicate-config');
+      toast.success(`Configurações replicadas para ${data.updated} revenda(s)!`);
+    } catch (error) {
+      toast.error('Erro ao replicar configurações');
+    }
+  };
 
   const handleSaveConfig = async () => {
     try {
