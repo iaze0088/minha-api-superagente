@@ -633,9 +633,9 @@ async def reset_pin(data: dict, current_user: dict = Depends(get_current_user)):
     return {"ok": True}
 
 # WebSocket endpoint
-@api_router.websocket("/ws/{user_id}")
-async def websocket_endpoint(websocket: WebSocket, user_id: str):
-    await manager.connect(websocket, user_id)
+@api_router.websocket("/ws/{user_id}/{session_id}")
+async def websocket_endpoint(websocket: WebSocket, user_id: str, session_id: str):
+    await manager.connect(websocket, user_id, session_id)
     try:
         while True:
             await websocket.receive_text()
