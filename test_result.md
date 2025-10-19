@@ -306,13 +306,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Testar middleware de detecção de tenant"
-    - "Testar rotas de reseller (hierarquia, CRUD)"
-    - "Testar isolamento de dados entre tenants"
-    - "Testar login com diferentes domínios"
-    - "Testar criação de agentes/tickets/mensagens por tenant"
+    - "Limitar visualização de clientes a 10 por aba com scroll"
   stuck_tasks: []
-  test_all: true
+  test_all: false
   test_priority: "high_first"
 
 agent_communication:
