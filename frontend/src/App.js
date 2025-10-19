@@ -15,25 +15,27 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
+          {/* Cliente é a home */}
           <Route path="/" element={<ClientLogin />} />
-          <Route path="/atendente/login" element={<AgentLogin />} />
-          <Route path="/" element={<AdminLogin />} />
-          
-          <Route path="/atendente" element={
-            <PrivateRoute requiredType="admin">
-              <AdminDashboard />
+          <Route path="/chat" element={
+            <PrivateRoute requiredType="client">
+              <ClientChat />
             </PrivateRoute>
           } />
           
-          <Route path="/agent" element={
+          {/* Atendente */}
+          <Route path="/atendente/login" element={<AgentLogin />} />
+          <Route path="/atendente" element={
             <PrivateRoute requiredType="agent">
               <AgentDashboard />
             </PrivateRoute>
           } />
           
-          <Route path="/client" element={
-            <PrivateRoute requiredType="client">
-              <ClientChat />
+          {/* Admin */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={
+            <PrivateRoute requiredType="admin">
+              <AdminDashboard />
             </PrivateRoute>
           } />
           
