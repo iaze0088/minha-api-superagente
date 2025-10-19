@@ -29,6 +29,7 @@ class UserBase(BaseModel):
     gender: Optional[str] = ""
     pinned_user: Optional[str] = ""
     pinned_pass: Optional[str] = ""
+    reseller_id: Optional[str] = None  # Tenant isolation
 
 class UserCreate(BaseModel):
     whatsapp: str
