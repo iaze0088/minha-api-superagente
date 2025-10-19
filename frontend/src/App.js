@@ -41,6 +41,14 @@ function App() {
             </PrivateRoute>
           } />
           
+          {/* Revenda */}
+          <Route path="/revenda/login" element={<ResellerLogin />} />
+          <Route path="/revenda/dashboard" element={
+            <PrivateRoute requiredType="reseller">
+              <ResellerDashboard />
+            </PrivateRoute>
+          } />
+          
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
