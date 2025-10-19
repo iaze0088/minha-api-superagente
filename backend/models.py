@@ -101,6 +101,7 @@ class MessageBase(BaseModel):
     kind: MessageKind
     text: Optional[str] = ""
     file_url: Optional[str] = ""
+    reseller_id: Optional[str] = None  # Tenant isolation
 
 class MessageCreate(MessageBase):
     pass
