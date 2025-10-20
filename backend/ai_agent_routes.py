@@ -2,7 +2,7 @@
 Rotas para gerenciamento de Agentes IA e Departamentos
 """
 import os
-from fastapi import APIRouter, HTTPException, Depends, Request
+from fastapi import APIRouter, HTTPException, Depends, Request, Header
 from typing import List
 import uuid
 from datetime import datetime, timezone
