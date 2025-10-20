@@ -379,9 +379,10 @@ const AgentDashboard = () => {
               </div>
 
               {/* Messages */}
-              <ScrollArea className="flex-1 p-4">
+              <div className="flex-1 overflow-y-auto p-4 flex flex-col-reverse" style={{ maxHeight: 'calc(100vh - 400px)' }}>
+                <div ref={messagesEndRef} />
                 <div className="space-y-4">
-                  {messages.map(msg => (
+                  {messages.slice(-6).map(msg => (
                     <div key={msg.id} className={`flex ${msg.from_type === 'agent' ? 'justify-end' : 'justify-start'}`}>
                       <div
                         className={`max-w-[70%] p-3 rounded-2xl ${
@@ -406,9 +407,8 @@ const AgentDashboard = () => {
                       </div>
                     </div>
                   ))}
-                  <div ref={messagesEndRef} />
                 </div>
-              </ScrollArea>
+              </div>
 
               {/* Quick Messages */}
               {config.quick_blocks && config.quick_blocks.length > 0 && (
