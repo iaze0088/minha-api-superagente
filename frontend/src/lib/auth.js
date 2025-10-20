@@ -7,7 +7,14 @@ export const setAuth = (token, userType, userData) => {
 export const getAuth = () => {
   const token = localStorage.getItem('token');
   const userType = localStorage.getItem('user_type');
-  const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
+  let userData = {};
+  try {
+    const storedData = localStorage.getItem('user_data');
+    userData = storedData ? JSON.parse(storedData) : {};
+  } catch (e) {
+    console.warn('Error parsing user_data from localStorage:', e);
+    userData = {};
+  }
   return { token, userType, userData };
 };
 
