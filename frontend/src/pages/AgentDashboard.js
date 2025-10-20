@@ -74,7 +74,10 @@ const AgentDashboard = () => {
   }, [userData, selectedTicket, navigate]);
 
   useEffect(() => {
-    console.log('🔵 AgentDashboard CARREGADO - Versão com LIMITES FIXOS');
+    console.log('🟢🟢🟢 AGENTDASHBOARD VERSÃO NOVA CARREGADA! 🟢🟢🟢');
+    console.log('✅ Lista tickets: maxHeight 480px');
+    console.log('✅ Mensagens: altura fixa com calc');
+    console.log('✅ Input: fixo na parte inferior');
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
