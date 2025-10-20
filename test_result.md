@@ -684,4 +684,33 @@ agent_communication:
       PRÓXIMAS AÇÕES:
       - Testar backend com deep_testing_backend_v2
       - Testar frontend depois de confirmar backend funcionando
+  - agent: "testing"
+    message: |
+      🎉 BACKEND WHATSAPP & CONFIG ENDPOINTS COMPLETAMENTE TESTADOS E FUNCIONANDO!
+      
+      TESTES REALIZADOS (13/13 PASSOU):
+      ✅ Admin Login (senha: 102030@ab)
+      ✅ Client Register/Login (whatsapp: 11999999999, pin: 12)
+      ✅ Reseller Login (michaelrv@gmail.com / ab181818ab)
+      
+      ENDPOINTS WHATSAPP & PIN:
+      ✅ GET /users/whatsapp-popup-status - Lógica de 7 dias funcionando
+      ✅ PUT /users/me/whatsapp-confirm - Atualiza whatsapp_confirmed e whatsapp_asked_at
+      ✅ PUT /users/me/pin - Atualiza PIN com validação de 2 dígitos
+      ✅ Validação de PIN inválido (rejeita corretamente)
+      
+      ENDPOINTS CONFIG:
+      ✅ GET /config (Admin) - Todos os campos presentes: quick_blocks, auto_reply, apps, pix_key, allowed_data, api_integration, ai_agent
+      ✅ GET /config (Reseller) - Config de reseller com reseller_id correto
+      ✅ PUT /config (Admin) - Salva na config principal
+      ✅ PUT /config (Reseller) - Salva em reseller_configs
+      ✅ Compatibilidade com configs antigas (campos default adicionados automaticamente)
+      
+      ESTRUTURA DE DADOS VALIDADA:
+      ✅ allowed_data: {cpfs, emails, phones, random_keys}
+      ✅ api_integration: {api_url, api_token, api_enabled}
+      ✅ ai_agent: {name, enabled, llm_provider, llm_model, personality, instructions, etc.}
+      
+      BACKEND WHATSAPP & CONFIG 100% FUNCIONAL!
+      Todos os endpoints implementados na Fase 4 e Fase 5 estão funcionando perfeitamente.
 
