@@ -247,7 +247,7 @@ const AdminDashboard = () => {
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         <Tabs defaultValue="agents" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-9 lg:w-auto lg:inline-grid">
             <TabsTrigger value="resellers" data-testid="tab-resellers">
               <Users className="w-4 h-4 mr-2" />
               Revendas
@@ -255,6 +255,14 @@ const AdminDashboard = () => {
             <TabsTrigger value="agents" data-testid="tab-agents">
               <Users className="w-4 h-4 mr-2" />
               Atendentes
+            </TabsTrigger>
+            <TabsTrigger value="ai-agents" data-testid="tab-ai-agents">
+              <Bot className="w-4 h-4 mr-2" />
+              Agentes IA
+            </TabsTrigger>
+            <TabsTrigger value="departments" data-testid="tab-departments">
+              <Folder className="w-4 h-4 mr-2" />
+              Departamentos
             </TabsTrigger>
             <TabsTrigger value="quick" data-testid="tab-quick">
               <MessageSquare className="w-4 h-4 mr-2" />
@@ -270,7 +278,7 @@ const AdminDashboard = () => {
             </TabsTrigger>
             <TabsTrigger value="ai" data-testid="tab-ai">
               <MessageSquare className="w-4 h-4 mr-2" />
-              IA
+              IA (Legacy)
             </TabsTrigger>
             <TabsTrigger value="notices" data-testid="tab-notices">
               <Bell className="w-4 h-4 mr-2" />
