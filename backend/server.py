@@ -329,6 +329,52 @@ async def update_user(data: dict, current_user: dict = Depends(get_current_user)
     return {"ok": True}
 
 @api_router.put("/users/me/pin")
+async def update_user_pin(data: dict, current_user: dict = Depends(get_current_user)):
+    """Atualiza o PIN do usuário atual"""
+    pin = data.get("pin", "")
+    if not pin or len(pin) != 2 or not pin.isdigit():
+        raise HTTPException(status_code=400, detail="PIN deve ter exatamente 2 dígitos")
+    
+    pin_hash = bcrypt.hashpw(pin.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+    await db.users.update_one({"id": current_user["user_id"]}, {"$set": {"pin_hash": pin_hash}})
+    return {"ok": True}
+
+@api_router.get("/users/whatsapp-popup-status")
+async def check_whatsapp_popup_status(current_user: dict = Depends(get_current_user)):
+    """Verifica se deve mostrar o pop-up de confirmação de WhatsApp"""
+    user = await db.users.find_one({"id": current_user["user_id"]})
+    if not user:
+        return {"should_show": False}
+    
+    # Verificar se já perguntou na última semana (7 dias)
+    asked_at = user.get("whatsapp_asked_at")
+    if asked_at:
+        try:
+            asked_date = datetime.fromisoformat(asked_at)
+            days_since_asked = (datetime.now(timezone.utc) - asked_date).days
+            if days_since_asked < 7:
+                return {"should_show": False, "days_until_next": 7 - days_since_asked}
+        except:
+            pass
+    
+    # Se nunca perguntou ou passou 1 semana, mostrar popup
+    return {"should_show": True}
+
+@api_router.put("/users/me/whatsapp-confirm")
+async def confirm_whatsapp(data: dict, current_user: dict = Depends(get_current_user)):
+    """Confirma o WhatsApp do usuário atual"""
+    whatsapp = data.get("whatsapp", "")
+    
+    await db.users.update_one(
+        {"id": current_user["user_id"]},
+        {"$set": {
+            "whatsapp_confirmed": whatsapp,
+            "whatsapp_asked_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    return {"ok": True}
+
+@api_router.put("/users/me/pin")
 async def update_pin(data: dict, current_user: dict = Depends(get_current_user)):
     pin = data.get("pin", "")
     if len(pin) != 2 or not pin.isdigit():
