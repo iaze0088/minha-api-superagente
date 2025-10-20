@@ -46,7 +46,7 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   // Agent form
-  const [newAgent, setNewAgent] = useState({ name: '', login: '', password: '', avatar: '' });
+  const [newAgent, setNewAgent] = useState({ name: '', login: '', password: '', avatar: '', department_ids: [] });
   const [editingAgent, setEditingAgent] = useState(null);
   
   // Reseller form
