@@ -103,7 +103,7 @@ async def reseller_login(data: ResellerLogin, request: Request):
     
     logger.info(f"Reseller found: {reseller is not None}")
     
-    if not reseller or not bcrypt.checkpw(data.password.encode(), reseller["password"].encode()):
+    if not reseller or not bcrypt.checkpw(data.password.encode(), reseller["pass_hash"].encode()):
         raise HTTPException(status_code=401, detail="Email ou senha inválidos")
     
     if not reseller.get("is_active", True):
