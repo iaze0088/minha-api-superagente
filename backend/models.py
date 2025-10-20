@@ -128,10 +128,18 @@ class AppItem(BaseModel):
     title: str
     content: str
 
+class AllowedData(BaseModel):
+    cpfs: List[str] = []
+    emails: List[str] = []
+    phones: List[str] = []
+    random_keys: List[str] = []
+
 class ConfigData(BaseModel):
     quick_blocks: List[QuickBlock] = []
     auto_reply: List[AutoReply] = []
     apps: List[AppItem] = []
+    pix_key: Optional[str] = ""
+    allowed_data: AllowedData = AllowedData()
     reseller_id: Optional[str] = None  # Tenant isolation - cada revenda tem suas configs
 
 # Reseller Models
