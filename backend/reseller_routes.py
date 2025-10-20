@@ -72,7 +72,7 @@ async def can_delete_reseller(reseller_id: str, db) -> tuple[bool, str]:
 async def reseller_login(data: ResellerLogin):
     db = get_db_dep()
     reseller = await db.resellers.find_one({"email": data.email})
-    if not reseller or not bcrypt.checkpw(data.password.encode(), reseller["pass_hash"].encode()):
+    if not reseller or not bcrypt.checkpw(data.password.encode(), reseller["password"].encode()):
         raise HTTPException(status_code=401, detail="Email ou senha inválidos")
     
     if not reseller.get("is_active", True):
