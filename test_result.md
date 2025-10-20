@@ -285,6 +285,21 @@ backend:
         agent: "testing"
         comment: "✅ TESTADO: Rotas de notices com filtro de tenant implementadas e funcionando."
 
+  - task: "Resolver problema de login da revenda ajuda.vip"
+    implemented: true
+    working: true
+    file: "/app/backend/reseller_routes.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "❌ PROBLEMA IDENTIFICADO: Revenda com custom_domain 'ajuda.vip' tinha email 'revenda1@teste.com' em vez de 'michael@gmail.com' e password hash incorreto para 'ab181818ab'."
+      - working: true
+        agent: "testing"
+        comment: "✅ RESOLVIDO: Atualização direta no MongoDB. Email alterado para michael@gmail.com e password hash corrigido. Login funcionando: michael@gmail.com / ab181818ab. Reseller_id: 6b3250b6-f746-4fa2-9ab4-89babf53b538. Usuário pode acessar ajuda.vip/admin normalmente."
+
 frontend:
   - task: "Limitar visualização de clientes a 10 por aba com scroll"
     implemented: true
