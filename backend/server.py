@@ -840,6 +840,18 @@ class TenantMiddleware(BaseHTTPMiddleware):
 
 app.add_middleware(TenantMiddleware)
 
+@app.get("/api/debug/tenant")
+async def debug_tenant(request: Request):
+    from tenant_middleware import get_current_tenant
+    tenant_ctx = get_current_tenant()
+    
+    return {
+        "domain": request.headers.get("host", ""),
+        "tenant_id": tenant_ctx.reseller_id,
+        "is_master": tenant_ctx.is_master,
+        "tenant_data": tenant_ctx.reseller_data.get("name") if tenant_ctx.reseller_data else None
+    }
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
