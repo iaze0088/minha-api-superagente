@@ -95,6 +95,56 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
+# Helper para enviar mensagem de seleção de departamento
+async def send_department_selection(ticket_id: str, client_id: str, reseller_id: Optional[str] = None):
+    """Envia mensagem automática pedindo ao cliente para escolher um departamento"""
+    # Buscar departamentos disponíveis
+    query = {}
+    if reseller_id:
+        query["reseller_id"] = reseller_id
+    
+    departments = await db.departments.find(query).to_list(None)
+    
+    if not departments or len(departments) == 0:
+        # Sem departamentos configurados, não envia nada
+        return
+    
+    # Criar mensagem com botões
+    buttons = []
+    for dept in departments:
+        buttons.append({
+            "id": dept["id"],
+            "label": dept["name"],
+            "description": dept.get("description", "")
+        })
+    
+    # Criar mensagem no banco
+    message = {
+        "id": str(uuid.uuid4()),
+        "ticket_id": ticket_id,
+        "from_type": "system",
+        "kind": "department_selection",
+        "text": "Você deseja o atendimento para qual área? Clique em uma das opções abaixo:",
+        "buttons": buttons,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "reseller_id": reseller_id
+    }
+    
+    await db.messages.insert_one(message)
+    
+    # Enviar via WebSocket para o cliente
+    await manager.send_to_user(client_id, {
+        "type": "new_message",
+        "message": message
+    })
+    
+    # Marcar timestamp de quando enviou
+    await db.tickets.update_one(
+        {"id": ticket_id},
+        {"$set": {"department_choice_sent_at": datetime.now(timezone.utc).isoformat()}}
+    )
+
+
 # Tenant helper
 def get_request_tenant(request: Request) -> TenantContext:
     """Obtém o tenant context do request"""
