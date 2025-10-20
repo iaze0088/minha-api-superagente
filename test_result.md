@@ -305,19 +305,22 @@ backend:
 
   - task: "Adicionar endpoints para WhatsApp popup e PIN update"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Adicionados endpoints: GET /users/whatsapp-popup-status, PUT /users/me/whatsapp-confirm, PUT /users/me/pin. Endpoints verificam última pergunta de WhatsApp (7 dias) e permitem atualizar PIN do usuário."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO: Todos os endpoints de WhatsApp e PIN funcionando perfeitamente. GET /users/whatsapp-popup-status ✓ (retorna should_show baseado em 7 dias), PUT /users/me/whatsapp-confirm ✓ (atualiza whatsapp_confirmed e whatsapp_asked_at), PUT /users/me/pin ✓ (atualiza PIN com validação de 2 dígitos). Validação de PIN inválido funcionando corretamente."
 
   - task: "Atualizar GET /config para retornar novos campos (pix_key, allowed_data, api_integration, ai_agent)"
     implemented: true
-    working: "NA"
+    working: true
 
   - task: "Adicionar WhatsApp popup no ClientChat"
     implemented: true
