@@ -1,77 +1,60 @@
 <analysis>
-The AI engineer successfully refactored a legacy PHP chat application into a modern FastAPI (Python) backend with a React (Frontend) UI, using MongoDB for persistence. The development was highly iterative, responding to user feedback and debugging authentication, messaging, PWA integration, and domain configuration issues. Key architectural decisions included a 3-panel system (Admin, Agent, Client), real-time chat via WebSockets, and a robust file upload mechanism. The process involved extensive file creation, modifications, and debugging of frontend-backend communication, JWT validation, and environment configurations. Recent efforts focused on PWA features (icons, manifest, service worker) and a complex reseller management system, including custom domain integration for resellers. The AI consistently addressed user queries, provided detailed explanations, and confirmed functionality with screenshots and tests.
+The AI engineer successfully refactored a legacy PHP chat app into a FastAPI/React/MongoDB stack. The trajectory details the implementation of a robust multi-tenant system with custom domains for resellers, including hierarchical support and data isolation. This involved extensive backend model and API modifications in , , and new . Frontend efforts focused on Admin and Reseller Dashboards, encountering and resolving complex JSX rendering issues by modularizing components. Persistent issues with frontend caching and incorrect API URL configuration for custom domains were debugged and fixed. The engineer also implemented Agent Dashboard UI enhancements (scroll, message preview, unread counts) and began implementing new features: restricted content validation, PIX key management, WhatsApp pop-ups, and a comprehensive AI integration system.
 </analysis>
 
 <product_requirements>
-The user initially requested a modern replacement for an existing PHP live chat support script. The new system, named CYBERTV Suporte, should feature:
--   **Three distinct panels:** Admin (management), Agent (customer support), and Client (end-user chat).
--   **Real-time chat** with WebSockets, including file uploads (images, videos, audio, documents).
--   **Ticket management** with queues (Em Espera, Atendendo, Finalizadas).
--   **Configurable messages**: Quick replies, auto-response rules.
--   **Admin features**: Agent CRUD, quick block messages, auto-reply rules, app tutorials, notices.
--   **Agent features**: View tickets by status, chat with clients, pin client credentials, reset client PIN, use quick messages.
--   **Client features**: Chat with agents, send media, view notices, change PIN, update profile photo.
--   **Modern UI/UX** with dark mode (initially), glass-morphism effects, and micro-animations.
--   **PWA (Progressive Web App)** for Android, installable from the website with a custom CyberTV logo and audio notifications for new messages.
--   **Persistent login** for Client and Agent, with automatic logout only on manual logout or simultaneous login from another device.
--   **Custom domain support** for the main application and a robust **reseller management system**. Each reseller should have an independent admin-like panel, customizable configurations, and their own custom domain (e.g., ), with updates from the main admin propagating to reseller panels.
+The user requested CYBERTV Suporte, a modern live chat system with Admin, Agent, and Client panels. Key features included real-time WebSocket chat with file uploads, ticket management, configurable messages, PWA support with custom branding and notifications, persistent login, and a robust multi-tenant reseller system. Each reseller needed a custom domain, independent admin-like panel, hierarchical sub-reseller creation, and isolated data. The Admin Master retains overall management. Recent additions include Agent Dashboard UI improvements: displaying new message counts, limiting visible tickets to 7 with scroll, showing a 20-character message preview, and a Copy PIX Key button. Also, strict content validation for messages (CPF/email/WhatsApp/random PIX), a configurable PIX key in Admin, a weekly WhatsApp pop-up for clients, and a comprehensive AI integration panel in Admin with multi-LLM support and access to client credentials.
 </product_requirements>
 
 <key_technical_concepts>
 -   **FastAPI**: Python framework for backend APIs and WebSockets.
 -   **React**: JavaScript library for building interactive user interfaces.
--   **MongoDB**: NoSQL database for data storage, replacing SQLite/JSON fallback from PHP.
--   **WebSockets**: For real-time chat functionality.
--   **PWA (Progressive Web App)**: Web technology for installable web applications.
--   **JWT (JSON Web Tokens)**: For secure authentication across panels.
--   **Cloudflare DNS**: For custom domain management and proxying.
--   **Shadcn UI & Tailwind CSS**: For UI component styling and rapid development.
+-   **MongoDB**: NoSQL database for data storage.
+-   **WebSockets**: Real-time chat communication.
+-   **Multi-tenancy**: Data isolation, custom domains, hierarchical structure.
+-   **PWA**: Progressive Web App features.
+-   **JWT**: Secure authentication.
+-   **Shadcn UI & Tailwind CSS**: Frontend styling.
+-   **Environment Variables**: , .
 </key_technical_concepts>
 
 <code_architecture>
-The application uses a full-stack architecture with a FastAPI backend and a React frontend.
+The application uses a FastAPI backend and a React frontend.
 
 
 
 **Key Files and Changes:**
--   **/app/backend/server.py**: Main FastAPI application. Modified extensively for authentication, message handling, ticket management, agent status, and integration of reseller routes.
--   **/app/backend/models.py**: Defines Pydantic models for , , , , , , and  (new).
--   **/app/backend/reseller_routes.py**: New file containing API endpoints for reseller CRUD operations, authentication, and management. Integrated into .
--   **/app/backend/.env**: Contains critical environment variables like , ,  (updated to ), , .
--   **/app/frontend/src/App.js**: Main React router. Updated to include routes for , , , , , , , and .
--   **/app/frontend/src/App.css**: Global CSS. Modified to hide Made with Emergent and apply overall styling.
--   **/app/frontend/src/pages/ClientChat.js**: Client-side chat interface. Modified significantly for real-time WebSocket communication, PWA installation prompts, audio notifications, improved message sending logic (ticket handling), and persistent single-session login.
--   **/app/frontend/src/pages/AgentDashboard.js**: Agent panel. Updated for WebSocket integration, formatted WhatsApp numbers, pinned credentials display, and single-session login.
--   **/app/frontend/src/pages/AdminDashboard.js**: Admin panel. Enhanced with a Revendas tab, forms for creating/managing resellers, and the ability to update reseller custom domains.
--   **/app/frontend/src/pages/ResellerLogin.js**: New page for reseller login.
--   **/app/frontend/src/pages/ResellerDashboard.js**: New page intended for reseller-specific management, mimicking Admin functionality.
--   **/app/frontend/public/manifest.json**: Created/updated for PWA configuration, including , ,  (for custom CyberTV logo), , .
--   **/app/frontend/public/service-worker.js**: Created/updated for PWA caching and offline capabilities.
--   **/app/frontend/public/index.html**: Modified to link PWA manifest and register the service worker.
--   **/app/frontend/public/cybertv.png**: The final, correct CyberTV logo used for the PWA icons and login screens.
--   **/app/frontend/src/components/AlertModal.js**: New component for displaying pop-up alerts to the client, replacing simpler  calls.
--   **/app/frontend/src/components/InstallPWA.js**: New component to handle and display the PWA installation prompt.
--   **/app/frontend/src/lib/api.js**: Modified Axios interceptor to correctly handle authentication errors and prevent unnecessary redirects.
--   **/app/frontend/src/utils/notification.js**: New utility for handling browser notifications.
+-   **/app/backend/models.py**: Added  to , , , , , . Introduced new models , ,  with , and  gained .  now includes .
+-   **/app/backend/server.py**: Integrated . Added a  helper. Modified all key authentication (, ) and data CRUD operations (, , , , , ) to filter/include . Enhanced message validation (, , ). Added new endpoints for  and .
+-   **/app/backend/tenant_middleware.py**: New file created to intercept requests and determine the  based on the request host, injecting it into the request state.
+-   **/app/backend/reseller_routes.py**: Backed up and replaced by .
+-   **/app/backend/reseller_routes_multitenant.py**: New file containing a more robust API for hierarchical reseller management.
+-   **/app/frontend/public/index.html**: Modified to include a version query parameter () for cache busting.
+-   **/app/frontend/src/pages/AdminDashboard.js**: Updated to integrate  component for complex reseller hierarchy display. Added new  and  for Dados Permitidos, Integração API, and Inteligência Artificial configuration. Contains  for propagating settings.
+-   **/app/frontend/src/pages/AgentDashboard.js**: Modified to limit ticket display to 10 per tab with scroll, show message count badges, and a 20-character message preview.  updated to mark tickets as read. A new quick message button for PIX key was added.
+-   **/app/frontend/src/pages/ResellerDashboard.js**: Updated to include an Atendentes tab with forms for creating, listing, and deleting agents, isolated per reseller.
+-   **/app/frontend/src/pages/ClientChat.js**: Currently being modified to include a WhatsApp pop-up, Copy PIX Key button, and AI integration.
+-   **/app/frontend/src/lib/api.js**: Modified the  logic to use a relative path () if  is not explicitly set, resolving custom domain API routing issues.
+-   **/app/frontend/src/components/ResellerManagement.js**: New component extracted from  to manage reseller UI, containing sub-components like , , and .
+-   **/app/frontend/src/components/ResellerTreeNode.js**: New component to display individual resellers in a hierarchical tree structure.
+-   **/app/frontend/src/components/ResellerList.js**: New component to display a flat list of resellers.
+-   **/app/frontend/src/components/ResellerTree.js**: New component to display the hierarchical tree of resellers.
 </code_architecture>
 
 <pending_tasks>
--   Full UI implementation and functionality of the  to mirror the  capabilities for resellers, but with isolated configurations.
--   Implementation of the Replicar Configurações para Todas feature within the Admin Dashboard for resellers, which propagates main Admin configurations to all reseller panels.
--   Configuring subdomains (, ) to automatically redirect to their respective login pages (user chose to defer).
+-   Complete implementation of  to include the WhatsApp pop-up, Copy PIX Key button, and AI integration.
+-   Full UI implementation and functionality for the Dados Permitidos, Integração API, and Inteligência Artificial tabs in .
+-   Implement the Replicar Configurações para Todas feature within the Admin Dashboard.
 </pending_tasks>
 
 <current_work>
-Immediately before this summary request, the AI engineer was focused on completing the reseller management system and custom domain integration for resellers.
--   New frontend pages  and  were created.
--   Frontend routing in  was updated to include  and  paths.
--   The  UI was updated to include a Revendas tab, allowing the Admin to create and manage resellers, including a  field for each reseller.
--   Backend routes in  were integrated into  to handle reseller operations, including setting custom domains.
--   The custom domain  was successfully saved for a test reseller via API.
--   A guide for configuring the  reseller domain () was created.
--   The AI was in the process of testing the reseller login flow using the  page and verifying if the components of the  were loading correctly, indicating that the UI and isolated functionality for reseller panels is the immediate next step.
+Immediately before this summary request, the AI engineer was focused on completing the major feature requests given by the user in Chat Message 513.
+The backend has been largely updated in **FASE 1**, including new models (, , ), expanded message content validation (, , ), and new API endpoints for  and .
+On the frontend, **FASE 2** involved adding new tabs (Dados Permitidos, Integração API, Inteligência Artificial) to , though their content implementation is pending.
+The engineer has just completed **FASE 3**, which involved significant updates to . This included displaying unread message counts on tickets, showing a 20-character preview of the last message, ensuring the chat list has scroll for more than 7 tickets, and adding a dedicated Chave PIX quick message button.
+The engineer is currently proceeding with **FASE 4 - ClientChat** to implement the remaining features: the WhatsApp pop-up, the client-side Copy PIX Key button, and the integration with AI.
 </current_work>
 
 <optional_next_step>
-Complete the  UI and backend integration to enable resellers to manage their agents and configurations independently, akin to the Admin panel.
+Continue implementing **FASE 4** by adding the WhatsApp pop-up and Copy PIX button to .
 </optional_next_step>
