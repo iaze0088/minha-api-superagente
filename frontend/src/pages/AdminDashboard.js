@@ -62,18 +62,20 @@ const AdminDashboard = () => {
 
   const loadData = async () => {
     try {
-      const [agentsRes, resellersRes, hierarchyRes, configRes, noticesRes] = await Promise.all([
+      const [agentsRes, resellersRes, hierarchyRes, configRes, noticesRes, departmentsRes] = await Promise.all([
         api.get('/agents'),
         api.get('/resellers').catch(() => ({ data: [] })),
         api.get('/resellers/hierarchy').catch(() => ({ data: { hierarchy: [] } })),
         api.get('/config'),
-        api.get('/notices')
+        api.get('/notices'),
+        api.get('/ai/departments').catch(() => ({ data: [] }))
       ]);
       setAgents(agentsRes.data);
       setResellers(resellersRes.data);
       setHierarchy(hierarchyRes.data);
       setConfig(configRes.data);
       setNotices(noticesRes.data);
+      setDepartments(departmentsRes.data);
     } catch (error) {
       toast.error('Erro ao carregar dados');
     } finally {
