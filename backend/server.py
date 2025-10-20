@@ -123,7 +123,71 @@ async def get_current_user(authorization: Optional[str] = Header(None)):
     return verify_token(token)
 
 # Validation helpers
+def validate_user_password_format(text: str) -> bool:
+    """Valida se texto está no formato permitido de usuário/senha"""
+    patterns = [
+        r'^usuario:\s*.+\s*senha:\s*.+$',
+        r'^Usuario:\s*.+\s*Senha:\s*.+$',
+        r'^Usuário:\s*.+\s*Senha:\s*.+$',
+        r'^USUÁRIO:\s*.+\s*SENHA:\s*.+$'
+    ]
+    text_normalized = ' '.join(text.split())
+    return any(re.match(pattern, text_normalized, re.IGNORECASE | re.MULTILINE) for pattern in patterns)
+
+def has_user_password_keywords(text: str) -> bool:
+    """Verifica se tem palavras-chave de usuário/senha"""
+    keywords = ['usuario', 'usuário', 'senha', 'password', 'user']
+    text_lower = text.lower()
+    return any(keyword in text_lower for keyword in keywords)
+
+async def validate_sensitive_data(text: str, config: dict) -> Optional[str]:
+    """Valida dados sensíveis baseado na config permitida"""
+    text_lower = text.lower()
+    allowed_data = config.get('allowed_data', {})
+    
+    # Se tem usuário/senha, validar formato
+    if has_user_password_keywords(text):
+        if not validate_user_password_format(text):
+            return "❌ Formato de usuário/senha inválido. Use: 'usuario: XXXX senha: XXXX'"
+    
+    # CPF check
+    cpf_match = re.search(r'\b\d{3}\.?\d{3}\.?\d{3}-?\d{2}\b', text)
+    if cpf_match:
+        cpf_found = cpf_match.group()
+        allowed_cpfs = allowed_data.get('cpfs', [])
+        if cpf_found not in allowed_cpfs:
+            return "❌ CPF não autorizado. Cadastre no Admin primeiro."
+    
+    # Email check
+    email_match = re.search(r'[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}', text, re.IGNORECASE)
+    if email_match:
+        email_found = email_match.group()
+        allowed_emails = allowed_data.get('emails', [])
+        if email_found.lower() not in [e.lower() for e in allowed_emails]:
+            return "❌ Email não autorizado. Cadastre no Admin primeiro."
+    
+    # Phone/WhatsApp check
+    phone_match = re.search(r'\b(\+?55)?\D*\(?\d{2}\)?\D*\d{4,5}\D*\d{4}\b', text)
+    if phone_match:
+        phone_found = re.sub(r'\D', '', phone_match.group())
+        allowed_phones = [re.sub(r'\D', '', p) for p in allowed_data.get('phones', [])]
+        if phone_found not in allowed_phones:
+            return "❌ Número de telefone não autorizado. Cadastre no Admin primeiro."
+    
+    # Random key check (chave aleatória PIX)
+    if 'chave' in text_lower or 'pix' in text_lower:
+        # Check se tem UUID ou chave aleatória
+        random_key_match = re.search(r'\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b', text, re.IGNORECASE)
+        if random_key_match:
+            key_found = random_key_match.group()
+            allowed_keys = allowed_data.get('random_keys', [])
+            if key_found not in allowed_keys:
+                return "❌ Chave aleatória não autorizada. Cadastre no Admin primeiro."
+    
+    return None
+
 def is_forbidden_text(text: str) -> Optional[str]:
+    """Validação básica (mantida para compatibilidade)"""
     text_lower = text.lower()
     
     # Email check
