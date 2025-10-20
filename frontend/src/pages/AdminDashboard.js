@@ -248,12 +248,26 @@ const AdminDashboard = () => {
           </TabsList>
 
           {/* Resellers Tab */}
-          <ResellerManagement 
-            resellers={resellers} 
-            hierarchy={hierarchy}
-            loadData={loadData}
-            handleReplicateConfig={handleReplicateConfig}
-          />
+          <TabsContent value="resellers" className="space-y-6">
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Gerenciar Revendas</h3>
+              <p className="text-sm text-slate-600 mb-4">Sistema multi-tenant ativo com isolamento de dados</p>
+              <div className="grid gap-4">
+                {resellers.map((reseller) => (
+                  <Card key={reseller.id} className="p-4">
+                    <h4 className="font-semibold">{reseller.name}</h4>
+                    <p className="text-sm text-slate-600">Email: {reseller.email}</p>
+                    {reseller.custom_domain && (
+                      <p className="text-sm text-emerald-600">Domínio: {reseller.custom_domain}</p>
+                    )}
+                    <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">
+                      Nível {reseller.level || 0}
+                    </span>
+                  </Card>
+                ))}
+              </div>
+            </Card>
+          </TabsContent>
 
           {/* Agents Tab */}
           <TabsContent value="agents" className="space-y-6">
