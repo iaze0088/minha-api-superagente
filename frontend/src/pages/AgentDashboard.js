@@ -117,6 +117,17 @@ const AgentDashboard = () => {
     setSelectedTicket(ticket);
     loadMessages(ticket.id);
     
+    // Marcar como lido (zerar contador)
+    if (ticket.unread_count > 0) {
+      try {
+        await api.post(`/tickets/${ticket.id}/mark-read`);
+        // Atualizar localmente
+        loadTickets(status);
+      } catch (error) {
+        console.error('Error marking as read:', error);
+      }
+    }
+    
     // Load client credentials
     try {
       const { data } = await api.get(`/users/me`, {
