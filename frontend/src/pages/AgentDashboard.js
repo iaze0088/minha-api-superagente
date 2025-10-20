@@ -378,11 +378,10 @@ const AgentDashboard = () => {
                 )}
               </div>
 
-              {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-4 flex flex-col-reverse" style={{ maxHeight: 'calc(100vh - 400px)' }}>
-                <div ref={messagesEndRef} />
+              {/* Messages - Mostra apenas as últimas 6, rolar para cima para ver histórico */}
+              <div className="flex-1 overflow-y-auto p-4 bg-slate-50" style={{ maxHeight: 'calc(100vh - 400px)' }}>
                 <div className="space-y-4">
-                  {messages.slice(-6).map(msg => (
+                  {messages.map(msg => (
                     <div key={msg.id} className={`flex ${msg.from_type === 'agent' ? 'justify-end' : 'justify-start'}`}>
                       <div
                         className={`max-w-[70%] p-3 rounded-2xl ${
@@ -407,6 +406,7 @@ const AgentDashboard = () => {
                       </div>
                     </div>
                   ))}
+                  <div ref={messagesEndRef} />
                 </div>
               </div>
 
