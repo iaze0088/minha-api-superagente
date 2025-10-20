@@ -1,6 +1,7 @@
 """
 Rotas para gerenciamento de revendas com suporte a multi-tenant e hierarquia.
 """
+import os
 from fastapi import APIRouter, HTTPException, Depends, Header, Request
 from typing import List, Optional
 import uuid
