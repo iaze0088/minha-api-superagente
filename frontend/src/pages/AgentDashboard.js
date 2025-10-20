@@ -237,14 +237,14 @@ const AgentDashboard = () => {
     <div className="h-screen bg-slate-50 flex flex-col overflow-hidden">
       {/* Header fixo - v2024.01.20.FINAL */}
       <header className="bg-white border-b border-slate-200 flex-shrink-0">
-        <div className="max-w-full mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-full mx-auto px-4 py-3 flex items-center justify-between" style={{ backgroundColor: '#FF0000' }}>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
               <Headphones className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-900">Painel do Atendente</h1>
-              <p className="text-sm text-slate-600">{userData?.name}</p>
+              <h1 className="text-xl font-bold text-white">🔴 VERSÃO NOVA - TESTE</h1>
+              <p className="text-sm text-white">{userData?.name}</p>
             </div>
           </div>
           <Button data-testid="agent-logout-btn" onClick={() => { clearAuth(); navigate('/'); }} variant="outline" size="sm">
