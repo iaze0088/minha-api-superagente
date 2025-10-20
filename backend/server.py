@@ -571,9 +571,16 @@ async def send_message(data: MessageCreate, request: Request, current_user: dict
     tenant = get_request_tenant(request)
     reseller_id = tenant.reseller_id or current_user.get("reseller_id")
     
-    # Agent text validation
+    # Get config for validation
+    if reseller_id:
+        config = await db.reseller_configs.find_one({"reseller_id": reseller_id}) or {}
+    else:
+        config = await db.config.find_one({"id": "config"}) or {}
+    
+    # Agent text validation - NEW ENHANCED VALIDATION
     if data.from_type == "agent" and data.kind == "text":
-        error = is_forbidden_text(data.text)
+        # Nova validação com dados sensíveis
+        error = await validate_sensitive_data(data.text, config)
         if error:
             raise HTTPException(status_code=400, detail=error)
     
