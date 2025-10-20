@@ -11,5 +11,19 @@ root.render(
   </React.StrictMode>,
 );
 
-// Registrar Service Worker para PWA
-registerServiceWorker();
+// Registrar Service Worker APENAS em produção
+if (process.env.NODE_ENV === 'production') {
+  registerServiceWorker();
+} else {
+  console.log('🔧 Service Worker DESABILITADO em desenvolvimento para permitir hot reload');
+  
+  // Desregistrar service workers existentes em desenvolvimento
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      for (let registration of registrations) {
+        registration.unregister();
+        console.log('🗑️ Service Worker desregistrado');
+      }
+    });
+  }
+}
