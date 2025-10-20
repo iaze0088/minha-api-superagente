@@ -87,9 +87,30 @@ const AgentDashboard = () => {
   const loadTickets = async () => {
     try {
       const { data } = await api.get('/tickets', { params: { status } });
-      setTickets(data);
+      setAllTickets(data);
+      
+      // Filtrar por departamento se necessário
+      if (selectedDepartment === 'all' || myDepartments.length === 0) {
+        setTickets(data);
+      } else {
+        const filtered = data.filter(t => 
+          t.department_id === selectedDepartment || 
+          (selectedDepartment === 'none' && !t.department_id)
+        );
+        setTickets(filtered);
+      }
     } catch (error) {
       console.error('Error loading tickets:', error);
+    }
+  };
+
+  const loadMyDepartments = async () => {
+    try {
+      // Buscar informações do agente logado para pegar seus departamentos
+      const { data } = await api.get('/agents/me');
+      setMyDepartments(data.department_ids || []);
+    } catch (error) {
+      console.error('Error loading departments:', error);
     }
   };
 
