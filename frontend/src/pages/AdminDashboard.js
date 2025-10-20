@@ -17,6 +17,7 @@ import DepartmentsManager from '../components/DepartmentsManager';
 const AdminDashboard = () => {
   const navigate = useNavigate();
   const [agents, setAgents] = useState([]);
+  const [departments, setDepartments] = useState([]);
   const [resellers, setResellers] = useState([]);
   const [hierarchy, setHierarchy] = useState({ hierarchy: [] });
   const [config, setConfig] = useState({ 
