@@ -318,6 +318,79 @@ backend:
   - task: "Atualizar GET /config para retornar novos campos (pix_key, allowed_data, api_integration, ai_agent)"
     implemented: true
     working: "NA"
+
+  - task: "Adicionar WhatsApp popup no ClientChat"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/ClientChat.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Pop-up de confirmação de WhatsApp implementado. Verifica status via /users/whatsapp-popup-status e aparece 15 segundos após acesso se não foi perguntado nos últimos 7 dias. Permite confirmar ou pular."
+
+  - task: "Adicionar botão Copiar Chave PIX no ClientChat"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/ClientChat.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Botão 'PIX' adicionado no header do ClientChat. Carrega chave PIX do config via /config e copia para clipboard ao clicar."
+
+  - task: "Completar aba 'Dados Permitidos' no AdminDashboard"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/AdminDashboard.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Aba 'Dados Permitidos' 100% funcional. Permite configurar: Chave PIX, CPFs permitidos, Emails permitidos, Telefones/WhatsApp permitidos, Chaves Aleatórias PIX. Interface com adicionar/remover itens."
+
+  - task: "Completar aba 'Integração API' no AdminDashboard"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/AdminDashboard.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Aba 'Integração API' 100% funcional. Campos: URL da API, Token de Autenticação, checkbox para ativar/desativar. Botão de testar conexão e salvar configuração."
+
+  - task: "Completar aba 'Inteligência Artificial' no AdminDashboard"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/AdminDashboard.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Aba 'Inteligência Artificial' 100% funcional. Configurações: Status IA (ativo/desativo), Nome do Agente, Modo de Operação (standby/solo/hybrid), Provedor LLM (OpenAI/Claude/Gemini), Modelo, Personalidade, Instruções, Base de Conhecimento, Temperatura, Max Tokens, Horário de Ativação, Acesso a Credenciais."
+
+  - task: "Adicionar botão 'Replicar Configurações' no AdminDashboard"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/pages/AdminDashboard.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Botão 'Replicar Configurações para Todas' adicionado nas abas: Dados Permitidos, Integração API, Inteligência Artificial. Chama /resellers/replicate-config para propagar configurações para todas as revendas."
+
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
