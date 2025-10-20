@@ -230,3 +230,108 @@ class TokenResponse(BaseModel):
     user_type: str
     user_data: dict
     reseller_id: Optional[str] = None
+
+
+# ============================================
+# SISTEMA DE MÚLTIPLOS AGENTES IA
+# ============================================
+
+class AIAgentFull(BaseModel):
+    """Modelo completo de Agente IA (similar ao SuperAgentes)"""
+    id: str
+    name: str
+    description: Optional[str] = ""
+    
+    # Configurações do Prompt
+    who_is: Optional[str] = ""  # Quem é o seu Agente?
+    what_does: Optional[str] = ""  # O que seu Agente faz?
+    objective: Optional[str] = ""  # Qual o objetivo do seu Agente?
+    how_respond: Optional[str] = ""  # Como seu Agente deve responder?
+    
+    # Regras Gerais
+    instructions: Optional[str] = ""  # Instruções para o Agente
+    avoid_topics: Optional[str] = ""  # Quais temas ele deve evitar?
+    avoid_words: Optional[str] = ""  # Quais palavras ele deve evitar?
+    allowed_links: Optional[str] = ""  # Links permitidos
+    custom_rules: Optional[str] = ""  # Regras personalizadas
+    
+    # Base de Conhecimento
+    knowledge_base: Optional[str] = ""
+    
+    # Configurações do Modelo
+    llm_provider: str = "openai"  # openai, claude, gemini
+    llm_model: str = "gpt-4o-mini"
+    api_key: Optional[str] = ""
+    temperature: float = 0.5
+    max_tokens: int = 500
+    
+    # Comportamento
+    auto_detect_language: bool = True
+    knowledge_restriction: bool = False
+    timezone: str = "America/Sao_Paulo"
+    
+    # Status
+    is_active: bool = True
+    
+    # Tenant
+    reseller_id: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class AIAgentCreate(BaseModel):
+    name: str
+    description: Optional[str] = ""
+    llm_provider: str = "openai"
+    llm_model: str = "gpt-4o-mini"
+
+class AIAgentUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    who_is: Optional[str] = None
+    what_does: Optional[str] = None
+    objective: Optional[str] = None
+    how_respond: Optional[str] = None
+    instructions: Optional[str] = None
+    avoid_topics: Optional[str] = None
+    avoid_words: Optional[str] = None
+    allowed_links: Optional[str] = None
+    custom_rules: Optional[str] = None
+    knowledge_base: Optional[str] = None
+    llm_provider: Optional[str] = None
+    llm_model: Optional[str] = None
+    api_key: Optional[str] = None
+    temperature: Optional[float] = None
+    max_tokens: Optional[int] = None
+    auto_detect_language: Optional[bool] = None
+    knowledge_restriction: Optional[bool] = None
+    timezone: Optional[str] = None
+    is_active: Optional[bool] = None
+
+# ============================================
+# SISTEMA DE DEPARTAMENTOS
+# ============================================
+
+class Department(BaseModel):
+    """Departamento para roteamento (Suporte, Vendas, etc)"""
+    id: str
+    name: str
+    description: Optional[str] = ""
+    ai_agent_id: Optional[str] = None  # Agente IA vinculado a este departamento
+    is_default: bool = False  # Departamento padrão (após timeout)
+    timeout_seconds: int = 120  # Tempo para auto-direcionar (padrão: 2 min)
+    reseller_id: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class DepartmentCreate(BaseModel):
+    name: str
+    description: Optional[str] = ""
+    ai_agent_id: Optional[str] = None
+    is_default: bool = False
+    timeout_seconds: int = 120
+
+class DepartmentUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    ai_agent_id: Optional[str] = None
+    is_default: Optional[bool] = None
+    timeout_seconds: Optional[int] = None
