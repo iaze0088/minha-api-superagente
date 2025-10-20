@@ -490,6 +490,37 @@ const ClientChat = () => {
                   {msg.kind === 'image' && <img src={msg.file_url} alt="" className="max-w-full rounded-lg" />}
                   {msg.kind === 'video' && <video src={msg.file_url} controls className="max-w-full rounded-lg" />}
                   {msg.kind === 'audio' && <audio src={msg.file_url} controls className="w-full" />}
+                  {msg.kind === 'department_selection' && (
+                    <div>
+                      <p className="font-semibold text-sm mb-3">{msg.text}</p>
+                      <div className="space-y-2">
+                        {msg.buttons && msg.buttons.map((btn, idx) => (
+                          <Button
+                            key={btn.id}
+                            onClick={async () => {
+                              try {
+                                await api.post(`/tickets/${msg.ticket_id}/select-department`, {
+                                  department_id: btn.id
+                                });
+                                toast.success(`Departamento selecionado: ${btn.label}`);
+                              } catch (error) {
+                                toast.error('Erro ao selecionar departamento');
+                              }
+                            }}
+                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white justify-start"
+                          >
+                            <span className="font-bold mr-2">{idx + 1}:</span>
+                            <div className="text-left">
+                              <div className="font-semibold">{btn.label}</div>
+                              {btn.description && (
+                                <div className="text-xs opacity-80">{btn.description}</div>
+                              )}
+                            </div>
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   {msg.kind === 'pix' && (
                     <div>
                       <p className="font-semibold text-sm mb-2">Chave PIX</p>
