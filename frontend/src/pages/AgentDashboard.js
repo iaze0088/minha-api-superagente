@@ -234,7 +234,7 @@ const AgentDashboard = () => {
 
   return (
     <div className="h-screen bg-slate-50 flex flex-col overflow-hidden">
-      {/* Header fixo */}
+      {/* Header fixo - v2024.01.20.FINAL */}
       <header className="bg-white border-b border-slate-200 flex-shrink-0">
         <div className="max-w-full mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
