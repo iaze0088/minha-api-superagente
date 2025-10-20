@@ -128,17 +128,20 @@ const AgentDashboard = () => {
       }
     }
     
-    // Load client credentials
+    // Load client credentials usando endpoint específico
     try {
-      const { data } = await api.get(`/users/me`, {
-        headers: { 'X-User-Id': ticket.client_id }
-      });
+      const { data } = await api.get(`/users/${ticket.client_id}/credentials`);
       setClientCredentials({
         pinned_user: data.pinned_user || '',
         pinned_pass: data.pinned_pass || ''
       });
     } catch (error) {
       console.error('Error loading client credentials:', error);
+      // Se falhar, limpar credenciais para não mostrar as do cliente anterior
+      setClientCredentials({
+        pinned_user: '',
+        pinned_pass: ''
+      });
     }
   };
 
