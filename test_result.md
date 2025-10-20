@@ -437,9 +437,16 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Testar aba Atendentes no ResellerDashboard"
-  stuck_tasks:
-    - "Login da revenda ajuda.vip não funcionando"
+    - "Adicionar endpoints para WhatsApp popup e PIN update"
+    - "Atualizar GET /config para retornar novos campos"
+    - "Atualizar PUT /config para salvar novos campos"
+    - "Adicionar WhatsApp popup no ClientChat"
+    - "Adicionar botão Copiar Chave PIX no ClientChat"
+    - "Completar aba 'Dados Permitidos' no AdminDashboard"
+    - "Completar aba 'Integração API' no AdminDashboard"
+    - "Completar aba 'Inteligência Artificial' no AdminDashboard"
+    - "Adicionar botão 'Replicar Configurações' no AdminDashboard"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
