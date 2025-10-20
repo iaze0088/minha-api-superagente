@@ -243,7 +243,9 @@ const AgentDashboard = () => {
               <Headphones className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-900">Painel do Atendente</h1>
+              <h1 className="text-xl font-bold text-slate-900" style={{ fontSize: '32px', color: '#FF0000' }}>
+                ⚡ VERSÃO ATUALIZADA 2024 ⚡
+              </h1>
               <p className="text-sm text-slate-600">{userData?.name}</p>
             </div>
           </div>
