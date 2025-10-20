@@ -414,6 +414,21 @@ const ClientChat = () => {
             </div>
           </div>
           <div className="flex gap-2">
+            {pixKey && (
+              <Button
+                data-testid="copy-pix-btn"
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  navigator.clipboard.writeText(pixKey);
+                  toast.success('Chave PIX copiada!');
+                }}
+                className="text-white hover:bg-white/20"
+                title="Copiar Chave PIX"
+              >
+                <span className="text-xs font-bold">PIX</span>
+              </Button>
+            )}
             <Button
               data-testid="notices-btn"
               variant="ghost"
