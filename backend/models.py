@@ -27,8 +27,10 @@ class UserBase(BaseModel):
     avatar: Optional[str] = ""
     custom_avatar: Optional[str] = ""
     gender: Optional[str] = ""
-    pinned_user: Optional[str] = ""
-    pinned_pass: Optional[str] = ""
+    pinned_user: Optional[str] = ""  # Credenciais PRIVADAS do cliente
+    pinned_pass: Optional[str] = ""  # Credenciais PRIVADAS do cliente
+    whatsapp_confirmed: Optional[str] = ""  # WhatsApp confirmado pelo cliente
+    whatsapp_asked_at: Optional[str] = ""  # Última vez que perguntou WhatsApp
     reseller_id: Optional[str] = None  # Tenant isolation
 
 class UserCreate(BaseModel):
