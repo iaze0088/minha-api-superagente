@@ -1,6 +1,7 @@
 """
 Rotas para gerenciamento de revendas com suporte a multi-tenant e hierarquia.
 """
+import os
 from fastapi import APIRouter, HTTPException, Depends, Header, Request
 from typing import List, Optional
 import uuid
@@ -14,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 reseller_router = APIRouter(prefix="/api/resellers", tags=["resellers"])
 
-JWT_SECRET = "sua-chave-secreta-super-segura-aqui-2024"
+JWT_SECRET = os.environ.get('JWT_SECRET', 'fallback-secret-key-change-in-production')
 
 def create_token(user_id: str, user_type: str, reseller_id: Optional[str] = None) -> str:
     payload = {
