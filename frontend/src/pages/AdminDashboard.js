@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, LogOut, Users, MessageSquare, Settings, Bell, Plus, Trash2, Edit } from 'lucide-react';
+import { Shield, LogOut, Users, MessageSquare, Settings, Bell, Plus, Trash2, Edit, Bot, Folder } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,6 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import api from '../lib/api';
 import { clearAuth } from '../lib/auth';
+import AIAgentsManager from '../components/AIAgentsManager';
+import DepartmentsManager from '../components/DepartmentsManager';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
