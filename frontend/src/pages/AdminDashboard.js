@@ -17,7 +17,28 @@ const AdminDashboard = () => {
   const [agents, setAgents] = useState([]);
   const [resellers, setResellers] = useState([]);
   const [hierarchy, setHierarchy] = useState({ hierarchy: [] });
-  const [config, setConfig] = useState({ quick_blocks: [], auto_reply: [], apps: [] });
+  const [config, setConfig] = useState({ 
+    quick_blocks: [], 
+    auto_reply: [], 
+    apps: [],
+    pix_key: '',
+    allowed_data: { cpfs: [], emails: [], phones: [], random_keys: [] },
+    api_integration: { api_url: '', api_token: '', api_enabled: false },
+    ai_agent: {
+      name: 'Assistente IA',
+      personality: '',
+      instructions: '',
+      llm_provider: 'openai',
+      llm_model: 'gpt-4',
+      temperature: 0.7,
+      max_tokens: 500,
+      mode: 'standby',
+      active_hours: '24/7',
+      enabled: false,
+      can_access_credentials: true,
+      knowledge_base: ''
+    }
+  });
   const [notices, setNotices] = useState([]);
   const [loading, setLoading] = useState(true);
 
