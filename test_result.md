@@ -511,3 +511,51 @@ agent_communication:
       2. Verificar se frontend está usando URLs corretas após rebuild
       3. Debugar processo de login completo
       4. Testar aba Atendentes após resolver autenticação
+  - agent: "main"
+    message: |
+      🎉 FASE 4 E FASE 5 IMPLEMENTADAS COM SUCESSO!
+      
+      MUDANÇAS REALIZADAS:
+      
+      ✅ FASE 4 - ClientChat.js:
+      1. Pop-up de confirmação de WhatsApp implementado
+         - Verifica se já foi perguntado nos últimos 7 dias
+         - Aparece automaticamente 15 segundos após o primeiro acesso
+         - Salva whatsapp_confirmed e whatsapp_asked_at no banco
+      2. Botão "Copiar Chave PIX" adicionado no header
+         - Carrega chave PIX do config
+         - Copia para clipboard com um clique
+      3. Novos endpoints no backend:
+         - GET /users/whatsapp-popup-status
+         - PUT /users/me/whatsapp-confirm
+         - PUT /users/me/pin
+      
+      ✅ FASE 5 - AdminDashboard.js:
+      1. Aba "Dados Permitidos" - 100% funcional
+         - Configurar Chave PIX
+         - Gerenciar CPFs, Emails, Telefones, Chaves Aleatórias permitidos
+         - Adicionar/remover itens com interface visual
+      2. Aba "Integração API" - 100% funcional
+         - Configurar URL da API
+         - Configurar Token de autenticação
+         - Ativar/desativar integração
+      3. Aba "Inteligência Artificial" - 100% funcional
+         - Ativar/desativar IA
+         - Configurar nome, personalidade, instruções
+         - Selecionar provedor (OpenAI, Claude, Gemini)
+         - Configurar modelo, temperatura, max_tokens
+         - Horário de ativação
+         - Acesso a credenciais dos clientes
+         - Base de conhecimento
+      4. Botão "Replicar Configurações" adicionado nas 3 abas
+         - Propaga configurações para TODAS as revendas
+      
+      ✅ BACKEND ATUALIZADO:
+      1. GET /config retorna todos os novos campos com valores default
+      2. PUT /config salva todos os novos campos (pix_key, allowed_data, api_integration, ai_agent)
+      3. Compatibilidade com configs antigas (adiciona campos faltantes automaticamente)
+      
+      PRÓXIMAS AÇÕES:
+      - Testar backend com deep_testing_backend_v2
+      - Testar frontend depois de confirmar backend funcionando
+
