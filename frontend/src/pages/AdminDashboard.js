@@ -434,6 +434,538 @@ const AdminDashboard = () => {
             </Card>
           </TabsContent>
 
+          {/* Security Tab - Dados Permitidos */}
+          <TabsContent value="security" className="space-y-6">
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-4">🔐 Dados Permitidos para Envio</h3>
+              <p className="text-sm text-slate-600 mb-6">Configure quais dados sensíveis podem ser enviados nas conversas</p>
+              
+              {/* Chave PIX */}
+              <div className="mb-6">
+                <h4 className="font-semibold mb-3">💰 Chave PIX</h4>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Digite a chave PIX (CPF, Email, Telefone ou Chave Aleatória)"
+                    value={config.pix_key || ''}
+                    onChange={(e) => setConfig({ ...config, pix_key: e.target.value })}
+                    className="flex-1"
+                  />
+                  <Button onClick={handleSaveConfig} className="bg-emerald-600 hover:bg-emerald-700">
+                    💾 Salvar PIX
+                  </Button>
+                </div>
+                {config.pix_key && (
+                  <p className="text-sm text-emerald-600 mt-2">✅ Chave PIX cadastrada: {config.pix_key}</p>
+                )}
+              </div>
+
+              {/* CPFs Permitidos */}
+              <div className="mb-6">
+                <h4 className="font-semibold mb-3">📄 CPFs Permitidos</h4>
+                <p className="text-xs text-slate-500 mb-2">Apenas CPFs cadastrados aqui poderão ser enviados nas conversas</p>
+                <div className="flex gap-2 mb-2">
+                  <Input
+                    placeholder="000.000.000-00"
+                    id="new-cpf"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        const input = document.getElementById('new-cpf');
+                        const cpf = input.value.trim();
+                        if (cpf) {
+                          const cpfs = config.allowed_data?.cpfs || [];
+                          setConfig({
+                            ...config,
+                            allowed_data: { ...config.allowed_data, cpfs: [...cpfs, cpf] }
+                          });
+                          input.value = '';
+                        }
+                      }
+                    }}
+                  />
+                  <Button onClick={() => {
+                    const input = document.getElementById('new-cpf');
+                    const cpf = input.value.trim();
+                    if (cpf) {
+                      const cpfs = config.allowed_data?.cpfs || [];
+                      setConfig({
+                        ...config,
+                        allowed_data: { ...config.allowed_data, cpfs: [...cpfs, cpf] }
+                      });
+                      input.value = '';
+                      handleSaveConfig();
+                    }
+                  }}>
+                    Adicionar
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {(config.allowed_data?.cpfs || []).map((cpf, idx) => (
+                    <span key={idx} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+                      {cpf}
+                      <button onClick={() => {
+                        const cpfs = config.allowed_data.cpfs.filter((_, i) => i !== idx);
+                        setConfig({ ...config, allowed_data: { ...config.allowed_data, cpfs } });
+                        handleSaveConfig();
+                      }} className="text-red-600 hover:text-red-800">×</button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Emails Permitidos */}
+              <div className="mb-6">
+                <h4 className="font-semibold mb-3">📧 Emails Permitidos</h4>
+                <div className="flex gap-2 mb-2">
+                  <Input
+                    placeholder="email@exemplo.com"
+                    type="email"
+                    id="new-email"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        const input = document.getElementById('new-email');
+                        const email = input.value.trim();
+                        if (email) {
+                          const emails = config.allowed_data?.emails || [];
+                          setConfig({
+                            ...config,
+                            allowed_data: { ...config.allowed_data, emails: [...emails, email] }
+                          });
+                          input.value = '';
+                        }
+                      }
+                    }}
+                  />
+                  <Button onClick={() => {
+                    const input = document.getElementById('new-email');
+                    const email = input.value.trim();
+                    if (email) {
+                      const emails = config.allowed_data?.emails || [];
+                      setConfig({
+                        ...config,
+                        allowed_data: { ...config.allowed_data, emails: [...emails, email] }
+                      });
+                      input.value = '';
+                      handleSaveConfig();
+                    }
+                  }}>
+                    Adicionar
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {(config.allowed_data?.emails || []).map((email, idx) => (
+                    <span key={idx} className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+                      {email}
+                      <button onClick={() => {
+                        const emails = config.allowed_data.emails.filter((_, i) => i !== idx);
+                        setConfig({ ...config, allowed_data: { ...config.allowed_data, emails } });
+                        handleSaveConfig();
+                      }} className="text-red-600 hover:text-red-800">×</button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Telefones Permitidos */}
+              <div className="mb-6">
+                <h4 className="font-semibold mb-3">📱 Telefones/WhatsApp Permitidos</h4>
+                <div className="flex gap-2 mb-2">
+                  <Input
+                    placeholder="+55 11 91111-1111"
+                    id="new-phone"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        const input = document.getElementById('new-phone');
+                        const phone = input.value.trim();
+                        if (phone) {
+                          const phones = config.allowed_data?.phones || [];
+                          setConfig({
+                            ...config,
+                            allowed_data: { ...config.allowed_data, phones: [...phones, phone] }
+                          });
+                          input.value = '';
+                        }
+                      }
+                    }}
+                  />
+                  <Button onClick={() => {
+                    const input = document.getElementById('new-phone');
+                    const phone = input.value.trim();
+                    if (phone) {
+                      const phones = config.allowed_data?.phones || [];
+                      setConfig({
+                        ...config,
+                        allowed_data: { ...config.allowed_data, phones: [...phones, phone] }
+                      });
+                      input.value = '';
+                      handleSaveConfig();
+                    }
+                  }}>
+                    Adicionar
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {(config.allowed_data?.phones || []).map((phone, idx) => (
+                    <span key={idx} className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+                      {phone}
+                      <button onClick={() => {
+                        const phones = config.allowed_data.phones.filter((_, i) => i !== idx);
+                        setConfig({ ...config, allowed_data: { ...config.allowed_data, phones } });
+                        handleSaveConfig();
+                      }} className="text-red-600 hover:text-red-800">×</button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Chaves Aleatórias PIX */}
+              <div>
+                <h4 className="font-semibold mb-3">🔑 Chaves Aleatórias PIX</h4>
+                <div className="flex gap-2 mb-2">
+                  <Input
+                    placeholder="UUID ou chave aleatória"
+                    id="new-random-key"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        const input = document.getElementById('new-random-key');
+                        const key = input.value.trim();
+                        if (key) {
+                          const keys = config.allowed_data?.random_keys || [];
+                          setConfig({
+                            ...config,
+                            allowed_data: { ...config.allowed_data, random_keys: [...keys, key] }
+                          });
+                          input.value = '';
+                        }
+                      }
+                    }}
+                  />
+                  <Button onClick={() => {
+                    const input = document.getElementById('new-random-key');
+                    const key = input.value.trim();
+                    if (key) {
+                      const keys = config.allowed_data?.random_keys || [];
+                      setConfig({
+                        ...config,
+                        allowed_data: { ...config.allowed_data, random_keys: [...keys, key] }
+                      });
+                      input.value = '';
+                      handleSaveConfig();
+                    }
+                  }}>
+                    Adicionar
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {(config.allowed_data?.random_keys || []).map((key, idx) => (
+                    <span key={idx} className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm flex items-center gap-2">
+                      {key}
+                      <button onClick={() => {
+                        const keys = config.allowed_data.random_keys.filter((_, i) => i !== idx);
+                        setConfig({ ...config, allowed_data: { ...config.allowed_data, random_keys: keys } });
+                        handleSaveConfig();
+                      }} className="text-red-600 hover:text-red-800">×</button>
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+
+          {/* API Tab */}
+          <TabsContent value="api" className="space-y-6">
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-4">🔌 Integração API Office</h3>
+              <p className="text-sm text-slate-600 mb-6">Configure a API para buscar automaticamente usuário e senha dos clientes</p>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium mb-2 block">URL da API</label>
+                  <Input
+                    placeholder="https://api.office.com/v1/..."
+                    value={config.api_integration?.api_url || ''}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      api_integration: { ...config.api_integration, api_url: e.target.value }
+                    })}
+                  />
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Token de Autenticação</label>
+                  <Input
+                    type="password"
+                    placeholder="Bearer token ou API key"
+                    value={config.api_integration?.api_token || ''}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      api_integration: { ...config.api_integration, api_token: e.target.value }
+                    })}
+                  />
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="api-enabled"
+                    checked={config.api_integration?.api_enabled || false}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      api_integration: { ...config.api_integration, api_enabled: e.target.checked }
+                    })}
+                    className="rounded"
+                  />
+                  <label htmlFor="api-enabled" className="text-sm font-medium">
+                    Ativar integração com API
+                  </label>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    onClick={async () => {
+                      if (!config.api_integration?.api_url) {
+                        toast.error('Configure a URL da API primeiro');
+                        return;
+                      }
+                      try {
+                        toast.info('Testando conexão...');
+                        // TODO: Implementar teste real quando houver API
+                        setTimeout(() => toast.success('✅ API configurada! (teste futuro)'), 1000);
+                      } catch (error) {
+                        toast.error('Erro ao testar API');
+                      }
+                    }}
+                    variant="outline"
+                  >
+                    🧪 Testar Conexão
+                  </Button>
+                  
+                  <Button onClick={handleSaveConfig} className="bg-blue-600 hover:bg-blue-700">
+                    💾 Salvar Configuração
+                  </Button>
+                </div>
+
+                {config.api_integration?.api_enabled && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
+                    <p className="text-sm text-green-800">
+                      ✅ Integração API ativa! Os atendentes poderão buscar credenciais automaticamente.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </Card>
+          </TabsContent>
+
+          {/* AI Tab */}
+          <TabsContent value="ai" className="space-y-6">
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-4">🤖 Inteligência Artificial</h3>
+              <p className="text-sm text-slate-600 mb-6">Configure o agente de IA para atendimento automatizado</p>
+              
+              <div className="space-y-6">
+                {/* Ativar/Desativar IA */}
+                <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-semibold text-purple-900">Status da IA</h4>
+                      <p className="text-sm text-purple-700">
+                        {config.ai_agent?.enabled ? '✅ Ativa e pronta para atender' : '⏸️ Desativada'}
+                      </p>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={config.ai_agent?.enabled || false}
+                      onChange={(e) => setConfig({
+                        ...config,
+                        ai_agent: { ...config.ai_agent, enabled: e.target.checked }
+                      })}
+                      className="w-12 h-6 rounded-full"
+                    />
+                  </div>
+                </div>
+
+                {/* Nome e Personalidade */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Nome do Agente IA</label>
+                    <Input
+                      placeholder="Ex: Assistente Virtual"
+                      value={config.ai_agent?.name || ''}
+                      onChange={(e) => setConfig({
+                        ...config,
+                        ai_agent: { ...config.ai_agent, name: e.target.value }
+                      })}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Modo de Operação</label>
+                    <Select
+                      value={config.ai_agent?.mode || 'standby'}
+                      onValueChange={(val) => setConfig({
+                        ...config,
+                        ai_agent: { ...config.ai_agent, mode: val }
+                      })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="standby">⏸️ Standby (apenas quando solicitado)</SelectItem>
+                        <SelectItem value="solo">🤖 Solo (sem atendentes)</SelectItem>
+                        <SelectItem value="hybrid">🤝 Híbrido (com atendentes)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* Provider LLM */}
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Provedor LLM</label>
+                    <Select
+                      value={config.ai_agent?.llm_provider || 'openai'}
+                      onValueChange={(val) => setConfig({
+                        ...config,
+                        ai_agent: { ...config.ai_agent, llm_provider: val }
+                      })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="openai">🟢 OpenAI (GPT-4, GPT-3.5)</SelectItem>
+                        <SelectItem value="claude">🟣 Anthropic Claude</SelectItem>
+                        <SelectItem value="gemini">🔵 Google Gemini</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Modelo</label>
+                    <Input
+                      placeholder="gpt-4, claude-3, gemini-pro"
+                      value={config.ai_agent?.llm_model || ''}
+                      onChange={(e) => setConfig({
+                        ...config,
+                        ai_agent: { ...config.ai_agent, llm_model: e.target.value }
+                      })}
+                    />
+                  </div>
+                </div>
+
+                {/* Personalidade */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Personalidade do Agente</label>
+                  <textarea
+                    className="w-full min-h-[80px] px-3 py-2 border rounded-md"
+                    placeholder="Ex: Você é um assistente amigável e prestativo. Seja educado e objetivo..."
+                    value={config.ai_agent?.personality || ''}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      ai_agent: { ...config.ai_agent, personality: e.target.value }
+                    })}
+                  />
+                </div>
+
+                {/* Instruções */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Instruções Específicas</label>
+                  <textarea
+                    className="w-full min-h-[100px] px-3 py-2 border rounded-md"
+                    placeholder="Ex: Sempre cumprimente o cliente. Pergunte como pode ajudar. Use a base de conhecimento..."
+                    value={config.ai_agent?.instructions || ''}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      ai_agent: { ...config.ai_agent, instructions: e.target.value }
+                    })}
+                  />
+                </div>
+
+                {/* Knowledge Base */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Base de Conhecimento</label>
+                  <textarea
+                    className="w-full min-h-[120px] px-3 py-2 border rounded-md"
+                    placeholder="Cole aqui FAQs, informações sobre produtos, políticas, etc..."
+                    value={config.ai_agent?.knowledge_base || ''}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      ai_agent: { ...config.ai_agent, knowledge_base: e.target.value }
+                    })}
+                  />
+                </div>
+
+                {/* Configurações Avançadas */}
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Temperatura (Criatividade)</label>
+                    <Input
+                      type="number"
+                      min="0"
+                      max="1"
+                      step="0.1"
+                      value={config.ai_agent?.temperature || 0.7}
+                      onChange={(e) => setConfig({
+                        ...config,
+                        ai_agent: { ...config.ai_agent, temperature: parseFloat(e.target.value) }
+                      })}
+                    />
+                    <p className="text-xs text-slate-500 mt-1">0 = Preciso, 1 = Criativo</p>
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Max Tokens (Resposta)</label>
+                    <Input
+                      type="number"
+                      min="100"
+                      max="2000"
+                      step="100"
+                      value={config.ai_agent?.max_tokens || 500}
+                      onChange={(e) => setConfig({
+                        ...config,
+                        ai_agent: { ...config.ai_agent, max_tokens: parseInt(e.target.value) }
+                      })}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Horário de Ativação</label>
+                    <Input
+                      placeholder="24/7 ou 09:00-18:00"
+                      value={config.ai_agent?.active_hours || '24/7'}
+                      onChange={(e) => setConfig({
+                        ...config,
+                        ai_agent: { ...config.ai_agent, active_hours: e.target.value }
+                      })}
+                    />
+                  </div>
+                </div>
+
+                {/* Acesso a Credenciais */}
+                <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                  <input
+                    type="checkbox"
+                    id="ai-credentials"
+                    checked={config.ai_agent?.can_access_credentials || false}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      ai_agent: { ...config.ai_agent, can_access_credentials: e.target.checked }
+                    })}
+                    className="rounded"
+                  />
+                  <label htmlFor="ai-credentials" className="text-sm font-medium">
+                    🔐 Permitir IA acessar credenciais fixadas (usuário/senha) dos clientes
+                  </label>
+                </div>
+
+                <Button onClick={handleSaveConfig} className="w-full bg-purple-600 hover:bg-purple-700">
+                  💾 Salvar Configuração de IA
+                </Button>
+              </div>
+            </Card>
+          </TabsContent>
+
+
           {/* Config Tab */}
           <TabsContent value="config" className="space-y-6">
             <Card className="p-6">
