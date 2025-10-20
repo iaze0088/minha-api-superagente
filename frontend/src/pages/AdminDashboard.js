@@ -349,8 +349,38 @@ const AdminDashboard = () => {
                 <p className="text-xs text-indigo-700 mb-3">
                   Selecione quais departamentos este atendente pode acessar. Se não selecionar nenhum, terá acesso a todos.
                 </p>
-                {/* TODO: Adicionar multi-select de departamentos quando carregar */}
-                <p className="text-xs text-slate-500 italic">Configure departamentos na aba "Departamentos" primeiro</p>
+                {departments.length > 0 ? (
+                  <div className="space-y-2">
+                    {departments.map(dept => (
+                      <label key={dept.id} className="flex items-center gap-2 p-2 bg-white rounded border hover:bg-indigo-50 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={newAgent.department_ids.includes(dept.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setNewAgent({
+                                ...newAgent,
+                                department_ids: [...newAgent.department_ids, dept.id]
+                              });
+                            } else {
+                              setNewAgent({
+                                ...newAgent,
+                                department_ids: newAgent.department_ids.filter(id => id !== dept.id)
+                              });
+                            }
+                          }}
+                          className="w-4 h-4"
+                        />
+                        <span className="text-sm font-medium">{dept.name}</span>
+                        {dept.description && (
+                          <span className="text-xs text-slate-500">- {dept.description}</span>
+                        )}
+                      </label>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-500 italic">Configure departamentos na aba "Departamentos" primeiro</p>
+                )}
               </div>
               
               <Button data-testid="create-agent-btn" onClick={handleCreateAgent} className="mt-4 bg-purple-600 hover:bg-purple-700">
