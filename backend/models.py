@@ -148,6 +148,7 @@ class AIAgentConfig(BaseModel):
     instructions: str = ""
     llm_provider: str = "openai"  # openai, claude, gemini
     llm_model: str = "gpt-4"
+    api_key: Optional[str] = ""  # API Key do provedor LLM
     temperature: float = 0.7
     max_tokens: int = 500
     mode: str = "standby"  # standby, solo, hybrid
