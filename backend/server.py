@@ -1077,6 +1077,16 @@ except Exception as e:
     import traceback
     traceback.print_exc()
 
+# Include AI agent routes
+try:
+    from ai_agent_routes import ai_router
+    app.include_router(ai_router)
+    print("✅ AI agent routes loaded successfully")
+except Exception as e:
+    print(f"❌ Failed to load AI agent routes: {e}")
+    import traceback
+    traceback.print_exc()
+
 # Serve uploads
 app.mount("/api/uploads", StaticFiles(directory=str(UPLOADS_DIR)), name="uploads")
 
