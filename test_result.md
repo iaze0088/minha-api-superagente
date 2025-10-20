@@ -299,6 +299,9 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ RESOLVIDO: Atualização direta no MongoDB. Email alterado para michael@gmail.com e password hash corrigido. Login funcionando: michael@gmail.com / ab181818ab. Reseller_id: 6b3250b6-f746-4fa2-9ab4-89babf53b538. Usuário pode acessar ajuda.vip/admin normalmente."
+      - working: true
+        agent: "testing"
+        comment: "✅ PROBLEMA AJUDA.VIP COMPLETAMENTE RESOLVIDO: Email corrigido para michaelrv@gmail.com conforme solicitado. Login funcionando perfeitamente: michaelrv@gmail.com / ab181818ab. Reseller_id: 6b3250b6-f746-4fa2-9ab4-89babf53b538. Todos os acessos testados: config ✓, agentes ✓, tickets ✓. Usuário pode acessar ajuda.vip/admin com as credenciais corretas."
 
 frontend:
   - task: "Limitar visualização de clientes a 10 por aba com scroll"
