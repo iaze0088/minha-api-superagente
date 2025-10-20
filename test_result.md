@@ -397,23 +397,29 @@ backend:
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "GET /config atualizado para retornar todos os novos campos com valores default. Compatível com configs antigas (adiciona campos faltantes automaticamente)."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO: GET /config funcionando perfeitamente para Admin e Reseller. Admin acessa config principal com todos os campos (quick_blocks, auto_reply, apps, pix_key, allowed_data, api_integration, ai_agent) ✓. Reseller acessa reseller_configs com reseller_id correto ✓. Compatibilidade com configs antigas funcionando (campos default adicionados automaticamente) ✓."
 
   - task: "Atualizar PUT /config para salvar novos campos (pix_key, allowed_data, api_integration, ai_agent)"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "PUT /config atualizado para salvar todos os novos campos do ConfigData model. Suporta pix_key, allowed_data (cpfs, emails, phones, random_keys), api_integration (api_url, api_token, api_enabled), ai_agent (name, personality, instructions, llm_provider, llm_model, temperature, max_tokens, mode, active_hours, enabled, can_access_credentials, knowledge_base)."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO: PUT /config funcionando perfeitamente para Admin e Reseller. Admin salva na config principal ✓, Reseller salva em reseller_configs ✓. Todos os novos campos salvos corretamente: pix_key ✓, allowed_data (cpfs, emails, phones, random_keys) ✓, api_integration (api_url, api_token, api_enabled) ✓, ai_agent (todos os campos) ✓. Estrutura de dados complexa preservada."
 
 
 frontend:
