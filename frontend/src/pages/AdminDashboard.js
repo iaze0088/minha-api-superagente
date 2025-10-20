@@ -90,7 +90,7 @@ const AdminDashboard = () => {
     try {
       await api.post('/agents', newAgent);
       toast.success('Atendente criado com sucesso!');
-      setNewAgent({ name: '', login: '', password: '', avatar: '' });
+      setNewAgent({ name: '', login: '', password: '', avatar: '', department_ids: [] });
       loadData();
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Erro ao criar atendente');
