@@ -137,12 +137,33 @@ class AllowedData(BaseModel):
     phones: List[str] = []
     random_keys: List[str] = []
 
+class APIIntegration(BaseModel):
+    api_url: str = ""
+    api_token: str = ""
+    api_enabled: bool = False
+
+class AIAgentConfig(BaseModel):
+    name: str = "Assistente IA"
+    personality: str = ""
+    instructions: str = ""
+    llm_provider: str = "openai"  # openai, claude, gemini
+    llm_model: str = "gpt-4"
+    temperature: float = 0.7
+    max_tokens: int = 500
+    mode: str = "standby"  # standby, solo, hybrid
+    active_hours: str = "24/7"  # Ex: "09:00-18:00" ou "24/7"
+    enabled: bool = False
+    can_access_credentials: bool = True
+    knowledge_base: str = ""  # Texto ou instruções adicionais
+
 class ConfigData(BaseModel):
     quick_blocks: List[QuickBlock] = []
     auto_reply: List[AutoReply] = []
     apps: List[AppItem] = []
     pix_key: Optional[str] = ""
     allowed_data: AllowedData = AllowedData()
+    api_integration: APIIntegration = APIIntegration()
+    ai_agent: AIAgentConfig = AIAgentConfig()
     reseller_id: Optional[str] = None  # Tenant isolation - cada revenda tem suas configs
 
 # Reseller Models
