@@ -303,6 +303,43 @@ backend:
         agent: "testing"
         comment: "✅ PROBLEMA AJUDA.VIP COMPLETAMENTE RESOLVIDO: Email corrigido para michaelrv@gmail.com conforme solicitado. Login funcionando perfeitamente: michaelrv@gmail.com / ab181818ab. Reseller_id: 6b3250b6-f746-4fa2-9ab4-89babf53b538. Todos os acessos testados: config ✓, agentes ✓, tickets ✓. Usuário pode acessar ajuda.vip/admin com as credenciais corretas."
 
+  - task: "Adicionar endpoints para WhatsApp popup e PIN update"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Adicionados endpoints: GET /users/whatsapp-popup-status, PUT /users/me/whatsapp-confirm, PUT /users/me/pin. Endpoints verificam última pergunta de WhatsApp (7 dias) e permitem atualizar PIN do usuário."
+
+  - task: "Atualizar GET /config para retornar novos campos (pix_key, allowed_data, api_integration, ai_agent)"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "GET /config atualizado para retornar todos os novos campos com valores default. Compatível com configs antigas (adiciona campos faltantes automaticamente)."
+
+  - task: "Atualizar PUT /config para salvar novos campos (pix_key, allowed_data, api_integration, ai_agent)"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "PUT /config atualizado para salvar todos os novos campos do ConfigData model. Suporta pix_key, allowed_data (cpfs, emails, phones, random_keys), api_integration (api_url, api_token, api_enabled), ai_agent (name, personality, instructions, llm_provider, llm_model, temperature, max_tokens, mode, active_hours, enabled, can_access_credentials, knowledge_base)."
+
+
 frontend:
   - task: "Limitar visualização de clientes a 10 por aba com scroll"
     implemented: true
