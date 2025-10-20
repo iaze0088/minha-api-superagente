@@ -479,3 +479,35 @@ agent_communication:
       
       ✅ PROBLEMA RESOLVIDO COMPLETAMENTE!
       O usuário pode agora acessar ajuda.vip/admin normalmente.
+  - agent: "testing"
+    message: |
+      🚨 TESTE DA ABA ATENDENTES - PROBLEMA CRÍTICO IDENTIFICADO
+      
+      SITUAÇÃO REPORTADA:
+      - Usuário reporta que aba "Atendentes" não aparece no ResellerDashboard
+      - URL: https://ajuda.vip/revenda/login
+      - Credenciais: michaelrv@gmail.com / ab181818ab
+      
+      ANÁLISE REALIZADA:
+      ✅ Código da aba "Atendentes" está implementado no ResellerDashboard.js (linhas 111-114)
+      ✅ Reseller criado no banco: ID 6b3250b6-f746-4fa2-9ab4-89babf53b538
+      ✅ Credenciais corretas no banco de dados
+      ✅ Frontend modificado para usar URLs relativas em domínios customizados
+      
+      PROBLEMAS IDENTIFICADOS E CORRIGIDOS:
+      1. ❌ Reseller não tinha campo "is_active" → ✅ Adicionado is_active: true
+      2. ❌ Campo password vs pass_hash inconsistente → ✅ Corrigido para "password"
+      3. ❌ Login route não usava tenant context → ✅ Modificado para filtrar por tenant
+      
+      PROBLEMA ATUAL:
+      ❌ Login ainda falha com 401 "Email ou senha inválidos"
+      ❌ Tenant middleware não está detectando domínio ajuda.vip (logs ausentes)
+      ❌ Frontend ainda faz requests para cybertv-support.emergent.host
+      
+      STATUS: TESTE FALHOU - Dashboard não carrega devido a problema de autenticação
+      
+      PRÓXIMAS AÇÕES NECESSÁRIAS:
+      1. Investigar por que tenant middleware não detecta ajuda.vip
+      2. Verificar se frontend está usando URLs corretas após rebuild
+      3. Debugar processo de login completo
+      4. Testar aba Atendentes após resolver autenticação
