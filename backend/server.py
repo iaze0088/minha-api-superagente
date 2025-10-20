@@ -144,6 +144,67 @@ async def send_department_selection(ticket_id: str, client_id: str, reseller_id:
         {"$set": {"department_choice_sent_at": datetime.now(timezone.utc).isoformat()}}
     )
 
+# Background task para verificar timeouts
+async def check_department_timeouts():
+    """Verifica tickets aguardando escolha de departamento e aplica timeout"""
+    while True:
+        try:
+            await asyncio.sleep(30)  # Verificar a cada 30 segundos
+            
+            # Buscar tickets aguardando escolha de departamento
+            tickets = await db.tickets.find({
+                "awaiting_department_choice": True,
+                "department_choice_sent_at": {"$exists": True, "$ne": None}
+            }).to_list(None)
+            
+            now = datetime.now(timezone.utc)
+            
+            for ticket in tickets:
+                sent_at = datetime.fromisoformat(ticket["department_choice_sent_at"])
+                elapsed = (now - sent_at).total_seconds()
+                
+                # Buscar timeout do departamento padrão ou usar 120s
+                default_dept = await db.departments.find_one({
+                    "is_default": True,
+                    "reseller_id": ticket.get("reseller_id")
+                })
+                
+                timeout = default_dept.get("timeout_seconds", 120) if default_dept else 120
+                
+                if elapsed >= timeout:
+                    # Timeout! Mover para departamento padrão
+                    if default_dept:
+                        await db.tickets.update_one(
+                            {"id": ticket["id"]},
+                            {"$set": {
+                                "department_id": default_dept["id"],
+                                "awaiting_department_choice": False,
+                                "updated_at": datetime.now(timezone.utc).isoformat()
+                            }}
+                        )
+                        
+                        # Enviar mensagem de notificação
+                        message = {
+                            "id": str(uuid.uuid4()),
+                            "ticket_id": ticket["id"],
+                            "from_type": "system",
+                            "kind": "text",
+                            "text": f"⏱️ Tempo esgotado. Você foi direcionado automaticamente para: {default_dept['name']}",
+                            "created_at": datetime.now(timezone.utc).isoformat(),
+                            "reseller_id": ticket.get("reseller_id")
+                        }
+                        
+                        await db.messages.insert_one(message)
+                        
+                        # Enviar via WebSocket
+                        await manager.send_to_user(ticket["client_id"], {
+                            "type": "new_message",
+                            "message": message
+                        })
+        except Exception as e:
+            print(f"Error in timeout checker: {e}")
+
+
 
 # Tenant helper
 def get_request_tenant(request: Request) -> TenantContext:
