@@ -842,7 +842,24 @@ async def get_config(request: Request, current_user: dict = Depends(get_current_
                 "reseller_id": reseller_id,
                 "quick_blocks": [],
                 "auto_reply": [],
-                "apps": []
+                "apps": [],
+                "pix_key": "",
+                "allowed_data": {"cpfs": [], "emails": [], "phones": [], "random_keys": []},
+                "api_integration": {"api_url": "", "api_token": "", "api_enabled": False},
+                "ai_agent": {
+                    "name": "Assistente IA",
+                    "personality": "",
+                    "instructions": "",
+                    "llm_provider": "openai",
+                    "llm_model": "gpt-4",
+                    "temperature": 0.7,
+                    "max_tokens": 500,
+                    "mode": "standby",
+                    "active_hours": "24/7",
+                    "enabled": False,
+                    "can_access_credentials": True,
+                    "knowledge_base": ""
+                }
             }
             await db.reseller_configs.insert_one(config)
     else:
@@ -853,9 +870,50 @@ async def get_config(request: Request, current_user: dict = Depends(get_current_
                 "id": "config",
                 "quick_blocks": [],
                 "auto_reply": [],
-                "apps": []
+                "apps": [],
+                "pix_key": "",
+                "allowed_data": {"cpfs": [], "emails": [], "phones": [], "random_keys": []},
+                "api_integration": {"api_url": "", "api_token": "", "api_enabled": False},
+                "ai_agent": {
+                    "name": "Assistente IA",
+                    "personality": "",
+                    "instructions": "",
+                    "llm_provider": "openai",
+                    "llm_model": "gpt-4",
+                    "temperature": 0.7,
+                    "max_tokens": 500,
+                    "mode": "standby",
+                    "active_hours": "24/7",
+                    "enabled": False,
+                    "can_access_credentials": True,
+                    "knowledge_base": ""
+                }
             }
             await db.config.insert_one(config)
+    
+    # Garantir que todos os campos existam (para configs antigas)
+    if "pix_key" not in config:
+        config["pix_key"] = ""
+    if "allowed_data" not in config:
+        config["allowed_data"] = {"cpfs": [], "emails": [], "phones": [], "random_keys": []}
+    if "api_integration" not in config:
+        config["api_integration"] = {"api_url": "", "api_token": "", "api_enabled": False}
+    if "ai_agent" not in config:
+        config["ai_agent"] = {
+            "name": "Assistente IA",
+            "personality": "",
+            "instructions": "",
+            "llm_provider": "openai",
+            "llm_model": "gpt-4",
+            "temperature": 0.7,
+            "max_tokens": 500,
+            "mode": "standby",
+            "active_hours": "24/7",
+            "enabled": False,
+            "can_access_credentials": True,
+            "knowledge_base": ""
+        }
+    
     return config
 
 @api_router.put("/config")
