@@ -189,6 +189,45 @@ const ClientChat = () => {
     }
   };
 
+  const loadPixKey = async () => {
+    try {
+      const { data } = await api.get('/config');
+      setPixKey(data.pix_key || '');
+    } catch (error) {
+      console.error('Error loading PIX key:', error);
+    }
+  };
+
+  const checkWhatsAppPopup = async () => {
+    try {
+      const { data } = await api.get('/users/whatsapp-popup-status');
+      if (data.should_show) {
+        // Show popup after 15 seconds if user hasn't confirmed WhatsApp in the last 7 days
+        whatsappPopupTimerRef.current = setTimeout(() => {
+          setShowWhatsAppPopup(true);
+        }, 15000);
+      }
+    } catch (error) {
+      console.error('Error checking WhatsApp popup:', error);
+    }
+  };
+
+  const handleConfirmWhatsApp = async () => {
+    if (!whatsappInput.trim()) {
+      toast.error('Por favor, digite seu WhatsApp');
+      return;
+    }
+    
+    try {
+      await api.put('/users/me/whatsapp-confirm', { whatsapp: whatsappInput });
+      toast.success('WhatsApp confirmado!');
+      setShowWhatsAppPopup(false);
+      setWhatsappInput('');
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Erro ao confirmar WhatsApp');
+    }
+  };
+
   const loadUserData = async () => {
     try {
       const { data } = await api.get('/users/me');
