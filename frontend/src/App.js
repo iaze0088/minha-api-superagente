@@ -14,16 +14,6 @@ import PrivateRoute from './components/PrivateRoute';
 import './App.css';
 
 function App() {
-  useEffect(() => {
-    // Força reload uma única vez após limpar cache
-    const cacheCleared = localStorage.getItem('cache_cleared_v2');
-    if (!cacheCleared) {
-      console.log('🔄 Limpando cache e recarregando...');
-      localStorage.setItem('cache_cleared_v2', 'true');
-      window.location.reload(true);
-    }
-  }, []);
-  
   return (
     <div className="App">
       <BrowserRouter>
