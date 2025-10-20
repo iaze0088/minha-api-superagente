@@ -1,9 +1,10 @@
 import axios from 'axios';
 
-// Use relative URL if REACT_APP_BACKEND_URL not set (for custom domains)
-const API_URL = process.env.REACT_APP_BACKEND_URL 
-  ? `${process.env.REACT_APP_BACKEND_URL}/api`
-  : '/api';
+// Use relative URL for custom domains, full URL for main domain
+const isCustomDomain = window.location.hostname !== 'cybertv-support.preview.emergentagent.com';
+const API_URL = isCustomDomain 
+  ? '/api'  // Use relative URL for custom domains like ajuda.vip
+  : `${process.env.REACT_APP_BACKEND_URL}/api`;  // Use full URL for main domain
 
 const api = axios.create({
   baseURL: API_URL,
