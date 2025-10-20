@@ -925,15 +925,35 @@ async def update_config(data: ConfigData, request: Request, current_user: dict =
     if current_user["user_type"] not in ["admin", "reseller"]:
         raise HTTPException(status_code=403, detail="Não autorizado")
     
+    # Preparar dados para salvar
+    config_data = {
+        "quick_blocks": [b.dict() for b in data.quick_blocks],
+        "auto_reply": [a.dict() for a in data.auto_reply],
+        "apps": [app.dict() for app in data.apps],
+        "pix_key": data.pix_key or "",
+        "allowed_data": data.allowed_data.dict() if data.allowed_data else {"cpfs": [], "emails": [], "phones": [], "random_keys": []},
+        "api_integration": data.api_integration.dict() if data.api_integration else {"api_url": "", "api_token": "", "api_enabled": False},
+        "ai_agent": data.ai_agent.dict() if data.ai_agent else {
+            "name": "Assistente IA",
+            "personality": "",
+            "instructions": "",
+            "llm_provider": "openai",
+            "llm_model": "gpt-4",
+            "temperature": 0.7,
+            "max_tokens": 500,
+            "mode": "standby",
+            "active_hours": "24/7",
+            "enabled": False,
+            "can_access_credentials": True,
+            "knowledge_base": ""
+        }
+    }
+    
     # Se for reseller, atualizar config da revenda
     if reseller_id:
         await db.reseller_configs.update_one(
             {"reseller_id": reseller_id},
-            {"$set": {
-                "quick_blocks": [b.dict() for b in data.quick_blocks],
-                "auto_reply": [a.dict() for a in data.auto_reply],
-                "apps": [app.dict() for app in data.apps]
-            }},
+            {"$set": config_data},
             upsert=True
         )
     else:
@@ -943,11 +963,7 @@ async def update_config(data: ConfigData, request: Request, current_user: dict =
         
         await db.config.update_one(
             {"id": "config"},
-            {"$set": {
-                "quick_blocks": [b.dict() for b in data.quick_blocks],
-                "auto_reply": [a.dict() for a in data.auto_reply],
-                "apps": [app.dict() for app in data.apps]
-            }},
+            {"$set": config_data},
             upsert=True
         )
     return {"ok": True}
