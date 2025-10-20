@@ -106,8 +106,12 @@ const ResellerDashboard = () => {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <Tabs defaultValue="quick" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
+        <Tabs defaultValue="agents" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="agents" data-testid="tab-agents">
+              <Users className="w-4 h-4 mr-2" />
+              Atendentes
+            </TabsTrigger>
             <TabsTrigger value="quick" data-testid="tab-quick">
               <MessageSquare className="w-4 h-4 mr-2" />
               Msg Rápidas
@@ -121,6 +125,76 @@ const ResellerDashboard = () => {
               Domínio
             </TabsTrigger>
           </TabsList>
+
+          {/* Agents Tab */}
+          <TabsContent value="agents" className="space-y-6">
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Novo Atendente</h3>
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
+                <Input
+                  placeholder="Nome"
+                  value={newAgent.name}
+                  onChange={(e) => setNewAgent({ ...newAgent, name: e.target.value })}
+                />
+                <Input
+                  placeholder="Login"
+                  value={newAgent.login}
+                  onChange={(e) => setNewAgent({ ...newAgent, login: e.target.value })}
+                />
+                <Input
+                  type="password"
+                  placeholder="Senha"
+                  value={newAgent.password}
+                  onChange={(e) => setNewAgent({ ...newAgent, password: e.target.value })}
+                />
+                <Select value={newAgent.avatar} onValueChange={(val) => setNewAgent({ ...newAgent, avatar: val })}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Avatar" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="👨">👨 Homem</SelectItem>
+                    <SelectItem value="👩">👩 Mulher</SelectItem>
+                    <SelectItem value="🧑">🧑 Pessoa</SelectItem>
+                    <SelectItem value="👤">👤 Perfil</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button onClick={handleCreateAgent} className="bg-emerald-600 hover:bg-emerald-700">
+                <Plus className="w-4 h-4 mr-2" />
+                Criar Atendente
+              </Button>
+            </Card>
+
+            <div className="grid gap-4">
+              {agents.map((agent) => (
+                <Card key={agent.id} className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="text-3xl">{agent.avatar}</div>
+                      <div>
+                        <h4 className="font-semibold">{agent.name}</h4>
+                        <p className="text-sm text-slate-600">Login: {agent.login}</p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDeleteAgent(agent.id)}
+                      className="text-red-600 hover:bg-red-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </Card>
+              ))}
+              {agents.length === 0 && (
+                <Card className="p-8 text-center">
+                  <Users className="w-16 h-16 mx-auto text-slate-300 mb-4" />
+                  <p className="text-slate-600">Nenhum atendente criado</p>
+                </Card>
+              )}
+            </div>
+          </TabsContent>
 
           <TabsContent value="quick" className="space-y-6">
             <Card className="p-6">
