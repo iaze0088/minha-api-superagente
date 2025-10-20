@@ -15,18 +15,24 @@ const ResellerDashboard = () => {
   const navigate = useNavigate();
   const { userData } = getAuth();
   const [config, setConfig] = useState({ quick_blocks: [], auto_reply: [], apps: [] });
+  const [agents, setAgents] = useState([]);
+  const [newAgent, setNewAgent] = useState({ name: '', login: '', password: '', avatar: '' });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadConfig();
+    loadData();
   }, []);
 
-  const loadConfig = async () => {
+  const loadData = async () => {
     try {
-      const { data } = await api.get(`/resellers/${userData.id}/config`);
-      setConfig(data);
+      const [configRes, agentsRes] = await Promise.all([
+        api.get(`/resellers/${userData.id}/config`),
+        api.get('/agents')
+      ]);
+      setConfig(configRes.data);
+      setAgents(agentsRes.data);
     } catch (error) {
-      toast.error('Erro ao carregar configurações');
+      toast.error('Erro ao carregar dados');
     } finally {
       setLoading(false);
     }
