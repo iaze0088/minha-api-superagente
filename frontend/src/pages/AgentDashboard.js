@@ -74,6 +74,7 @@ const AgentDashboard = () => {
   }, [userData, selectedTicket, navigate]);
 
   useEffect(() => {
+    console.log('🔵 AgentDashboard CARREGADO - Versão com LIMITES FIXOS');
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
