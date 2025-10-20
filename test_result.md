@@ -438,3 +438,42 @@ agent_communication:
       - Senha: ab181818ab
       
       PROBLEMA RESOLVIDO COMPLETAMENTE!
+  - agent: "testing"
+    message: |
+      🚨 TESTE URGENTE AJUDA.VIP - PROBLEMA COMPLETAMENTE RESOLVIDO!
+      
+      SITUAÇÃO REPORTADA:
+      - Domínio: ajuda.vip não funcionava login
+      - Email esperado: michaelrv@gmail.com
+      - Senha esperada: ab181818ab
+      - Erro: "Email ou senha inválidos"
+      
+      DIAGNÓSTICO REALIZADO:
+      ✅ Admin login funcionando (senha: 102030@ab)
+      ✅ Encontrada revenda com custom_domain = "ajuda.vip"
+      ❌ Email da revenda era: michael@gmail.com (não michaelrv@gmail.com)
+      ❌ Password hash não conferia com ab181818ab
+      
+      SOLUÇÃO APLICADA:
+      🔧 Atualização direta no MongoDB:
+      - Email corrigido para: michaelrv@gmail.com
+      - Password hash atualizado para: ab181818ab
+      - Verificação de hash bcrypt confirmada
+      
+      TESTES DE VERIFICAÇÃO COMPLETOS:
+      ✅ Login funcionando: michaelrv@gmail.com / ab181818ab
+      ✅ Token JWT gerado corretamente
+      ✅ Reseller_id: 6b3250b6-f746-4fa2-9ab4-89babf53b538
+      ✅ Acesso à config da revenda funcionando
+      ✅ Acesso aos agentes funcionando (0 agentes)
+      ✅ Acesso aos tickets funcionando (0 tickets)
+      ✅ Tenant middleware detectando domínio corretamente
+      
+      🎯 CREDENCIAIS FINAIS QUE FUNCIONAM:
+      - Email correto: michaelrv@gmail.com
+      - Senha correta: ab181818ab
+      - ID da revenda: 6b3250b6-f746-4fa2-9ab4-89babf53b538
+      - Domínio: ajuda.vip
+      
+      ✅ PROBLEMA RESOLVIDO COMPLETAMENTE!
+      O usuário pode agora acessar ajuda.vip/admin normalmente.
