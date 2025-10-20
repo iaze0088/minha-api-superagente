@@ -30,11 +30,15 @@ const ClientChat = () => {
   const [onlineStatus, setOnlineStatus] = useState('Carregando...');
   const [lastNoticeCount, setLastNoticeCount] = useState(0);
   const [alertModal, setAlertModal] = useState({ isOpen: false, title: '', message: '', icon: 'info' });
+  const [showWhatsAppPopup, setShowWhatsAppPopup] = useState(false);
+  const [whatsappInput, setWhatsappInput] = useState('');
+  const [firstMessageSent, setFirstMessageSent] = useState(false);
   const wsRef = useRef(null);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const queueTimerRef = useRef(null);
+  const whatsappPopupTimerRef = useRef(null);
 
   useEffect(() => {
     loadMessages();
