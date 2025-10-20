@@ -26,6 +26,14 @@ const AdminDashboard = () => {
   // Agent form
   const [newAgent, setNewAgent] = useState({ name: '', login: '', password: '', avatar: '' });
   const [editingAgent, setEditingAgent] = useState(null);
+  
+  // Reseller form
+  const [newReseller, setNewReseller] = useState({ name: '', email: '', password: '', domain: '', parent_id: null });
+  const [editingReseller, setEditingReseller] = useState(null);
+  const [hierarchy, setHierarchy] = useState({ hierarchy: [] });
+  const [expandedResellers, setExpandedResellers] = useState(new Set());
+  const [transferModal, setTransferModal] = useState({ open: false, reseller: null });
+  const [viewMode, setViewMode] = useState('list'); // 'list' or 'tree'
 
   useEffect(() => {
     loadData();
@@ -91,6 +99,52 @@ const AdminDashboard = () => {
   };
   
   // Reseller functions
+  const handleCreateReseller = async () => {
+    try {
+      await api.post('/resellers', newReseller);
+      toast.success('Revenda criada com sucesso!');
+      setNewReseller({ name: '', email: '', password: '', domain: '', parent_id: null });
+      loadData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Erro ao criar revenda');
+    }
+  };
+  
+  const handleDeleteReseller = async (resellerId) => {
+    if (!window.confirm('Tem certeza que deseja excluir esta revenda?')) return;
+    try {
+      await api.delete(`/resellers/${resellerId}`);
+      toast.success('Revenda excluída!');
+      loadData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Erro ao excluir revenda');
+    }
+  };
+  
+  const handleTransferReseller = async () => {
+    try {
+      await api.post('/resellers/transfer', {
+        reseller_id: transferModal.reseller.id,
+        new_parent_id: transferModal.new_parent_id
+      });
+      toast.success('Revenda transferida com sucesso!');
+      setTransferModal({ open: false, reseller: null });
+      loadData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Erro ao transferir revenda');
+    }
+  };
+  
+  const toggleExpand = (resellerId) => {
+    const newExpanded = new Set(expandedResellers);
+    if (newExpanded.has(resellerId)) {
+      newExpanded.delete(resellerId);
+    } else {
+      newExpanded.add(resellerId);
+    }
+    setExpandedResellers(newExpanded);
+  };
+  
   const handleReplicateConfig = async () => {
     if (!window.confirm('Isso vai sobrescrever as configurações de TODAS as revendas. Continuar?')) return;
     try {
