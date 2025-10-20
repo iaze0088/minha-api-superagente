@@ -598,6 +598,7 @@ async def send_message(data: MessageCreate, request: Request, current_user: dict
                 "id": ticket_id,
                 "client_id": data.from_id,
                 "status": "EM_ESPERA",
+                "unread_count": 0,
                 "reseller_id": reseller_id,
                 "created_at": datetime.now(timezone.utc).isoformat(),
                 "updated_at": datetime.now(timezone.utc).isoformat()
@@ -605,13 +606,22 @@ async def send_message(data: MessageCreate, request: Request, current_user: dict
             await db.tickets.insert_one(ticket)
         else:
             ticket_id = ticket["id"]
-            # Update ticket status to EM_ESPERA when client sends
+            # Update ticket status to EM_ESPERA when client sends and increment unread
             await db.tickets.update_one(
                 {"id": ticket_id},
-                {"$set": {"status": "EM_ESPERA", "updated_at": datetime.now(timezone.utc).isoformat()}}
+                {
+                    "$set": {"status": "EM_ESPERA", "updated_at": datetime.now(timezone.utc).isoformat()},
+                    "$inc": {"unread_count": 1}  # Incrementar contador de não lidas
+                }
             )
     else:
         ticket_id = data.ticket_id
+        # When agent sends, reset unread count
+        if data.from_type == "agent":
+            await db.tickets.update_one(
+                {"id": ticket_id},
+                {"$set": {"unread_count": 0}}
+            )
     
     # Wrap text at 20 chars for client
     text = data.text
