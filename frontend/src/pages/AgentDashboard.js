@@ -18,6 +18,7 @@ const AgentDashboard = () => {
   const { userData } = getAuth();
   const [status, setStatus] = useState('EM_ESPERA');
   const [tickets, setTickets] = useState([]);
+  const [allTickets, setAllTickets] = useState([]); // Todos os tickets
   const [selectedTicket, setSelectedTicket] = useState(null);
   const [messages, setMessages] = useState([]);
   const [messageText, setMessageText] = useState('');
@@ -27,6 +28,8 @@ const AgentDashboard = () => {
   const [pinnedPass, setPinnedPass] = useState('');
   const [resetPhone, setResetPhone] = useState('');
   const [clientCredentials, setClientCredentials] = useState({ pinned_user: '', pinned_pass: '' });
+  const [myDepartments, setMyDepartments] = useState([]); // Departamentos do atendente
+  const [selectedDepartment, setSelectedDepartment] = useState('all'); // Filtro de departamento
   const wsRef = useRef(null);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
