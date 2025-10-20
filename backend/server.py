@@ -783,12 +783,18 @@ async def send_message(data: MessageCreate, request: Request, current_user: dict
                 "id": ticket_id,
                 "client_id": data.from_id,
                 "status": "EM_ESPERA",
+                "department_id": None,
+                "awaiting_department_choice": True,
+                "department_choice_sent_at": None,
                 "unread_count": 0,
                 "reseller_id": reseller_id,
                 "created_at": datetime.now(timezone.utc).isoformat(),
                 "updated_at": datetime.now(timezone.utc).isoformat()
             }
             await db.tickets.insert_one(ticket)
+            
+            # Enviar mensagem de seleção de departamento (primeira vez)
+            await send_department_selection(ticket_id, data.from_id, reseller_id)
         else:
             ticket_id = ticket["id"]
             # Update ticket status to EM_ESPERA when client sends and increment unread
