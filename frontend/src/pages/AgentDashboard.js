@@ -345,62 +345,91 @@ const AgentDashboard = () => {
           </Tabs>
         </div>
 
-        {/* Chat Area */}
-        <div className="flex-1 flex flex-col bg-slate-100">
+        {/* Área de Conversas - Layout fixo e profissional */}
+        <div className="flex-1 bg-slate-100 flex flex-col overflow-hidden">
           {selectedTicket ? (
             <>
-              {/* Chat Header */}
-              <div className="bg-white border-b border-slate-200 p-4">
+              {/* Header do Chat - Fixo no topo */}
+              <div className="bg-white border-b border-slate-200 p-4 flex-shrink-0">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="font-semibold text-slate-900">
-                      {selectedTicket.client_name || formatWhatsApp(selectedTicket.client_whatsapp)}
-                    </h3>
-                    <p className="text-sm text-slate-600">
-                      WhatsApp: <span className="font-mono">{formatWhatsApp(selectedTicket.client_whatsapp)}</span>
-                    </p>
+                  <div className="flex items-center gap-3">
+                    {selectedTicket.client_avatar && (
+                      <img src={selectedTicket.client_avatar} alt="" className="w-12 h-12 rounded-full object-cover" />
+                    )}
+                    <div>
+                      <h3 className="font-semibold text-lg text-slate-900">
+                        {selectedTicket.client_name || formatWhatsApp(selectedTicket.client_whatsapp)}
+                      </h3>
+                      <p className="text-sm text-slate-600 flex items-center gap-2">
+                        <Phone className="w-3 h-3" />
+                        <span className="font-mono">{formatWhatsApp(selectedTicket.client_whatsapp)}</span>
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Status badges */}
+                  <div className="flex gap-2">
+                    {status === 'EM_ESPERA' && (
+                      <span className="px-3 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-full">
+                        Em Espera
+                      </span>
+                    )}
+                    {status === 'ATENDENDO' && (
+                      <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+                        Atendendo
+                      </span>
+                    )}
+                    {status === 'FINALIZADAS' && (
+                      <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                        Finalizado
+                      </span>
+                    )}
                   </div>
                 </div>
                 
                 {/* Credenciais fixadas */}
                 {(clientCredentials.pinned_user || clientCredentials.pinned_pass) && (
-                  <div className="mt-3 p-2 bg-cyan-50 border border-cyan-200 rounded-lg text-sm">
-                    <span className="font-medium text-cyan-900">Credenciais: </span>
-                    <span className="font-mono text-cyan-700">
-                      Usuário: {clientCredentials.pinned_user} • Senha: {clientCredentials.pinned_pass}
-                    </span>
+                  <div className="mt-3 p-3 bg-gradient-to-r from-cyan-50 to-blue-50 border-l-4 border-cyan-500 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Key className="w-4 h-4 text-cyan-600" />
+                      <span className="font-semibold text-cyan-900 text-sm">Credenciais do Cliente:</span>
+                    </div>
+                    <div className="mt-2 font-mono text-sm text-cyan-800">
+                      <span className="font-semibold">Usuário:</span> {clientCredentials.pinned_user} •{' '}
+                      <span className="font-semibold">Senha:</span> {clientCredentials.pinned_pass}
+                    </div>
                   </div>
                 )}
               </div>
 
-              {/* Messages - Mostra apenas as últimas 7, rolar para cima para ver histórico */}
-              <div className="flex-1 overflow-y-auto p-4 bg-slate-50">
+              {/* Área de Mensagens - Com scroll interno APENAS aqui */}
+              <div className="flex-1 overflow-y-auto bg-slate-50 p-4">
                 {messages.length > 7 && (
-                  <div className="text-center text-xs text-slate-500 py-2 sticky top-0 bg-slate-100 rounded mb-2">
+                  <div className="text-center text-xs text-slate-500 py-2 bg-white/80 backdrop-blur-sm rounded-lg mb-3 shadow-sm">
                     ↑ Role para cima para ver {messages.length - 7} mensagem(ns) anterior(es)
                   </div>
                 )}
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {messages.slice(-7).map(msg => (
-                    <div key={msg.id} className={`flex ${msg.from_type === 'agent' ? 'justify-end' : 'justify-start'}`}>
+                    <div key={msg.id} className={`flex ${msg.from_type === 'agent' ? 'justify-end' : 'justify-start'} animate-fadeIn`}>
                       <div
-                        className={`max-w-[70%] p-3 rounded-2xl ${
+                        className={`max-w-[70%] p-3 rounded-2xl shadow-sm ${
                           msg.from_type === 'agent'
                             ? 'bg-indigo-600 text-white rounded-br-sm'
-                            : 'bg-white text-slate-900 rounded-bl-sm shadow-sm'
+                            : 'bg-white text-slate-900 rounded-bl-sm border border-slate-200'
                         }`}
                       >
-                        {msg.kind === 'text' && <p className="whitespace-pre-wrap break-words">{msg.text}</p>}
+                        {msg.kind === 'text' && <p className="whitespace-pre-wrap break-words text-sm">{msg.text}</p>}
                         {msg.kind === 'image' && <img src={msg.file_url} alt="" className="max-w-full rounded-lg" />}
                         {msg.kind === 'video' && <video src={msg.file_url} controls className="max-w-full rounded-lg" />}
                         {msg.kind === 'audio' && <audio src={msg.file_url} controls className="w-full" />}
                         {msg.kind === 'pix' && (
                           <div>
-                            <p className="font-semibold mb-2">Chave PIX</p>
-                            <code className="text-xs bg-black/10 px-2 py-1 rounded">{msg.text}</code>
+                            <p className="font-semibold mb-2 text-sm">💰 Chave PIX</p>
+                            <code className="text-xs bg-black/10 px-2 py-1 rounded block">{msg.text}</code>
                           </div>
                         )}
-                        <p className="text-xs mt-1 opacity-70">
+                        <p className="text-[10px] mt-1.5 opacity-70">
                           {new Date(msg.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                         </p>
                       </div>
@@ -410,16 +439,16 @@ const AgentDashboard = () => {
                 </div>
               </div>
 
-              {/* Quick Messages */}
+              {/* Mensagens Rápidas - Fixo acima do input */}
               {config.quick_blocks && config.quick_blocks.length > 0 && (
-                <div className="bg-white border-t border-slate-200 p-2">
-                  <p className="text-xs font-medium text-slate-600 mb-2">Mensagens Rápidas:</p>
+                <div className="bg-white border-t border-slate-200 px-4 py-2 flex-shrink-0">
+                  <p className="text-xs font-semibold text-slate-700 mb-2">⚡ Mensagens Rápidas:</p>
                   <div className="flex flex-wrap gap-2">
                     {/* Botão especial de Chave PIX */}
                     {config.pix_key && (
                       <Button
                         size="sm"
-                        className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
+                        className="text-xs h-7 bg-emerald-600 hover:bg-emerald-700 text-white font-medium"
                         onClick={() => setMessageText(`💰 CHAVE PIX:\n\n${config.pix_key}\n\n👇 Copie a chave clicando no botão abaixo`)}
                       >
                         💰 PIX
@@ -433,7 +462,7 @@ const AgentDashboard = () => {
                         size="sm"
                         variant="outline"
                         onClick={() => setMessageText(block.text)}
-                        className="text-xs hover:bg-indigo-50 hover:border-indigo-300"
+                        className="text-xs h-7 hover:bg-indigo-50 hover:border-indigo-400 hover:text-indigo-700 transition-all"
                       >
                         {block.name}
                       </Button>
@@ -442,9 +471,9 @@ const AgentDashboard = () => {
                 </div>
               )}
 
-              {/* Input */}
-              <div className="bg-white border-t border-slate-200 p-4">
-                <div className="flex gap-2">
+              {/* Input de Mensagem - Fixo na parte inferior */}
+              <div className="bg-white border-t-2 border-slate-300 p-4 flex-shrink-0 shadow-lg">
+                <div className="flex gap-3">
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -456,12 +485,15 @@ const AgentDashboard = () => {
                     variant="outline"
                     size="icon"
                     onClick={() => fileInputRef.current?.click()}
+                    className="flex-shrink-0 h-20 w-12 hover:bg-slate-100"
+                    title="Anexar arquivo"
                   >
-                    <Paperclip className="w-4 h-4" />
+                    <Paperclip className="w-5 h-5" />
                   </Button>
+                  
                   <Textarea
                     data-testid="message-input"
-                    placeholder="Digite sua mensagem..."
+                    placeholder="Digite sua mensagem... (Enter para enviar, Shift+Enter para nova linha)"
                     value={messageText}
                     onChange={(e) => setMessageText(e.target.value)}
                     onKeyDown={(e) => {
@@ -470,18 +502,36 @@ const AgentDashboard = () => {
                         handleSendMessage('ATENDENDO');
                       }
                     }}
-                    className="flex-1 resize-none"
-                    rows={2}
+                    className="flex-1 resize-none min-h-[80px] border-2 border-slate-300 focus:border-indigo-500 rounded-lg p-3"
                   />
-                  <div className="flex flex-col gap-2">
-                    <Button data-testid="send-and-continue-btn" onClick={() => handleSendMessage('ATENDENDO')} size="sm" className="bg-indigo-600 hover:bg-indigo-700">
-                      <Send className="w-4 h-4" />
+                  
+                  <div className="flex flex-col gap-2 flex-shrink-0">
+                    <Button 
+                      data-testid="send-and-continue-btn" 
+                      onClick={() => handleSendMessage('ATENDENDO')} 
+                      className="bg-indigo-600 hover:bg-indigo-700 h-[26px] px-4 font-medium"
+                      title="Enviar e continuar atendendo"
+                    >
+                      <Send className="w-4 h-4 mr-1" />
+                      Enviar
                     </Button>
-                    <Button data-testid="send-and-wait-btn" onClick={() => handleSendMessage('EM_ESPERA')} size="sm" variant="outline">
-                      Espera
+                    <Button 
+                      data-testid="send-and-wait-btn" 
+                      onClick={() => handleSendMessage('EM_ESPERA')} 
+                      variant="outline"
+                      className="h-[26px] px-4 hover:bg-amber-50 hover:border-amber-400 hover:text-amber-700"
+                      title="Enviar e colocar em espera"
+                    >
+                      ⏸️ Espera
                     </Button>
-                    <Button data-testid="send-and-finish-btn" onClick={() => handleSendMessage('FINALIZADAS')} size="sm" variant="outline">
-                      Finalizar
+                    <Button 
+                      data-testid="send-and-finish-btn" 
+                      onClick={() => handleSendMessage('FINALIZADAS')} 
+                      variant="outline"
+                      className="h-[26px] px-4 hover:bg-green-50 hover:border-green-400 hover:text-green-700"
+                      title="Enviar e finalizar atendimento"
+                    >
+                      ✓ Finalizar
                     </Button>
                   </div>
                 </div>
@@ -489,9 +539,10 @@ const AgentDashboard = () => {
             </>
           ) : (
             <div className="flex-1 flex items-center justify-center">
-              <div className="text-center text-slate-500">
-                <Headphones className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p>Selecione um ticket para iniciar o atendimento</p>
+              <div className="text-center text-slate-400">
+                <Headphones className="w-20 h-20 mx-auto mb-4 opacity-30" />
+                <p className="text-lg font-medium">Selecione um ticket para iniciar o atendimento</p>
+                <p className="text-sm mt-2">Escolha um cliente da lista ao lado</p>
               </div>
             </div>
           )}
