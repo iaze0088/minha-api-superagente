@@ -339,6 +339,19 @@ const AdminDashboard = () => {
                   onChange={(e) => setNewAgent({ ...newAgent, avatar: e.target.value })}
                 />
               </div>
+              
+              {/* Seleção de Departamentos */}
+              <div className="mt-4 p-4 bg-indigo-50 border border-indigo-200 rounded-lg">
+                <label className="text-sm font-semibold text-indigo-900 mb-2 block">
+                  📂 Departamentos (Atendente verá apenas tickets destes departamentos)
+                </label>
+                <p className="text-xs text-indigo-700 mb-3">
+                  Selecione quais departamentos este atendente pode acessar. Se não selecionar nenhum, terá acesso a todos.
+                </p>
+                {/* TODO: Adicionar multi-select de departamentos quando carregar */}
+                <p className="text-xs text-slate-500 italic">Configure departamentos na aba "Departamentos" primeiro</p>
+              </div>
+              
               <Button data-testid="create-agent-btn" onClick={handleCreateAgent} className="mt-4 bg-purple-600 hover:bg-purple-700">
                 <Plus className="w-4 h-4 mr-2" />
                 Adicionar Atendente
