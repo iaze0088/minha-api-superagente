@@ -402,8 +402,15 @@ const AgentDashboard = () => {
                 )}
               </div>
 
-              {/* Área de Mensagens - Com scroll interno APENAS aqui */}
-              <div className="flex-1 overflow-y-auto bg-slate-50 p-4">
+              {/* Área de Mensagens - Com scroll interno APENAS aqui - ALTURA FIXA */}
+              <div 
+                className="overflow-y-auto bg-slate-50 p-4" 
+                style={{ 
+                  height: 'calc(100vh - 420px)',
+                  minHeight: '300px',
+                  maxHeight: '500px'
+                }}
+              >
                 {messages.length > 7 && (
                   <div className="text-center text-xs text-slate-500 py-2 bg-white/80 backdrop-blur-sm rounded-lg mb-3 shadow-sm">
                     ↑ Role para cima para ver {messages.length - 7} mensagem(ns) anterior(es)
