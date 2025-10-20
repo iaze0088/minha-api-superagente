@@ -220,17 +220,14 @@ async def admin_login(data: AdminLogin):
 
 @api_router.post("/auth/agent/login")
 async def agent_login(data: AgentLogin, request: Request):
-    tenant = get_request_tenant(request)
-    reseller_id = tenant.reseller_id
+    # Buscar agente - primeiro tenta sem filtro de tenant
+    agent = await db.agents.find_one({"login": data.login})
     
-    # Buscar agente com filtro de tenant
-    query = {"login": data.login}
-    if reseller_id:
-        query["reseller_id"] = reseller_id
-    
-    agent = await db.agents.find_one(query)
     if not agent or not bcrypt.checkpw(data.password.encode(), agent["pass_hash"].encode()):
         raise HTTPException(status_code=401, detail="Login ou senha inválidos")
+    
+    if not agent.get("is_active", True):
+        raise HTTPException(status_code=403, detail="Conta desativada")
     
     token = create_token(agent["id"], "agent", agent.get("reseller_id"))
     return TokenResponse(token=token, user_type="agent", user_data={
