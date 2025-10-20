@@ -904,6 +904,31 @@ const AdminDashboard = () => {
                   </div>
                 </div>
 
+                {/* API Key */}
+                <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4">
+                  <label className="text-sm font-semibold text-yellow-900 mb-2 block flex items-center gap-2">
+                    🔑 API Key do Provedor LLM
+                    <span className="text-xs font-normal text-yellow-700">(Obrigatório)</span>
+                  </label>
+                  <Input
+                    type="password"
+                    placeholder="sk-... ou sua chave de API"
+                    value={config.ai_agent?.api_key || ''}
+                    onChange={(e) => setConfig({
+                      ...config,
+                      ai_agent: { ...config.ai_agent, api_key: e.target.value }
+                    })}
+                    className="mb-2"
+                  />
+                  <p className="text-xs text-yellow-700">
+                    💡 <strong>Dica:</strong> Você pode usar sua própria API Key da OpenAI, Claude ou Gemini, 
+                    OU usar a <strong>Emergent LLM Key</strong> (chave universal que funciona com todos os provedores).
+                  </p>
+                  <p className="text-xs text-yellow-600 mt-1">
+                    🔒 Esta chave é armazenada de forma segura e nunca é exposta publicamente.
+                  </p>
+                </div>
+
                 {/* Personalidade */}
                 <div>
                   <label className="text-sm font-medium mb-2 block">Personalidade do Agente</label>
