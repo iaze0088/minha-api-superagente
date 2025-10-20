@@ -69,9 +69,22 @@ async def can_delete_reseller(reseller_id: str, db) -> tuple[bool, str]:
 
 # Reseller authentication
 @reseller_router.post("/login")
-async def reseller_login(data: ResellerLogin):
+async def reseller_login(data: ResellerLogin, request: Request):
+    from tenant_middleware import get_current_tenant
+    
     db = get_db_dep()
-    reseller = await db.resellers.find_one({"email": data.email})
+    tenant_ctx = get_current_tenant()
+    
+    # For custom domains, filter by the tenant's reseller
+    if tenant_ctx.reseller_id:
+        reseller = await db.resellers.find_one({
+            "email": data.email,
+            "id": tenant_ctx.reseller_id
+        })
+    else:
+        # For master domain, allow any reseller login
+        reseller = await db.resellers.find_one({"email": data.email})
+    
     if not reseller or not bcrypt.checkpw(data.password.encode(), reseller["password"].encode()):
         raise HTTPException(status_code=401, detail="Email ou senha inválidos")
     
