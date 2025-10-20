@@ -44,6 +44,14 @@ UPLOADS_DIR.mkdir(exist_ok=True)
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
+
+@app.on_event("startup")
+async def startup_event():
+    """Inicia background tasks ao iniciar o servidor"""
+    asyncio.create_task(check_department_timeouts())
+    print("✅ Background task de timeout de departamentos iniciada")
+
+
 # WebSocket connection manager
 class ConnectionManager:
     def __init__(self):
