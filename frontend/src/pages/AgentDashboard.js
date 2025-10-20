@@ -296,7 +296,7 @@ const AgentDashboard = () => {
 
             <div className="flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 250px)' }}>
               <div className="p-2 space-y-2">
-                {tickets.slice(0, 7).map(ticket => (
+                {tickets.map(ticket => (
                   <Card
                     key={ticket.id}
                     data-testid={`ticket-${ticket.id}`}
@@ -338,13 +338,6 @@ const AgentDashboard = () => {
                     </div>
                   </Card>
                 ))}
-                
-                {/* Mostrar quantos tickets restantes */}
-                {tickets.length > 7 && (
-                  <div className="text-center text-xs text-slate-500 py-2">
-                    ↓ Role para ver mais {tickets.length - 7} ticket(s)
-                  </div>
-                )}
               </div>
             </div>
           </Tabs>
