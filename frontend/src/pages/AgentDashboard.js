@@ -282,15 +282,22 @@ const AgentDashboard = () => {
 
             <div className="flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 250px)' }}>
               <div className="p-2 space-y-2">
-                {tickets.map(ticket => (
+                {tickets.slice(0, 7).map(ticket => (
                   <Card
                     key={ticket.id}
                     data-testid={`ticket-${ticket.id}`}
-                    className={`p-3 cursor-pointer transition-all hover:shadow-md ${
+                    className={`p-3 cursor-pointer transition-all hover:shadow-md relative ${
                       selectedTicket?.id === ticket.id ? 'border-2 border-indigo-500 bg-indigo-50' : ''
                     }`}
                     onClick={() => handleSelectTicket(ticket)}
                   >
+                    {/* Badge de mensagens não lidas */}
+                    {ticket.unread_count > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-pulse">
+                        {ticket.unread_count}
+                      </span>
+                    )}
+                    
                     <div className="flex items-center gap-3">
                       {ticket.client_avatar && (
                         <img src={ticket.client_avatar} alt="" className="w-10 h-10 rounded-full object-cover" />
@@ -300,10 +307,30 @@ const AgentDashboard = () => {
                           {ticket.client_name || formatWhatsApp(ticket.client_whatsapp)}
                         </p>
                         <p className="text-xs text-slate-500 truncate">{formatWhatsApp(ticket.client_whatsapp)}</p>
+                        
+                        {/* Preview da última mensagem (20 caracteres) */}
+                        {ticket.last_message && (
+                          <p className="text-xs text-slate-400 truncate mt-1">
+                            {ticket.last_message.text ? 
+                              (ticket.last_message.text.length > 20 ? 
+                                ticket.last_message.text.substring(0, 20) + '...' : 
+                                ticket.last_message.text
+                              ) : 
+                              '📎 Arquivo'
+                            }
+                          </p>
+                        )}
                       </div>
                     </div>
                   </Card>
                 ))}
+                
+                {/* Mostrar quantos tickets restantes */}
+                {tickets.length > 7 && (
+                  <div className="text-center text-xs text-slate-500 py-2">
+                    ↓ Role para ver mais {tickets.length - 7} ticket(s)
+                  </div>
+                )}
               </div>
             </div>
           </Tabs>
