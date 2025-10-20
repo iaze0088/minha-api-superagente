@@ -233,10 +233,10 @@ const AgentDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
-      {/* Header */}
-      <header className="bg-white border-b border-slate-200">
-        <div className="max-w-full mx-auto px-4 py-4 flex items-center justify-between">
+    <div className="h-screen bg-slate-50 flex flex-col overflow-hidden">
+      {/* Header fixo */}
+      <header className="bg-white border-b border-slate-200 flex-shrink-0">
+        <div className="max-w-full mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center">
               <Headphones className="w-6 h-6 text-white" />
@@ -253,36 +253,37 @@ const AgentDashboard = () => {
         </div>
       </header>
 
+      {/* Conteúdo principal com altura fixa */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Sidebar */}
-        <div className="w-80 bg-white border-r border-slate-200 flex flex-col">
+        {/* Sidebar - Lista de clientes */}
+        <div className="w-80 bg-white border-r border-slate-200 flex flex-col overflow-hidden">
           {/* Tools */}
-          <div className="p-4 border-b border-slate-200 space-y-3">
-            <div className="space-y-2">
+          <div className="p-3 border-b border-slate-200 space-y-2 flex-shrink-0">
+            <div className="space-y-1">
               <label className="text-xs font-medium text-slate-700">Fixar Credenciais</label>
-              <div className="flex gap-2">
-                <Input data-testid="pin-user-input" placeholder="Usuário" value={pinnedUser} onChange={(e) => setPinnedUser(e.target.value)} size="sm" />
-                <Input data-testid="pin-pass-input" placeholder="Senha" value={pinnedPass} onChange={(e) => setPinnedPass(e.target.value)} size="sm" />
+              <div className="flex gap-1">
+                <Input data-testid="pin-user-input" placeholder="Usuário" value={pinnedUser} onChange={(e) => setPinnedUser(e.target.value)} className="text-sm h-8" />
+                <Input data-testid="pin-pass-input" placeholder="Senha" value={pinnedPass} onChange={(e) => setPinnedPass(e.target.value)} className="text-sm h-8" />
               </div>
-              <Button data-testid="pin-credentials-btn" onClick={handlePinCredentials} size="sm" className="w-full">
+              <Button data-testid="pin-credentials-btn" onClick={handlePinCredentials} size="sm" className="w-full h-7 text-xs">
                 Fixar
               </Button>
             </div>
             
-            <div className="space-y-2">
+            <div className="space-y-1">
               <label className="text-xs font-medium text-slate-700">Resetar PIN</label>
-              <div className="flex gap-2">
-                <Input data-testid="reset-phone-input" placeholder="WhatsApp" value={resetPhone} onChange={(e) => setResetPhone(e.target.value)} size="sm" />
-                <Button data-testid="reset-pin-btn" onClick={handleResetPin} size="sm">
+              <div className="flex gap-1">
+                <Input data-testid="reset-phone-input" placeholder="WhatsApp" value={resetPhone} onChange={(e) => setResetPhone(e.target.value)} className="text-sm h-8" />
+                <Button data-testid="reset-pin-btn" onClick={handleResetPin} size="sm" className="h-8 px-2">
                   <RefreshCw className="w-4 h-4" />
                 </Button>
               </div>
             </div>
           </div>
 
-          {/* Tabs */}
-          <Tabs value={status} onValueChange={setStatus} className="flex-1 flex flex-col">
-            <TabsList className="grid grid-cols-3 m-2">
+          {/* Tabs e lista de tickets */}
+          <Tabs value={status} onValueChange={setStatus} className="flex-1 flex flex-col overflow-hidden">
+            <TabsList className="grid grid-cols-3 m-2 flex-shrink-0">
               <TabsTrigger value="EM_ESPERA" data-testid="tab-em-espera" className="text-xs">
                 Espera <span className="ml-1 px-1.5 py-0.5 bg-red-100 text-red-700 rounded-full text-[10px]">{counts.EM_ESPERA}</span>
               </TabsTrigger>
@@ -294,8 +295,9 @@ const AgentDashboard = () => {
               </TabsTrigger>
             </TabsList>
 
-            <div className="flex-1 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 250px)' }}>
-              <div className="p-2 space-y-2">
+            {/* Lista de tickets com scroll interno */}
+            <div className="flex-1 overflow-y-auto px-2 pb-2">
+              <div className="space-y-2">
                 {tickets.map(ticket => (
                   <Card
                     key={ticket.id}
@@ -312,7 +314,7 @@ const AgentDashboard = () => {
                       </span>
                     )}
                     
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
                       {ticket.client_avatar && (
                         <img src={ticket.client_avatar} alt="" className="w-10 h-10 rounded-full object-cover" />
                       )}
