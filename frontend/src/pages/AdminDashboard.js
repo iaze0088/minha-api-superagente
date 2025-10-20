@@ -787,6 +787,21 @@ const AdminDashboard = () => {
                     </p>
                   </div>
                 )}
+                
+                {/* Botão Replicar Configurações */}
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-lg p-4 mt-4">
+                  <h4 className="font-semibold text-amber-900 mb-2">⚡ Replicar para Todas as Revendas</h4>
+                  <p className="text-sm text-amber-700 mb-3">
+                    Propaga as configurações de API para TODAS as revendas do sistema.
+                  </p>
+                  <Button 
+                    onClick={handleReplicateConfig} 
+                    className="bg-amber-600 hover:bg-amber-700 w-full"
+                    variant="default"
+                  >
+                    🔄 Replicar Configurações
+                  </Button>
+                </div>
               </div>
             </Card>
           </TabsContent>
