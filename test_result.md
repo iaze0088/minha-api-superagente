@@ -463,16 +463,7 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "Adicionar endpoints para WhatsApp popup e PIN update"
-    - "Atualizar GET /config para retornar novos campos"
-    - "Atualizar PUT /config para salvar novos campos"
-    - "Adicionar WhatsApp popup no ClientChat"
-    - "Adicionar botão Copiar Chave PIX no ClientChat"
-    - "Completar aba 'Dados Permitidos' no AdminDashboard"
-    - "Completar aba 'Integração API' no AdminDashboard"
-    - "Completar aba 'Inteligência Artificial' no AdminDashboard"
-    - "Adicionar botão 'Replicar Configurações' no AdminDashboard"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
