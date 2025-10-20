@@ -68,6 +68,18 @@ async def can_delete_reseller(reseller_id: str, db) -> tuple[bool, str]:
     return True, ""
 
 # Reseller authentication
+@reseller_router.get("/debug")
+async def debug_tenant(request: Request):
+    from tenant_middleware import get_current_tenant
+    tenant_ctx = get_current_tenant()
+    
+    return {
+        "domain": request.headers.get("host", ""),
+        "tenant_id": tenant_ctx.reseller_id,
+        "is_master": tenant_ctx.is_master,
+        "tenant_data": tenant_ctx.reseller_data
+    }
+
 @reseller_router.post("/login")
 async def reseller_login(data: ResellerLogin, request: Request):
     from tenant_middleware import get_current_tenant
@@ -75,15 +87,21 @@ async def reseller_login(data: ResellerLogin, request: Request):
     db = get_db_dep()
     tenant_ctx = get_current_tenant()
     
+    logger.info(f"Login attempt - Domain: {request.headers.get('host')}, Tenant ID: {tenant_ctx.reseller_id}, Email: {data.email}")
+    
     # For custom domains, filter by the tenant's reseller
     if tenant_ctx.reseller_id:
         reseller = await db.resellers.find_one({
             "email": data.email,
             "id": tenant_ctx.reseller_id
         })
+        logger.info(f"Searching for reseller with email {data.email} and tenant_id {tenant_ctx.reseller_id}")
     else:
         # For master domain, allow any reseller login
         reseller = await db.resellers.find_one({"email": data.email})
+        logger.info(f"Searching for reseller with email {data.email} (master domain)")
+    
+    logger.info(f"Reseller found: {reseller is not None}")
     
     if not reseller or not bcrypt.checkpw(data.password.encode(), reseller["password"].encode()):
         raise HTTPException(status_code=401, detail="Email ou senha inválidos")
