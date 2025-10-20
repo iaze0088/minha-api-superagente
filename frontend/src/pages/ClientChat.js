@@ -33,6 +33,7 @@ const ClientChat = () => {
   const [showWhatsAppPopup, setShowWhatsAppPopup] = useState(false);
   const [whatsappInput, setWhatsappInput] = useState('');
   const [firstMessageSent, setFirstMessageSent] = useState(false);
+  const [pixKey, setPixKey] = useState('');
   const wsRef = useRef(null);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
