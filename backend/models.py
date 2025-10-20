@@ -56,6 +56,7 @@ class AgentBase(BaseModel):
     login: str
     avatar: Optional[str] = ""
     custom_avatar: Optional[str] = ""
+    department_ids: List[str] = []  # Lista de departamentos que o atendente pode acessar
     reseller_id: Optional[str] = None  # Tenant isolation
 
 class AgentCreate(BaseModel):
@@ -63,6 +64,7 @@ class AgentCreate(BaseModel):
     login: str
     password: str
     avatar: Optional[str] = ""
+    department_ids: List[str] = []  # Departamentos do atendente
 
 class AgentLogin(BaseModel):
     login: str
@@ -71,6 +73,7 @@ class AgentLogin(BaseModel):
 class AgentInDB(AgentBase):
     id: str
     pass_hash: str
+    is_active: bool = True
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class AgentResponse(AgentBase):
