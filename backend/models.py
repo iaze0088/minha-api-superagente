@@ -84,6 +84,9 @@ class AgentResponse(AgentBase):
 class TicketBase(BaseModel):
     client_id: str
     status: TicketStatus = TicketStatus.EM_ESPERA
+    department_id: Optional[str] = None  # Departamento do ticket
+    awaiting_department_choice: bool = True  # Se está aguardando cliente escolher departamento
+    department_choice_sent_at: Optional[str] = None  # Quando enviou a escolha de departamento
     unread_count: int = 0  # Contador de mensagens não lidas
     reseller_id: Optional[str] = None  # Tenant isolation
 
