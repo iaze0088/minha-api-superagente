@@ -18,7 +18,7 @@ mongo_url = os.environ['MONGO_URL']
 db_name = os.environ.get('DB_NAME', 'support_chat')
 
 # Target data
-REPORTED_EMAIL = "michael@gmail.com"
+REPORTED_EMAIL = "michaelrv@gmail.com"  # Expected email from review request
 REPORTED_PASSWORD = "ab181818ab"
 REPORTED_DOMAIN = "ajuda.vip"
 
