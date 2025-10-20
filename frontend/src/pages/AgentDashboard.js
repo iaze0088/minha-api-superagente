@@ -38,6 +38,7 @@ const AgentDashboard = () => {
     loadTickets();
     loadCounts();
     loadConfig();
+    loadMyDepartments();
     const interval = setInterval(loadCounts, 5000);
     return () => clearInterval(interval);
   }, [status]);
