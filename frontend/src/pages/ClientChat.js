@@ -45,7 +45,9 @@ const ClientChat = () => {
     loadMessages();
     loadNotices();
     loadUserData();
+    loadPixKey();
     checkOnlineStatus();
+    checkWhatsAppPopup();
     
     // Check notices every 30 seconds
     const noticesInterval = setInterval(() => {
@@ -62,6 +64,9 @@ const ClientChat = () => {
       clearInterval(statusInterval);
       if (queueTimerRef.current) {
         clearTimeout(queueTimerRef.current);
+      }
+      if (whatsappPopupTimerRef.current) {
+        clearTimeout(whatsappPopupTimerRef.current);
       }
     };
   }, []);
