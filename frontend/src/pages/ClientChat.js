@@ -634,6 +634,49 @@ const ClientChat = () => {
         autoCloseDelay={30000}
       />
       
+      {/* WhatsApp Confirmation Dialog */}
+      <Dialog open={showWhatsAppPopup} onOpenChange={setShowWhatsAppPopup}>
+        <DialogContent data-testid="whatsapp-dialog" className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>📱 Confirme seu WhatsApp</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-slate-600">
+              Para melhor atendimento, confirme seu número de WhatsApp:
+            </p>
+            <Input
+              data-testid="whatsapp-input"
+              placeholder="(00) 00000-0000"
+              value={whatsappInput}
+              onChange={(e) => setWhatsappInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleConfirmWhatsApp();
+                }
+              }}
+            />
+            <div className="flex gap-2">
+              <Button
+                data-testid="whatsapp-skip-btn"
+                variant="outline"
+                onClick={() => setShowWhatsAppPopup(false)}
+                className="flex-1"
+              >
+                Agora não
+              </Button>
+              <Button
+                data-testid="whatsapp-confirm-btn"
+                onClick={handleConfirmWhatsApp}
+                className="flex-1 bg-green-600 hover:bg-green-700"
+              >
+                Confirmar
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
       {/* PWA Install Prompt */}
       <InstallPWA />
     </div>
