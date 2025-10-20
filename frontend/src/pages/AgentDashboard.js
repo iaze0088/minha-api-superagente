@@ -295,8 +295,8 @@ const AgentDashboard = () => {
               </TabsTrigger>
             </TabsList>
 
-            {/* Lista de tickets com scroll interno */}
-            <div className="flex-1 overflow-y-auto px-2 pb-2">
+            {/* Lista de tickets com scroll interno - ALTURA FIXA para mostrar ~7 tickets */}
+            <div className="flex-1 overflow-y-auto px-2 pb-2" style={{ maxHeight: '480px' }}>
               <div className="space-y-2">
                 {tickets.map(ticket => (
                   <Card
