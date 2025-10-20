@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useEffect } from 'react';
 import { Toaster } from '@/components/ui/sonner';
 import AdminLogin from './pages/AdminLogin';
 import AgentLogin from './pages/AgentLogin';
