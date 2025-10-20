@@ -84,6 +84,19 @@ const AgentDashboard = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  useEffect(() => {
+    // Refiltrar tickets quando mudar departamento
+    if (selectedDepartment === 'all' || myDepartments.length === 0) {
+      setTickets(allTickets);
+    } else {
+      const filtered = allTickets.filter(t => 
+        t.department_id === selectedDepartment || 
+        (selectedDepartment === 'none' && !t.department_id)
+      );
+      setTickets(filtered);
+    }
+  }, [selectedDepartment, allTickets, myDepartments]);
+
   const loadTickets = async () => {
     try {
       const { data } = await api.get('/tickets', { params: { status } });
