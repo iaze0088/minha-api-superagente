@@ -456,6 +456,38 @@ async def delete_agent(agent_id: str, request: Request, current_user: dict = Dep
     await db.agents.delete_one({"id": agent_id})
     return {"ok": True}
 
+@api_router.post("/users/{user_id}/confirm-whatsapp")
+async def confirm_user_whatsapp(user_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+    """Salva WhatsApp confirmado pelo cliente"""
+    whatsapp_confirmed = data.get("whatsapp", "")
+    
+    await db.users.update_one(
+        {"id": user_id},
+        {"$set": {
+            "whatsapp_confirmed": whatsapp_confirmed,
+            "whatsapp_asked_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    return {"ok": True}
+
+@api_router.get("/users/{user_id}/should-ask-whatsapp")
+async def should_ask_whatsapp(user_id: str):
+    """Verifica se deve mostrar pop-up de WhatsApp"""
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        return {"should_ask": False}
+    
+    # Verificar se já perguntou na última semana
+    asked_at = user.get("whatsapp_asked_at")
+    if asked_at:
+        asked_date = datetime.fromisoformat(asked_at)
+        days_since_asked = (datetime.now(timezone.utc) - asked_date).days
+        if days_since_asked < 7:
+            return {"should_ask": False, "days_until_next": 7 - days_since_asked}
+    
+    # Se nunca perguntou ou passou 1 semana, perguntar
+    return {"should_ask": True}
+
 # Ticket routes
 @api_router.get("/tickets")
 async def list_tickets(status: Optional[str] = None, request: Request = None, current_user: dict = Depends(get_current_user)):
