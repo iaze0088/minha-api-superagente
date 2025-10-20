@@ -455,6 +455,26 @@ async def list_agents(request: Request, current_user: dict = Depends(get_current
     agents = await db.agents.find(query, {"_id": 0, "pass_hash": 0}).to_list(None)
     return agents
 
+
+@api_router.get("/agents/me")
+async def get_current_agent(current_user: dict = Depends(get_current_user)):
+    """Retorna informações do agente logado"""
+    if current_user["user_type"] != "agent":
+        raise HTTPException(status_code=403, detail="Apenas agentes podem acessar")
+    
+    agent = await db.agents.find_one({"id": current_user["user_id"]})
+    if not agent:
+        raise HTTPException(status_code=404, detail="Agente não encontrado")
+    
+    return {
+        "id": agent["id"],
+        "name": agent["name"],
+        "login": agent["login"],
+        "department_ids": agent.get("department_ids", []),
+        "avatar": agent.get("avatar", ""),
+        "custom_avatar": agent.get("custom_avatar", "")
+    }
+
 @api_router.get("/agents/online-status")
 async def get_online_status():
     # Check how many agents are connected via WebSocket
