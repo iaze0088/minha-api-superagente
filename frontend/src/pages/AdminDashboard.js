@@ -403,6 +403,16 @@ const AdminDashboard = () => {
             </div>
           </TabsContent>
 
+          {/* AI Agents Tab - NOVO */}
+          <TabsContent value="ai-agents" className="space-y-6">
+            <AIAgentsManager />
+          </TabsContent>
+
+          {/* Departments Tab - NOVO */}
+          <TabsContent value="departments" className="space-y-6">
+            <DepartmentsManager />
+          </TabsContent>
+
           {/* Quick Messages Tab */}
           <TabsContent value="quick" className="space-y-6">
             <Card className="p-6">
