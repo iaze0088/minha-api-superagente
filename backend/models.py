@@ -79,6 +79,7 @@ class AgentResponse(AgentBase):
 class TicketBase(BaseModel):
     client_id: str
     status: TicketStatus = TicketStatus.EM_ESPERA
+    unread_count: int = 0  # Contador de mensagens não lidas
     reseller_id: Optional[str] = None  # Tenant isolation
 
 class TicketInDB(TicketBase):
