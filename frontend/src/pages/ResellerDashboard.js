@@ -47,6 +47,28 @@ const ResellerDashboard = () => {
     }
   };
 
+  const handleCreateAgent = async () => {
+    try {
+      await api.post('/agents', newAgent);
+      toast.success('Atendente criado!');
+      setNewAgent({ name: '', login: '', password: '', avatar: '' });
+      loadData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Erro ao criar atendente');
+    }
+  };
+
+  const handleDeleteAgent = async (agentId) => {
+    if (!window.confirm('Tem certeza que deseja excluir este atendente?')) return;
+    try {
+      await api.delete(`/agents/${agentId}`);
+      toast.success('Atendente excluído!');
+      loadData();
+    } catch (error) {
+      toast.error('Erro ao excluir atendente');
+    }
+  };
+
   const handleLogout = () => {
     clearAuth();
     navigate('/');
