@@ -634,6 +634,54 @@ async def mark_ticket_as_read(ticket_id: str, current_user: dict = Depends(get_c
     )
     return {"ok": True}
 
+@api_router.post("/tickets/{ticket_id}/select-department")
+async def select_department(ticket_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+    """Cliente seleciona um departamento"""
+    department_id = data.get("department_id")
+    if not department_id:
+        raise HTTPException(status_code=400, detail="department_id é obrigatório")
+    
+    # Verificar se o departamento existe
+    department = await db.departments.find_one({"id": department_id})
+    if not department:
+        raise HTTPException(status_code=404, detail="Departamento não encontrado")
+    
+    # Atualizar ticket
+    await db.tickets.update_one(
+        {"id": ticket_id},
+        {"$set": {
+            "department_id": department_id,
+            "awaiting_department_choice": False,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    # Criar mensagem de confirmação
+    message = {
+        "id": str(uuid.uuid4()),
+        "ticket_id": ticket_id,
+        "from_type": "system",
+        "kind": "text",
+        "text": f"✅ Você selecionou: {department['name']}. Um atendente irá te responder em breve.",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "reseller_id": current_user.get("reseller_id")
+    }
+    
+    await db.messages.insert_one(message)
+    
+    # Enviar via WebSocket
+    ticket = await db.tickets.find_one({"id": ticket_id})
+    if ticket:
+        await manager.send_to_user(ticket["client_id"], {
+            "type": "new_message",
+            "message": message
+        })
+    
+    # TODO: Se departamento tem IA, acionar IA aqui
+    
+    return {"ok": True}
+
+
 @api_router.get("/tickets/counts")
 async def get_ticket_counts(request: Request, current_user: dict = Depends(get_current_user)):
     tenant = get_request_tenant(request)
