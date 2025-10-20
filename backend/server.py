@@ -497,6 +497,18 @@ async def list_tickets(status: Optional[str] = None, request: Request = None, cu
     
     return tickets
 
+@api_router.post("/tickets/{ticket_id}/mark-read")
+async def mark_ticket_as_read(ticket_id: str, current_user: dict = Depends(get_current_user)):
+    """Marca ticket como lido (zera contador de não lidas)"""
+    if current_user["user_type"] != "agent":
+        raise HTTPException(status_code=403, detail="Apenas agentes podem marcar como lido")
+    
+    await db.tickets.update_one(
+        {"id": ticket_id},
+        {"$set": {"unread_count": 0}}
+    )
+    return {"ok": True}
+
 @api_router.get("/tickets/counts")
 async def get_ticket_counts(request: Request, current_user: dict = Depends(get_current_user)):
     tenant = get_request_tenant(request)
