@@ -478,8 +478,8 @@ const AgentDashboard = () => {
                 </div>
               )}
 
-              {/* Input de Mensagem - Fixo na parte inferior */}
-              <div className="bg-white border-t-2 border-slate-300 p-4 flex-shrink-0 shadow-lg">
+              {/* Input de Mensagem - SEMPRE VISÍVEL E FIXO na parte inferior */}
+              <div className="bg-white border-t-2 border-slate-300 p-4 flex-shrink-0 shadow-lg" style={{ minHeight: '140px' }}>
                 <div className="flex gap-3">
                   <input
                     ref={fileInputRef}
