@@ -1005,6 +1005,21 @@ async def create_notice(data: NoticeCreate, request: Request, current_user: dict
     return {"ok": True, "notice_id": notice_id}
 
 # Pin credentials (agent only)
+@api_router.get("/users/{user_id}/credentials")
+async def get_user_credentials(user_id: str, current_user: dict = Depends(get_current_user)):
+    """Buscar credenciais fixadas de um cliente específico (apenas para agentes)"""
+    if current_user["user_type"] != "agent":
+        raise HTTPException(status_code=403, detail="Não autorizado")
+    
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado")
+    
+    return {
+        "pinned_user": user.get("pinned_user", ""),
+        "pinned_pass": user.get("pinned_pass", "")
+    }
+
 @api_router.put("/users/{user_id}/pin-credentials")
 async def set_pin_credentials(user_id: str, data: dict, current_user: dict = Depends(get_current_user)):
     if current_user["user_type"] != "agent":
