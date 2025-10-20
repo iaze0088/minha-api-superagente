@@ -509,7 +509,8 @@ const AgentDashboard = () => {
                         handleSendMessage('ATENDENDO');
                       }
                     }}
-                    className="flex-1 resize-none min-h-[80px] border-2 border-slate-300 focus:border-indigo-500 rounded-lg p-3"
+                    className="flex-1 resize-none border-2 border-slate-300 focus:border-indigo-500 rounded-lg p-3"
+                    style={{ height: '80px', minHeight: '80px', maxHeight: '80px' }}
                   />
                   
                   <div className="flex flex-col gap-2 flex-shrink-0">
