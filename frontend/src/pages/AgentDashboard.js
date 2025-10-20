@@ -412,6 +412,17 @@ const AgentDashboard = () => {
                 <div className="bg-white border-t border-slate-200 p-2">
                   <p className="text-xs font-medium text-slate-600 mb-2">Mensagens Rápidas:</p>
                   <div className="flex flex-wrap gap-2">
+                    {/* Botão especial de Chave PIX */}
+                    {config.pix_key && (
+                      <Button
+                        size="sm"
+                        className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
+                        onClick={() => setMessageText(`💰 CHAVE PIX:\n\n${config.pix_key}\n\n👇 Copie a chave clicando no botão abaixo`)}
+                      >
+                        💰 PIX
+                      </Button>
+                    )}
+                    
                     {config.quick_blocks.map((block, idx) => (
                       <Button
                         key={idx}
