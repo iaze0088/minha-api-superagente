@@ -77,7 +77,7 @@ async def debug_tenant(request: Request):
         "domain": request.headers.get("host", ""),
         "tenant_id": tenant_ctx.reseller_id,
         "is_master": tenant_ctx.is_master,
-        "tenant_data": tenant_ctx.reseller_data
+        "tenant_data": tenant_ctx.reseller_data.get("name") if tenant_ctx.reseller_data else None
     }
 
 @reseller_router.post("/login")
