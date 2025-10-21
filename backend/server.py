@@ -306,30 +306,6 @@ async def validate_sensitive_data(text: str, config: dict) -> Optional[str]:
     
     return None
 
-def is_forbidden_text(text: str) -> Optional[str]:
-    """Validação básica (mantida para compatibilidade)"""
-    text_lower = text.lower()
-    
-    # Email check
-    if re.search(r'[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}', text, re.IGNORECASE):
-        return "E-mail não permitido."
-    
-    # Phone check
-    if re.search(r'\b(\+?55)?\D*\(?\d{2}\)?\D*\d{4,5}\D*\d{4}\b', text):
-        return "Telefone não permitido."
-    
-    # CPF check
-    if re.search(r'\b\d{3}\.\d{3}\.\d{3}-\d{2}\b', text) or re.search(r'\b\d{11}\b', text):
-        return "CPF não permitido."
-    
-    # PIX UUID check
-    uuids = re.findall(r'\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b', text, re.IGNORECASE)
-    for uuid_str in uuids:
-        if uuid_str.lower() not in [p.lower() for p in PIX_ALLOWED]:
-            return "Chave Pix não autorizada."
-    
-    return None
-
 # Auth routes
 @api_router.post("/auth/admin/login")
 async def admin_login(data: AdminLogin):
