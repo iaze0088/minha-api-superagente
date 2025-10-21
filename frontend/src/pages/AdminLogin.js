@@ -18,17 +18,27 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      const { data } = await api.post('/auth/admin/login', { password });
+      const response = await api.post('/auth/admin/login', { password });
+      console.log('Full response:', response);
+      console.log('Response data:', response.data);
       
-      // Salvar auth no localStorage
-      localStorage.setItem('token', data.token);
+      // Forçar user_type como 'admin'
+      localStorage.setItem('token', response.data.token);
       localStorage.setItem('user_type', 'admin');
-      localStorage.setItem('user_data', JSON.stringify(data.user_data));
+      localStorage.setItem('user_data', JSON.stringify(response.data.user_data || { id: 'admin' }));
+      
+      console.log('LocalStorage after set:', {
+        token: localStorage.getItem('token'),
+        user_type: localStorage.getItem('user_type'),
+        user_data: localStorage.getItem('user_data')
+      });
       
       toast.success('Login realizado com sucesso!');
       
       // Redirecionar usando window.location para forçar reload completo
-      window.location.href = '/admin';
+      setTimeout(() => {
+        window.location.href = '/admin';
+      }, 500);
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Senha incorreta');
     } finally {
