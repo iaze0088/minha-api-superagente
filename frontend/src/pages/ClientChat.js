@@ -514,9 +514,16 @@ const ClientChat = () => {
                 >
                   {/* SEMPRE mostrar texto, independente do kind */}
                   {msg.text && (
-                    <p className="whitespace-pre-wrap break-words text-sm" style={{ minHeight: '20px' }}>
-                      {msg.text}
-                    </p>
+                    <p 
+                      className="whitespace-pre-wrap break-words text-sm" 
+                      style={{ minHeight: '20px' }}
+                      dangerouslySetInnerHTML={{
+                        __html: msg.text.replace(
+                          /(https?:\/\/[^\s]+)/g,
+                          '<a href="$1" target="_blank" rel="noopener noreferrer" class="underline text-blue-300 hover:text-blue-100">$1</a>'
+                        )
+                      }}
+                    />
                   )}
                   
                   {/* Se não tiver texto, mostrar mensagem de debug */}
