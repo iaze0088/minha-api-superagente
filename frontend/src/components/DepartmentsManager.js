@@ -29,18 +29,21 @@ const DepartmentsManager = () => {
   const loadDepartments = async () => {
     try {
       const { data } = await api.get('/ai/departments');
-      setDepartments(data);
+      setDepartments(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error loading departments:', error);
+      setDepartments([]);
     }
   };
 
   const loadAgents = async () => {
     try {
       const { data } = await api.get('/ai/agents');
-      setAgents(data.filter(a => a.is_active));
+      const agentsList = Array.isArray(data) ? data : [];
+      setAgents(agentsList.filter(a => a.is_active));
     } catch (error) {
       console.error('Error loading agents:', error);
+      setAgents([]);
     }
   };
 
