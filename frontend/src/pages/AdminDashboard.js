@@ -1142,7 +1142,7 @@ const AdminDashboard = () => {
                 </Button>
               </div>
               <div className="space-y-4">
-                {config.auto_reply.map((rule, idx) => (
+                {(config.auto_reply || []).map((rule, idx) => (
                   <div key={idx} className="border border-slate-200 rounded-lg p-4 space-y-3">
                     <div className="flex items-center justify-between">
                       <h4 className="font-medium text-slate-700">Regra {idx + 1}</h4>
