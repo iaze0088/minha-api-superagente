@@ -1361,8 +1361,14 @@ async def send_message(data: MessageCreate, request: Request, current_user: dict
     else:
         ai_logger.info(f"⚪ Mensagem não é de cliente ou não é texto: from_type={data.from_type}, kind={data.kind}")
     
-    # Send via WebSocket
+    # Send via WebSocket to recipient
     await manager.send_to_user(data.to_id, {
+        "type": "message",
+        "message": message
+    })
+    
+    # Send to sender as well (for real-time update in their own chat)
+    await manager.send_to_user(data.from_id, {
         "type": "message",
         "message": message
     })
@@ -1370,6 +1376,13 @@ async def send_message(data: MessageCreate, request: Request, current_user: dict
     # If client sent, notify all agents
     if data.from_type == "client":
         await manager.broadcast_to_agents({
+            "type": "message",
+            "message": message
+        })
+    
+    # If agent sent, make sure client receives it
+    if data.from_type == "agent":
+        await manager.send_to_user(data.to_id, {
             "type": "message",
             "message": message
         })
