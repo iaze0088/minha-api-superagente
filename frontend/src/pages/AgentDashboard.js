@@ -39,6 +39,10 @@ const AgentDashboard = () => {
   const wsRef = useRef(null);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
+  const messagesContainerRef = useRef(null);
+  const [isLoadingOlderMessages, setIsLoadingOlderMessages] = useState(false);
+  const [hasMoreMessages, setHasMoreMessages] = useState(true);
+  const [messageOffset, setMessageOffset] = useState(0);
 
   useEffect(() => {
     loadTickets();
