@@ -207,8 +207,15 @@ async def process_message_with_ai(ticket: Dict, message_text: str, reseller_id: 
         
         logger.info(f"✅ TODAS AS VERIFICAÇÕES PASSARAM! 🤖 IA ativada para ticket {ticket['id']} - Agente: {ai_agent.get('name', 'Sem nome')}")
         
-        # Buscar histórico de mensagens do ticket
-        messages = await db.messages.find({"ticket_id": ticket["id"]}).sort("created_at", 1).to_list(20)
+        # Buscar histórico de mensagens do ticket (LIMITADO a últimas 10 para evitar Context Window Exceeded)
+        all_messages = await db.messages.find({"ticket_id": ticket["id"]}).sort("created_at", -1).limit(10).to_list(10)
+        # Reverter ordem (mais antigas primeiro)
+        messages = list(reversed(all_messages))
+        
+        # Truncar mensagens muito longas para economizar tokens
+        for msg in messages:
+            if msg.get("text") and len(msg["text"]) > 500:
+                msg["text"] = msg["text"][:500] + "..."
         
         # Buscar dados do cliente (para credenciais se permitido)
         client = await db.users.find_one({"id": ticket["client_id"], "reseller_id": reseller_id})
