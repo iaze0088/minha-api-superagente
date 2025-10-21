@@ -630,9 +630,18 @@ const ClientChat = () => {
                       </Button>
                     </div>
                   )}
-                  <p className="text-[10px] mt-1 opacity-70">
-                    {new Date(msg.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                  </p>
+                    {/* Nome e horário */}
+                    <div className="flex items-center justify-between mt-1 gap-2">
+                      {msg.from_type === 'client' && userData?.display_name && (
+                        <span className="text-[10px] font-semibold opacity-80">
+                          {userData.display_name}
+                        </span>
+                      )}
+                      <p className="text-[10px] opacity-70 ml-auto">
+                        {new Date(msg.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
               );
