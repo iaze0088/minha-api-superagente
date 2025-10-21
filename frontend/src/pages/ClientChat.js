@@ -73,13 +73,34 @@ const ClientChat = () => {
           if (data.message.from_type === 'agent' || data.message.from_type === 'ai') {
             // Tocar som de notificação do WhatsApp
             try {
-              const audio = new Audio('/notification.mp3');
-              audio.volume = 1.0; // Volume máximo
-              audio.play().catch((error) => {
-                console.log('Erro ao tocar som:', error);
-              });
+              if (notificationAudioRef.current) {
+                // Resetar o áudio para o início para permitir tocar novamente
+                notificationAudioRef.current.currentTime = 0;
+                notificationAudioRef.current.volume = 1.0;
+                
+                // Tentar tocar - usando Promise
+                const playPromise = notificationAudioRef.current.play();
+                
+                if (playPromise !== undefined) {
+                  playPromise
+                    .then(() => {
+                      console.log('🔊 Som de notificação tocado com sucesso!');
+                    })
+                    .catch((error) => {
+                      console.warn('⚠️ Não foi possível tocar o som (autoplay bloqueado):', error);
+                      // Tentar criar um novo áudio como fallback
+                      try {
+                        const fallbackAudio = new Audio('/notification.mp3');
+                        fallbackAudio.volume = 1.0;
+                        fallbackAudio.play().catch(e => console.log('Fallback também falhou:', e));
+                      } catch (e) {
+                        console.error('Erro no fallback:', e);
+                      }
+                    });
+                }
+              }
             } catch (e) {
-              console.error('Erro ao criar áudio:', e);
+              console.error('❌ Erro ao tocar som:', e);
             }
             
             // Vibrar dispositivo (se suportado)
