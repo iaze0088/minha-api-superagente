@@ -364,10 +364,17 @@ async def process_message_with_ai(ticket: Dict, message_text: str, reseller_id: 
                 "message": ai_message
             })
         
-        logger.info(f"✅ IA respondeu no ticket {ticket['id']}")
+        ai_logger.info(f"📡 Mensagem enviada via WebSocket para cliente e atendentes")
+        ai_logger.info(f"✅ IA respondeu no ticket {ticket['id']}")
         
     except Exception as e:
-        logger.error(f"Erro ao processar mensagem com IA: {str(e)}", exc_info=True)
+        ai_logger.error("💥 " + "="*80)
+        ai_logger.error(f"💥 ERRO CRÍTICO ao processar mensagem com IA!")
+        ai_logger.error(f"   Tipo: {type(e).__name__}")
+        ai_logger.error(f"   Mensagem: {str(e)}")
+        import traceback
+        ai_logger.error(f"   Traceback:\n{traceback.format_exc()}")
+        ai_logger.error("💥 " + "="*80)
 
 # Background task para verificar timeouts
 async def check_department_timeouts():
