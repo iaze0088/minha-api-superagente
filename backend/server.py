@@ -977,6 +977,21 @@ async def send_message(data: MessageCreate, request: Request, current_user: dict
     if data.from_type == "client" and data.kind == "text":
         text = re.sub(r'(.{20})', r'\1\n', text)
     
+    # Detectar se atendente está enviando chave PIX
+    message_kind = data.kind
+    pix_key = None
+    if data.from_type == "agent" and data.kind == "text":
+        # Buscar chave PIX configurada
+        config_query = {"reseller_id": reseller_id} if reseller_id else {"id": "config"}
+        config = await db.reseller_configs.find_one(config_query) or await db.config.find_one({"id": "config"}) or {}
+        configured_pix = config.get("pix_key", "")
+        
+        # Se o texto contém a chave PIX configurada, transformar em mensagem PIX
+        if configured_pix and configured_pix in text:
+            message_kind = "pix"
+            pix_key = configured_pix
+            text = f"💰 Clique no botão abaixo para copiar a chave PIX"
+    
     # Create message
     message_id = str(uuid.uuid4())
     message = {
@@ -986,8 +1001,9 @@ async def send_message(data: MessageCreate, request: Request, current_user: dict
         "from_id": data.from_id,
         "to_type": data.to_type,
         "to_id": data.to_id,
-        "kind": data.kind,
+        "kind": message_kind,
         "text": text,
+        "pix_key": pix_key,  # Adicionar chave PIX se for mensagem tipo pix
         "file_url": data.file_url or "",
         "reseller_id": reseller_id,
         "created_at": datetime.now(timezone.utc).isoformat()
