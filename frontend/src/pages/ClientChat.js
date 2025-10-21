@@ -58,7 +58,8 @@ const ClientChat = () => {
       const data = JSON.parse(event.data);
       console.log('📨 Nova mensagem via WebSocket:', data);
       
-      if (data.type === 'new_message' && data.message) {
+      // Mensagens de chat (novo tipo ou tipo message)
+      if ((data.type === 'new_message' || data.type === 'message') && data.message) {
         setMessages(prev => {
           // Evitar duplicação
           if (prev.some(m => m.id === data.message.id)) {
@@ -66,6 +67,20 @@ const ClientChat = () => {
             return prev;
           }
           console.log('✅ Nova mensagem adicionada:', data.message.text?.substring(0, 50));
+          
+          // Som de notificação para mensagens do agente ou IA
+          if (data.message.from_type === 'agent' || data.message.from_type === 'ai') {
+            try {
+              const audio = new Audio('/notification.mp3');
+              audio.volume = 0.7;
+              audio.play().catch(() => {});
+            } catch (e) {}
+            
+            if ('vibrate' in navigator) {
+              navigator.vibrate([200, 100, 200]);
+            }
+          }
+          
           return [...prev, data.message];
         });
         
@@ -73,6 +88,21 @@ const ClientChat = () => {
         setTimeout(() => {
           messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
         }, 100);
+      }
+      
+      // Credenciais atualizadas
+      if (data.type === 'credentials_updated') {
+        setCredentials({ 
+          pinned_user: data.pinned_user, 
+          pinned_pass: data.pinned_pass 
+        });
+      }
+      
+      // Logout forçado
+      if (data.type === 'force_logout') {
+        clearAuth();
+        alert('Você foi desconectado porque outra pessoa fez login com suas credenciais.');
+        navigate('/');
       }
     };
 
