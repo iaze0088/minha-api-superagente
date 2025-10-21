@@ -357,14 +357,99 @@ const AdminDashboard = () => {
               <div className="grid gap-4">
                 {(resellers || []).map((reseller) => (
                   <Card key={reseller.id} className="p-4">
-                    <h4 className="font-semibold">{reseller.name}</h4>
-                    <p className="text-sm text-slate-600">Email: {reseller.email}</p>
-                    {reseller.custom_domain && (
-                      <p className="text-sm text-emerald-600">Domínio: {reseller.custom_domain}</p>
-                    )}
-                    <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">
-                      Nível {reseller.level || 0}
-                    </span>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="font-semibold">{reseller.name}</h4>
+                        <p className="text-sm text-slate-600">Email: {reseller.email}</p>
+                        {reseller.custom_domain && (
+                          <p className="text-sm text-emerald-600">Domínio: {reseller.custom_domain}</p>
+                        )}
+                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded inline-block mt-2">
+                          Nível {reseller.level || 0}
+                        </span>
+                        {reseller.is_active !== undefined && (
+                          <span className={`text-xs px-2 py-1 rounded inline-block ml-2 mt-2 ${reseller.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                            {reseller.is_active ? 'Ativo' : 'Inativo'}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => setEditingReseller({...reseller, password: ''})}
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent>
+                            <DialogHeader>
+                              <DialogTitle>✏️ Editar Revenda</DialogTitle>
+                            </DialogHeader>
+                            {editingReseller && editingReseller.id === reseller.id && (
+                              <div className="space-y-4">
+                                <div>
+                                  <label className="text-sm font-medium block mb-1">Nome:</label>
+                                  <Input
+                                    value={editingReseller.name}
+                                    onChange={(e) => setEditingReseller({...editingReseller, name: e.target.value})}
+                                    placeholder="Nome da revenda"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium block mb-1">Email:</label>
+                                  <Input
+                                    type="email"
+                                    value={editingReseller.email}
+                                    onChange={(e) => setEditingReseller({...editingReseller, email: e.target.value})}
+                                    placeholder="Email de acesso"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium block mb-1">Nova Senha (deixe vazio para manter):</label>
+                                  <Input
+                                    type="password"
+                                    value={editingReseller.password || ''}
+                                    onChange={(e) => setEditingReseller({...editingReseller, password: e.target.value})}
+                                    placeholder="Nova senha (opcional)"
+                                  />
+                                </div>
+                                <div>
+                                  <label className="text-sm font-medium block mb-1">Domínio Customizado:</label>
+                                  <Input
+                                    value={editingReseller.custom_domain || ''}
+                                    onChange={(e) => setEditingReseller({...editingReseller, custom_domain: e.target.value})}
+                                    placeholder="exemplo.com"
+                                  />
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    type="checkbox"
+                                    checked={editingReseller.is_active !== false}
+                                    onChange={(e) => setEditingReseller({...editingReseller, is_active: e.target.checked})}
+                                    className="w-4 h-4"
+                                  />
+                                  <label className="text-sm font-medium">Ativo</label>
+                                </div>
+                                <Button onClick={handleUpdateReseller} className="w-full">
+                                  <Save className="w-4 h-4 mr-2" />
+                                  Salvar Alterações
+                                </Button>
+                              </div>
+                            )}
+                          </DialogContent>
+                        </Dialog>
+                        <Button 
+                          variant="destructive" 
+                          size="sm"
+                          onClick={() => handleDeleteReseller(reseller.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
                   </Card>
                 ))}
               </div>
