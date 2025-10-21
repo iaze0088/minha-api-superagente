@@ -741,41 +741,45 @@ const ClientChat = () => {
         autoCloseDelay={30000}
       />
       
-      {/* WhatsApp Confirmation Dialog */}
-      <Dialog open={showWhatsAppPopup} onOpenChange={setShowWhatsAppPopup}>
-        <DialogContent data-testid="whatsapp-dialog" className="max-w-md">
+      {/* Name Confirmation Dialog */}
+      <Dialog open={showNamePopup} onOpenChange={setShowNamePopup}>
+        <DialogContent data-testid="name-dialog" className="max-w-md">
           <DialogHeader>
-            <DialogTitle>📱 Confirme seu WhatsApp</DialogTitle>
+            <DialogTitle>👤 Como você gostaria de ser chamado?</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-slate-600">
-              Para melhor atendimento, confirme seu número de WhatsApp:
+              Digite seu nome para um atendimento mais personalizado:
             </p>
             <Input
-              data-testid="whatsapp-input"
-              placeholder="(00) 00000-0000"
-              value={whatsappInput}
-              onChange={(e) => setWhatsappInput(e.target.value)}
+              data-testid="name-input"
+              placeholder="Seu nome"
+              value={nameInput}
+              onChange={(e) => setNameInput(e.target.value)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
-                  handleConfirmWhatsApp();
+                  handleConfirmName();
                 }
               }}
+              autoFocus
             />
+            <p className="text-xs text-slate-500">
+              💡 Digite apenas seu nome (ex: João, Maria Silva)
+            </p>
             <div className="flex gap-2">
               <Button
-                data-testid="whatsapp-skip-btn"
+                data-testid="name-skip-btn"
                 variant="outline"
-                onClick={() => setShowWhatsAppPopup(false)}
+                onClick={() => setShowNamePopup(false)}
                 className="flex-1"
               >
-                Agora não
+                Depois
               </Button>
               <Button
-                data-testid="whatsapp-confirm-btn"
-                onClick={handleConfirmWhatsApp}
-                className="flex-1 bg-green-600 hover:bg-green-700"
+                data-testid="name-confirm-btn"
+                onClick={handleConfirmName}
+                className="flex-1 bg-indigo-600 hover:bg-indigo-700"
               >
                 Confirmar
               </Button>
