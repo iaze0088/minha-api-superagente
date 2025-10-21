@@ -1686,7 +1686,8 @@ async def get_auto_responder_sequences(current_user: dict = Depends(get_current_
     reseller_id = tenant_ctx.reseller_id
     
     sequences = await db.auto_responder_sequences.find(
-        {"reseller_id": reseller_id}
+        {"reseller_id": reseller_id},
+        {"_id": 0}  # Exclude MongoDB ObjectId
     ).to_list(length=None)
     
     return sequences
