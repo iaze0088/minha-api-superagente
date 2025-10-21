@@ -64,6 +64,11 @@ const AgentDashboard = () => {
       
       // Aceitar tanto 'message' quanto 'new_message' (da IA)
       if (data.type === 'message' || data.type === 'new_message') {
+        // Sempre recarregar lista de tickets para atualizar contadores
+        loadTickets();
+        loadCounts();
+        
+        // Se está no ticket ativo, adicionar mensagem em tempo real
         if (selectedTicket && data.message.ticket_id === selectedTicket.id) {
           setMessages(prev => {
             const exists = prev.some(m => m.id === data.message.id);
@@ -82,11 +87,14 @@ const AgentDashboard = () => {
               } catch (e) {}
             }
             
+            // Scroll automático
+            setTimeout(() => {
+              messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+            
             return [...prev, data.message];
           });
         }
-        // Recarregar lista de tickets para atualizar contadores
-        loadTickets();
       }
       
       // Comentado: Não forçar logout automático
