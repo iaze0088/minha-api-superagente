@@ -19,13 +19,14 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle errors - NÃO FORÇAR LOGOUT NUNCA
+// Handle errors - NUNCA DESCONECTAR
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Apenas rejeitar o erro sem desconectar o usuário
-    // Sessão persiste indefinidamente até logout manual
-    console.log('API Error:', error.response?.status, error.config?.url);
+    // Apenas log, NUNCA redirecionar ou limpar token
+    if (error.response?.status === 401) {
+      console.warn('⚠️ Erro 401 - Token pode estar inválido, mas mantendo sessão');
+    }
     return Promise.reject(error);
   }
 );
