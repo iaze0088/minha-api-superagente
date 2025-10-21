@@ -112,8 +112,16 @@ class MessageBase(BaseModel):
     file_url: Optional[str] = ""
     reseller_id: Optional[str] = None  # Tenant isolation
 
-class MessageCreate(MessageBase):
-    pass
+class MessageCreate(BaseModel):
+    ticket_id: Optional[str] = None  # Optional for client messages (auto-created)
+    from_type: UserType
+    from_id: str
+    to_type: UserType
+    to_id: str
+    kind: MessageKind
+    text: Optional[str] = ""
+    file_url: Optional[str] = ""
+    reseller_id: Optional[str] = None
 
 class MessageInDB(MessageBase):
     id: str
