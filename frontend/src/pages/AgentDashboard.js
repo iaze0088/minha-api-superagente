@@ -274,6 +274,20 @@ const AgentDashboard = () => {
       toast.error('Erro ao fixar credenciais');
     }
   };
+  
+  const handleToggleAI = async () => {
+    if (!selectedTicket) return;
+    try {
+      const { data } = await api.post(`/tickets/${selectedTicket.id}/toggle-ai`, {});
+      setAiEnabled(data.ai_enabled);
+      toast.success(data.message);
+      
+      // Atualizar o ticket localmente
+      loadTickets(status);
+    } catch (error) {
+      toast.error('Erro ao alterar status da IA');
+    }
+  };
 
   const handleResetPin = async () => {
     try {
