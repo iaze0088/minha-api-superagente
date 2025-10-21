@@ -665,9 +665,9 @@ const ClientChat = () => {
           </div>
         </div>
 
-        {/* Input */}
-        <div className="bg-white border-t border-slate-200 p-3">
-          <div className="flex gap-2">
+        {/* Input - Estilo WhatsApp */}
+        <div className="bg-[#F0F0F0] p-2 rounded-b-2xl">
+          <div className="flex items-center gap-2">
             <input
               ref={fileInputRef}
               type="file"
@@ -677,36 +677,43 @@ const ClientChat = () => {
             />
             <Button
               data-testid="attach-btn"
-              variant="outline"
+              variant="ghost"
               size="icon"
               onClick={() => fileInputRef.current?.click()}
+              className="text-gray-600 hover:bg-gray-200 h-10 w-10"
             >
-              <Paperclip className="w-4 h-4" />
+              <Paperclip className="w-5 h-5" />
             </Button>
-            <Button
-              data-testid="record-btn"
-              variant="outline"
-              size="icon"
-              onClick={isRecording ? handleStopRecording : handleStartRecording}
-              className={isRecording ? 'bg-red-100 border-red-300' : ''}
+            <div className="flex-1 bg-white rounded-full px-4 py-2 flex items-center gap-2">
+              <Input
+                data-testid="client-message-input"
+                placeholder="Mensagem"
+                value={messageText}
+                onChange={(e) => setMessageText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleSendMessage();
+                  }
+                }}
+                className="flex-1 border-none focus:ring-0 px-0 bg-transparent"
+              />
+              <Button
+                data-testid="record-btn"
+                variant="ghost"
+                size="icon"
+                onClick={isRecording ? handleStopRecording : handleStartRecording}
+                className={`h-8 w-8 ${isRecording ? 'bg-red-100 text-red-600' : 'text-gray-600 hover:bg-gray-100'}`}
+              >
+                <Mic className="w-5 h-5" />
+              </Button>
+            </div>
+            <Button 
+              data-testid="send-message-btn" 
+              onClick={handleSendMessage} 
+              className="bg-[#075E54] hover:bg-[#064d44] h-10 w-10 rounded-full p-0"
             >
-              <Mic className={`w-4 h-4 ${isRecording ? 'text-red-600' : ''}`} />
-            </Button>
-            <Input
-              data-testid="client-message-input"
-              placeholder="Digite sua mensagem..."
-              value={messageText}
-              onChange={(e) => setMessageText(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  handleSendMessage();
-                }
-              }}
-              className="flex-1"
-            />
-            <Button data-testid="send-message-btn" onClick={handleSendMessage} className="bg-blue-600 hover:bg-blue-700">
-              <Send className="w-4 h-4" />
+              <Send className="w-5 h-5" />
             </Button>
           </div>
         </div>
