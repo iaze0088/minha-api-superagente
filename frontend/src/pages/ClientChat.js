@@ -521,8 +521,14 @@ const ClientChat = () => {
           </div>
         )}
 
-        {/* Messages */}
-        <div className="h-[500px] bg-slate-50 p-4 overflow-y-auto">
+        {/* Messages - Fundo estilo WhatsApp */}
+        <div 
+          className="h-[500px] p-4 overflow-y-auto" 
+          style={{
+            backgroundImage: 'url("data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M10 10 L90 10 L90 90 L10 90 Z\' fill=\'none\' stroke=\'%23d9d9d9\' stroke-width=\'0.5\' opacity=\'0.1\'/%3E%3C/svg%3E")',
+            backgroundColor: '#e5ddd5'
+          }}
+        >
           <div className="space-y-3">
             {messages.map((msg, index) => {
               // Debug: log mensagem
