@@ -1659,7 +1659,7 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str, session_id: str
     except WebSocketDisconnect:
         manager.disconnect(websocket, user_id)
 
-# Auto-Responder endpoints
+# Auto-Responder endpoints (legado - mantido para compatibilidade)
 @api_router.get("/config/auto-responses")
 async def get_auto_responses(current_user: dict = Depends(get_current_user)):
     config = await db.config.find_one({"id": "auto_responses"}) or {}
@@ -1677,7 +1677,121 @@ async def save_auto_responses(data: dict, current_user: dict = Depends(get_curre
     )
     return {"ok": True}
 
-# Tutoriais endpoints
+# ====== NOVO: Auto-Responder Avançado (Multi-mídia + Delays) ======
+@api_router.get("/config/auto-responder-sequences")
+async def get_auto_responder_sequences(current_user: dict = Depends(get_current_user)):
+    """Retorna todas as sequências de auto-responder"""
+    from tenant_middleware import get_current_tenant
+    tenant_ctx = get_current_tenant()
+    reseller_id = tenant_ctx.reseller_id
+    
+    sequences = await db.auto_responder_sequences.find(
+        {"reseller_id": reseller_id}
+    ).to_list(length=None)
+    
+    return sequences
+
+@api_router.post("/config/auto-responder-sequences")
+async def save_auto_responder_sequences(data: dict, current_user: dict = Depends(get_current_user)):
+    """Salva/atualiza uma sequência de auto-responder"""
+    if current_user["user_type"] != "admin":
+        raise HTTPException(status_code=403, detail="Apenas admin")
+    
+    from tenant_middleware import get_current_tenant
+    tenant_ctx = get_current_tenant()
+    reseller_id = tenant_ctx.reseller_id
+    
+    sequences = data.get("sequences", [])
+    
+    # Remove todas as sequências existentes desta revenda
+    await db.auto_responder_sequences.delete_many({"reseller_id": reseller_id})
+    
+    # Insere novas sequências
+    if sequences:
+        for seq in sequences:
+            seq["reseller_id"] = reseller_id
+        await db.auto_responder_sequences.insert_many(sequences)
+    
+    return {"ok": True, "count": len(sequences)}
+
+@api_router.delete("/config/auto-responder-sequences/{sequence_id}")
+async def delete_auto_responder_sequence(sequence_id: str, current_user: dict = Depends(get_current_user)):
+    """Deleta uma sequência específica"""
+    if current_user["user_type"] != "admin":
+        raise HTTPException(status_code=403, detail="Apenas admin")
+    
+    from tenant_middleware import get_current_tenant
+    tenant_ctx = get_current_tenant()
+    reseller_id = tenant_ctx.reseller_id
+    
+    result = await db.auto_responder_sequences.delete_one({
+        "id": sequence_id,
+        "reseller_id": reseller_id
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Sequência não encontrada")
+    
+    return {"ok": True}
+
+# ====== NOVO: Tutorials Avançado (Multi-mídia + Delays) ======
+@api_router.get("/config/tutorials-advanced")
+async def get_tutorials_advanced(current_user: dict = Depends(get_current_user)):
+    """Retorna todos os tutoriais avançados"""
+    from tenant_middleware import get_current_tenant
+    tenant_ctx = get_current_tenant()
+    reseller_id = tenant_ctx.reseller_id
+    
+    tutorials = await db.tutorials_advanced.find(
+        {"reseller_id": reseller_id}
+    ).to_list(length=None)
+    
+    return tutorials
+
+@api_router.post("/config/tutorials-advanced")
+async def save_tutorials_advanced(data: dict, current_user: dict = Depends(get_current_user)):
+    """Salva/atualiza tutoriais avançados"""
+    if current_user["user_type"] != "admin":
+        raise HTTPException(status_code=403, detail="Apenas admin")
+    
+    from tenant_middleware import get_current_tenant
+    tenant_ctx = get_current_tenant()
+    reseller_id = tenant_ctx.reseller_id
+    
+    tutorials = data.get("tutorials", [])
+    
+    # Remove todos os tutoriais existentes desta revenda
+    await db.tutorials_advanced.delete_many({"reseller_id": reseller_id})
+    
+    # Insere novos tutoriais
+    if tutorials:
+        for tutorial in tutorials:
+            tutorial["reseller_id"] = reseller_id
+        await db.tutorials_advanced.insert_many(tutorials)
+    
+    return {"ok": True, "count": len(tutorials)}
+
+@api_router.delete("/config/tutorials-advanced/{tutorial_id}")
+async def delete_tutorial_advanced(tutorial_id: str, current_user: dict = Depends(get_current_user)):
+    """Deleta um tutorial específico"""
+    if current_user["user_type"] != "admin":
+        raise HTTPException(status_code=403, detail="Apenas admin")
+    
+    from tenant_middleware import get_current_tenant
+    tenant_ctx = get_current_tenant()
+    reseller_id = tenant_ctx.reseller_id
+    
+    result = await db.tutorials_advanced.delete_one({
+        "id": tutorial_id,
+        "reseller_id": reseller_id
+    })
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Tutorial não encontrado")
+    
+    return {"ok": True}
+
+# Tutoriais endpoints (legado - mantido para compatibilidade)
 @api_router.get("/config/tutorials")
 async def get_tutorials(current_user: dict = Depends(get_current_user)):
     config = await db.config.find_one({"id": "tutorials"}) or {}
