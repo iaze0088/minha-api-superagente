@@ -1190,12 +1190,12 @@ const AdminDashboard = () => {
           
           {/* Auto-Responder Tab */}
           <TabsContent value="auto-responder" className="space-y-6">
-            <AutoResponder />
+            <AutoResponderAdvanced />
           </TabsContent>
           
           {/* Tutoriais/Apps Tab */}
           <TabsContent value="tutorials" className="space-y-6">
-            <TutorialsApps />
+            <TutorialsAdvanced />
           </TabsContent>
         </Tabs>
       </div>
