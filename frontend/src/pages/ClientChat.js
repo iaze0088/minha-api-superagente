@@ -185,9 +185,6 @@ const ClientChat = () => {
       if (queueTimerRef.current) {
         clearTimeout(queueTimerRef.current);
       }
-      if (whatsappPopupTimerRef.current) {
-        clearTimeout(whatsappPopupTimerRef.current);
-      }
     };
   }, []);
 
