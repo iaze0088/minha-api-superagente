@@ -467,6 +467,35 @@ const AgentDashboard = () => {
                     </div>
                   </div>
                 )}
+                
+                {/* Botão Toggle IA */}
+                <div className="mt-3">
+                  <button
+                    onClick={handleToggleAI}
+                    className={`w-full px-4 py-2 rounded-lg flex items-center justify-center gap-2 transition-all font-medium ${
+                      aiEnabled 
+                        ? 'bg-green-100 text-green-700 hover:bg-green-200 border-2 border-green-300' 
+                        : 'bg-red-100 text-red-700 hover:bg-red-200 border-2 border-red-300'
+                    }`}
+                  >
+                    {aiEnabled ? (
+                      <>
+                        <Bot className="w-4 h-4" />
+                        <span>IA Ativa - Clique para Desativar (1h)</span>
+                      </>
+                    ) : (
+                      <>
+                        <Bot className="w-4 h-4" />
+                        <span>IA Desativada - Clique para Reativar</span>
+                      </>
+                    )}
+                  </button>
+                  <p className="text-xs text-slate-500 mt-1 text-center">
+                    {aiEnabled 
+                      ? 'IA responderá automaticamente nesta conversa' 
+                      : 'IA não responderá nesta conversa até ser reativada'}
+                  </p>
+                </div>
               </div>
 
               {/* Área de Mensagens - Com scroll interno APENAS aqui - ALTURA FIXA */}
