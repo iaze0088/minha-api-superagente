@@ -315,6 +315,7 @@ class AIAgentUpdate(BaseModel):
     knowledge_restriction: Optional[bool] = None
     timezone: Optional[str] = None
     is_active: Optional[bool] = None
+    linked_agents: Optional[List[str]] = None
 
 # ============================================
 # SISTEMA DE DEPARTAMENTOS
