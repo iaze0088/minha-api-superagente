@@ -293,6 +293,8 @@ async def update_reseller(reseller_id: str, data: dict, current_user: dict = Dep
     update_data = {}
     if "name" in data:
         update_data["name"] = data["name"]
+    if "email" in data:
+        update_data["email"] = data["email"]
     if "custom_domain" in data:
         update_data["custom_domain"] = data["custom_domain"]
     if "is_active" in data and current_user["user_type"] == "admin":
