@@ -8,7 +8,7 @@ import json
 import os
 
 # Get backend URL from environment
-BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://cyberchat-1.preview.emergentagent.com')
+BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://suporte-chat-1.preview.emergentagent.com')
 API_BASE = f"{BACKEND_URL}/api"
 
 def make_request(method: str, endpoint: str, data: dict = None, token: str = None) -> tuple[bool, dict]:

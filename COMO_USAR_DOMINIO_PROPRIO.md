@@ -86,7 +86,7 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 ❌ ERRADO:
 ```javascript
-const API_URL = "https://cyberchat-1.preview.emergentagent.com";
+const API_URL = "https://suporte-chat-1.preview.emergentagent.com";
 ```
 
 ---

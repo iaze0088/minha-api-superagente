@@ -1,33 +1,31 @@
 <analysis>
-The AI engineer successfully extended the CYBERTV Suporte live chat system, moving from an MVP to a feature-rich application. Initially, the focus was on implementing multi-tenant features, custom domains, and agent dashboard UI improvements (message counts, previews, PIX button). Challenges with frontend caching and hot reload, primarily due to the PWA Service Worker, led to significant debugging efforts, including temporary disabling and re-enabling, and ultimately requiring user-initiated hard refreshes/deploys. A login issue for agents was also identified and resolved by standardizing login fields and handling tenant context.
+The previous AI engineer’s primary task involved debugging and enhancing the CYBERTV Suporte application. Initial efforts focused on resolving a persistent AI not responding issue. This encompassed implementing robust logging, diagnosing incorrect  and  associations, addressing an excessively large AI  and an incorrectly configured LLM model ( instead of ), and fixing user-side configuration saving failures. Concurrently, session disconnection problems were tackled by inspecting JWT expiration and removing forceful logout mechanisms from frontend interceptors and WebSocket logic.
 
-The most substantial new development involved transforming the AI tab into a comprehensive multi-agent system with department-based routing. This required extensive backend model updates (new ,  models, agent/ticket model modifications), new API routes for AI agents and departments, and significant frontend work in  and  for managing these new entities and routing logic. The engineer completed all requested features, including the complex routing system, and provided a detailed deployment guide, currently about to create an automatic deployment script.
+Significant challenges included frontend rendering issues where AI responses were present in the database but invisible to users, requiring WebSocket communication fixes and UI adjustments. Deployment inconsistencies between local/preview and the production domain () were traced to a  file syntax error and outdated deployment pointers, which were resolved through guided user actions and backend fixes. Towards the end, the engineer began implementing new features like Auto-Responder, Tutorials/Apps, Clicable Links, and advanced multi-reseller functionalities, including default passwords and forced changes. The latest interaction involves refining the Auto-Responder and Tutorials/Apps to support multiple media types and response delays.
 </analysis>
 
 <product_requirements>
-The CYBERTV Suporte application is a multi-tenant live chat system designed for Admin, Agent, and Client users. Its core problem statement revolved around providing real-time chat with file uploads, ticket management, configurable messages, and PWA support with custom branding. A critical requirement was a robust multi-tenant reseller system, allowing each reseller a custom domain, an independent admin-like panel, hierarchical sub-reseller creation, and isolated data.
+The CYBERTV Suporte app is a multi-tenant live chat system for Admins, Agents, and Clients, designed for real-time chat with file uploads, ticket management, configurable messages, and PWA support with custom branding. A robust multi-tenant reseller system was required, featuring custom domains, independent admin panels, hierarchical sub-resellers, and isolated data.
 
-Implementation so far includes:
-- Agent Dashboard UI improvements: Displaying new message counts, limiting visible tickets to 7 with scroll, showing a 20-character message preview, and a Copy PIX Key button.
-- Strict content validation for messages (CPF/email/WhatsApp/random PIX).
-- A configurable PIX key in the Admin panel.
-- A weekly WhatsApp pop-up for clients.
-- A comprehensive AI integration panel in Admin with multi-LLM support and access to client credentials.
-- A full multi-agent system, allowing creation of multiple AI agents per reseller.
-- Department management (Suporte, Vendas, Teste Grátis) with intelligent routing: clients select via buttons, or unaddressed messages timeout to Suporte.
-- Agent permissions are now linked to specific departments.
+Implemented features include:
+- Agent Dashboard UI with new message counts, limited ticket display, message preview, and Copy PIX Key button.
+- Strict content validation and configurable PIX keys.
+- Weekly WhatsApp pop-up for clients.
+- Comprehensive AI integration with multi-LLM support, client credential access, and a full multi-agent system (multiple AI agents per reseller).
+- Department management (Suporte, Vendas, Teste Grátis) with intelligent routing.
+- Agent permissions linked to specific departments.
+- Recent additions: PIX key as an interactive copyable button, granular AI control linking AI agents to specific human agents, a per-conversation AI toggle, automatic AI re-activation after 1 hour, and configurable AI response delays.
 </product_requirements>
 
 <key_technical_concepts>
 - **FastAPI**: Python framework for backend APIs and WebSockets.
-- **React**: JavaScript library for building interactive user interfaces.
-- **MongoDB**: NoSQL database for data storage.
-- **WebSockets**: Real-time chat communication.
-- **Multi-tenancy**: Data isolation, custom domains, hierarchical structure.
-- **PWA**: Progressive Web App features.
+- **React**: JavaScript library for interactive user interfaces.
+- **MongoDB**: NoSQL database.
+- **WebSockets**: Real-time chat.
+- **Multi-tenancy**: Data isolation, custom domains.
 - **JWT**: Secure authentication.
 - **Shadcn UI & Tailwind CSS**: Frontend styling.
-- **Environment Variables**: , , .
+- **Emergent Integrations**: LLM interaction library.
 </key_technical_concepts>
 
 <code_architecture>
@@ -36,46 +34,60 @@ The application utilizes a FastAPI backend and a React frontend.
 
 
 **Key Files and Changes:**
--   **/app/backend/models.py**: Introduced  (with ),  models.  model updated with .  model updated with .
--   **/app/backend/server.py**: Integrated . Updated auth endpoints (, ) to handle  and correct login fields. Added new endpoints: , , , . Modified ticket creation logic to send department selection. Implemented  background task.  and  were updated to handle new AI/allowed data fields.
--   **/app/backend/ai_agent_routes.py**: New file created for CRUD operations on  and  models.
--   **/app/backend/tenant_middleware.py**: Intercepts requests to determine .
--   **/app/frontend/public/index.html**: Modified for cache busting with version query parameter. HTML meta tags were fixed.
--   **/app/frontend/src/index.js**: Service Worker temporarily disabled for development to resolve caching issues.
--   **/app/frontend/src/App.js**: Added client-side cache clearing logic.
--   **/app/frontend/src/pages/AdminDashboard.js**: Updated with new tabs (Agentes IA, Departamentos). Agent creation form now includes department multi-select. PIX key, allowed data, API integration, and AI configuration (including  for AI) fields added/updated. Replicar Configurações button added to relevant tabs.
--   **/app/frontend/src/pages/AgentDashboard.js**: Refactored for a fixed, professional layout without external scrollbars. Ticket list limited to 7 with scroll and 20-char message preview. Conversation history limited to 7 messages with scroll. Input field fixed at bottom. Implemented department-based ticket filtering. Agent credentials loading corrected.
--   **/app/frontend/src/pages/ClientChat.js**: Modified to display the WhatsApp pop-up, Copy PIX Key button, and handle department selection messages with interactive buttons.
--   **/app/frontend/src/components/AIAgentsManager.js**: New component for UI management of AI Agents.
--   **/app/frontend/src/components/DepartmentsManager.js**: New component for UI management of Departments.
+-   ****:  model updated with  and .
+-   ****:
+    -   AI integration:  handles LLM calls,  calls AI.
+    -   New endpoint .
+    -   Background task .
+    -   PIX validation logic modified.
+    -   Implemented detailed logging for AI and WebSocket.
+    -   Added API endpoints for  () and  ().
+    -   Added  helper function.
+    -   Relaxed  validation in  for agents/admins.
+-   ****: Modified reseller creation to set default  password and  flag.
+-   ****: New file for LLM interaction using .
+-   ****: Fixed syntax errors (missing newlines).
+-   ****: Cache-clearing logic removed,  managed.
+-   ****:
+    -   UI for creating resellers and managing AI agents/departments enhanced.
+    -   Added new tabs for Auto-Responder and Tutorials/Apps.
+    -   Protected  calls with  fallbacks.
+-   ****:
+    -   UI for agent-specific IA toggle button.
+    -   Logic for automatic ticket assignment.
+    -   Updated WebSocket handling for instant messages, including AI responses.
+    -   Modified message rendering to show AI messages on the left.
+-   ****:
+    -   Fixed PIX button rendering.
+    -   Re-wrote WebSocket logic for robust, persistent, and instant message handling, including auto-reconnection.
+    -   Fixed  related to  destructuring.
+    -   Added fallbacks and debug logs for message rendering.
+-   ****: UI updated to link human agents to AI, and configure response delays.
+-   ****:  calls protected with  fallbacks.
+-   ****:  updated to include  suffix. Axios interceptor modified to prevent forced logouts.
+-   ****: Fixed  extraction and saving.  is only called explicitly on logout.
+-   ****: *New file created* for auto-response management.
+-   ****: *New file created* for tutorials/apps management.
+-   ****: *New file created* for mandatory password change on first login.
 </code_architecture>
 
 <pending_tasks>
-- Create an automatic deployment script for VPS, as requested by the user.
+- Refactor the Auto-Responder feature to support multiple responses (text, audio, video, photo) and configurable delays (0-60 seconds) for each response.
+- Implement the Tutorials/Aplicativos feature with the same multi-media response and delay capabilities as the auto-responder.
+- Add the Tutorials/Aplicativos feature to the Agent Dashboard.
+- Enhance reseller domain management to provide a test domain, allow custom domain configuration directly from the reseller panel, and display the necessary IP for DNS pointing.
+- Ensure all new reseller admin panels inherit the same configuration options as the main admin, while maintaining individual configurations.
 </pending_tasks>
 
 <current_work>
-Immediately before this summary request, the AI engineer had completed a significant overhaul of the application. The system now supports a comprehensive multi-agent AI framework with departmental routing. This included:
-- **Backend (FASE 1 - 5):**
-    - New  and  models added to .
-    -  model updated to include .  model updated to include .
-    - New routes for AI Agents and Departments created in  and registered in .
-    - Implemented a background task in  () to route unresponded tickets to the Suporte department after 2 minutes.
-    - Added an endpoint  for clients to choose departments.
-    - Modified client login to trigger department selection on first message.
-    - Ensured  and  handle new AI-related configuration fields, including .
-    - Login issues for agents (due to  vs  field mismatch and tenant filtering) were debugged and resolved.
-    - Multiple caching issues and hardcoded secrets (e.g., JWT) were identified and fixed during deployment attempts.
-- **Frontend (FASE 2 - 5):**
-    - New components  and  were created.
-    -  was updated with new tabs for Agentes IA and Departamentos, allowing management of these entities and multi-select for agent department assignments.
-    -  was refactored for a professional, fixed-height layout. Ticket list and message history are now limited to 7 items with scroll, and the input field is fixed at the bottom. Agent credentials are now isolated per client.
-    -  was updated to render department selection messages with interactive buttons, the WhatsApp pop-up, and the Copy PIX Key button.
-    - Debugged persistent frontend caching issues (PWA Service Worker) by temporarily disabling the Service Worker, adding cache-busting mechanisms, and restarting services.
+Immediately before this summary, the AI engineer was addressing the user's explicit request to enhance the Auto-responder and Tutorials/Aplicativos features. The user specifically asked for the ability to:
+1.  **Register multiple responses**: Not just one, but two or more responses.
+2.  **Support various media types**: Responses should include text, audio, photo, and video.
+3.  **Configurable delays**: For subsequent responses, allow the admin to set a delay from 0 to 60 seconds.
 
-The system is declared 100% functional and ready for production, with all links and credentials provided. The user's last request was to create an automatic script for VPS deployment.
+This feedback was triggered by the user noticing that the existing auto-responder only allowed a single text response. The AI engineer acknowledged these new requirements, stating, Vou refazer o Auto-Responder com múltiplas respostas, mídia e delay! The component  was previously created, and now requires refactoring to incorporate these advanced capabilities, along with . The Agent Dashboard also needs to display these tutorials.
 </current_work>
 
 <optional_next_step>
-Create the automatic deployment script for the VPS as requested by the user.
+Begin refactoring the  component to support multiple response types (audio, text, photo, video) and configurable delays.
 </optional_next_step>
