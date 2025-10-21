@@ -98,12 +98,12 @@ const ClientChat = () => {
         });
       }
       
-      // Logout forçado
-      if (data.type === 'force_logout') {
-        clearAuth();
-        alert('Você foi desconectado porque outra pessoa fez login com suas credenciais.');
-        navigate('/');
-      }
+      // Comentado: Não forçar logout automático
+      // if (data.type === 'force_logout') {
+      //   clearAuth();
+      //   alert('Você foi desconectado porque outra pessoa fez login com suas credenciais.');
+      //   navigate('/');
+      // }
     };
 
     ws.onerror = (error) => {
