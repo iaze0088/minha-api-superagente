@@ -515,7 +515,7 @@ const ClientChat = () => {
         {/* Messages */}
         <div className="h-[500px] bg-slate-50 p-4 overflow-y-auto">
           <div className="space-y-3">
-            {messages.map(msg => {
+            {messages.map((msg, index) => {
               // Debug: log mensagem
               console.log('📝 Renderizando mensagem:', {
                 id: msg.id?.substring(0, 8),
@@ -525,17 +525,35 @@ const ClientChat = () => {
                 has_text: !!msg.text
               });
               
+              // Verificar se deve mostrar data (primeira mensagem do dia)
+              const showDate = index === 0 || 
+                new Date(messages[index - 1].created_at).toDateString() !== new Date(msg.created_at).toDateString();
+              
               return (
-              <div key={msg.id} className={`flex ${msg.from_type === 'client' ? 'justify-end' : 'justify-start'}`}>
-                <div
-                  className={`max-w-[80%] p-3 rounded-2xl shadow-sm ${
-                    msg.from_type === 'client'
-                      ? 'bg-blue-600 text-white rounded-br-sm'
-                      : msg.from_type === 'ai'
-                      ? 'bg-purple-100 text-purple-900 rounded-bl-sm border border-purple-200'
-                      : 'bg-white text-slate-900 rounded-bl-sm'
-                  }`}
-                >
+              <div key={msg.id}>
+                {/* Separador de data */}
+                {showDate && (
+                  <div className="flex justify-center my-3">
+                    <span className="bg-slate-200 text-slate-600 text-xs px-3 py-1 rounded-full">
+                      {new Date(msg.created_at).toLocaleDateString('pt-BR', { 
+                        day: '2-digit', 
+                        month: 'long', 
+                        year: 'numeric' 
+                      })}
+                    </span>
+                  </div>
+                )}
+                
+                <div className={`flex ${msg.from_type === 'client' ? 'justify-end' : 'justify-start'}`}>
+                  <div
+                    className={`max-w-[80%] p-3 rounded-2xl shadow-sm ${
+                      msg.from_type === 'client'
+                        ? 'bg-blue-600 text-white rounded-br-sm'
+                        : msg.from_type === 'ai'
+                        ? 'bg-purple-100 text-purple-900 rounded-bl-sm border border-purple-200'
+                        : 'bg-white text-slate-900 rounded-bl-sm'
+                    }`}
+                  >
                   {/* SEMPRE mostrar texto, independente do kind */}
                   {msg.text && (
                     <p 
