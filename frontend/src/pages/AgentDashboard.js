@@ -530,23 +530,94 @@ const AgentDashboard = () => {
           </div>
 
           {/* Tabs e lista de tickets */}
-          <Tabs value={status} onValueChange={setStatus} className="flex-1 flex flex-col overflow-hidden">
-            <TabsList className="grid grid-cols-3 m-2 flex-shrink-0">
-              <TabsTrigger value="EM_ESPERA" data-testid="tab-em-espera" className="text-xs">
-                Espera <span className="ml-1 px-1.5 py-0.5 bg-red-100 text-red-700 rounded-full text-[10px]">{counts.EM_ESPERA}</span>
-              </TabsTrigger>
-              <TabsTrigger value="ATENDENDO" data-testid="tab-atendendo" className="text-xs">
-                Atendendo <span className="ml-1 px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-[10px]">{counts.ATENDENDO}</span>
-              </TabsTrigger>
-              <TabsTrigger value="FINALIZADAS" data-testid="tab-finalizadas" className="text-xs">
-                Finalizadas <span className="ml-1 px-1.5 py-0.5 bg-green-100 text-green-700 rounded-full text-[10px]">{counts.FINALIZADAS}</span>
-              </TabsTrigger>
-            </TabsList>
+          {isSearching ? (
+            // Modo de pesquisa - mostrar resultados
+            <div className="flex-1 flex flex-col overflow-hidden">
+              <div className="p-3 bg-amber-50 border-b border-amber-200 flex items-center justify-between flex-shrink-0">
+                <div className="flex items-center gap-2">
+                  <Search className="w-4 h-4 text-amber-600" />
+                  <span className="text-sm font-medium text-amber-900">
+                    Resultados da Pesquisa: "{searchTerm}"
+                  </span>
+                  <span className="text-xs bg-amber-200 text-amber-800 px-2 py-0.5 rounded-full">
+                    {searchResults.length} encontrado(s)
+                  </span>
+                </div>
+                <Button size="sm" variant="ghost" onClick={clearSearch}>
+                  <X className="w-4 h-4 mr-1" />
+                  Limpar
+                </Button>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto px-2 pb-2 pt-2" style={{ maxHeight: '520px' }}>
+                <div className="space-y-2">
+                  {searchResults.length === 0 ? (
+                    <div className="text-center py-8 text-slate-500">
+                      <Search className="w-12 h-12 mx-auto mb-2 opacity-30" />
+                      <p className="text-sm">Nenhum resultado encontrado</p>
+                      <p className="text-xs mt-1">Tente buscar por WhatsApp ou conteúdo de mensagens</p>
+                    </div>
+                  ) : (
+                    searchResults.map(ticket => (
+                      <Card
+                        key={ticket.id}
+                        className={`p-3 cursor-pointer transition-all hover:shadow-md relative ${
+                          selectedTicket?.id === ticket.id ? 'border-2 border-indigo-500 bg-indigo-50' : ''
+                        }`}
+                        onClick={() => handleSelectTicket(ticket)}
+                      >
+                        {ticket.unread_count > 0 && (
+                          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                            {ticket.unread_count}
+                          </span>
+                        )}
+                        
+                        <div className="flex items-center gap-2">
+                          {ticket.client_avatar && (
+                            <img src={ticket.client_avatar} alt="" className="w-10 h-10 rounded-full object-cover" />
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-sm text-slate-900 truncate">
+                              {ticket.client_name || formatWhatsApp(ticket.client_whatsapp)}
+                            </p>
+                            <p className="text-xs text-slate-500 truncate">{formatWhatsApp(ticket.client_whatsapp)}</p>
+                            
+                            {/* Mostrar onde foi encontrado */}
+                            <div className="flex items-center gap-1 mt-1">
+                              <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">
+                                {ticket.matchDetails}
+                              </span>
+                              <span className="text-xs text-slate-400">
+                                Status: {ticket.status === 'EM_ESPERA' ? 'Espera' : ticket.status === 'ATENDENDO' ? 'Atendendo' : 'Finalizado'}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : (
+            // Modo normal - mostrar por status
+            <Tabs value={status} onValueChange={setStatus} className="flex-1 flex flex-col overflow-hidden">
+              <TabsList className="grid grid-cols-3 m-2 flex-shrink-0">
+                <TabsTrigger value="EM_ESPERA" data-testid="tab-em-espera" className="text-xs">
+                  Espera <span className="ml-1 px-1.5 py-0.5 bg-red-100 text-red-700 rounded-full text-[10px]">{counts.EM_ESPERA}</span>
+                </TabsTrigger>
+                <TabsTrigger value="ATENDENDO" data-testid="tab-atendendo" className="text-xs">
+                  Atendendo <span className="ml-1 px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-[10px]">{counts.ATENDENDO}</span>
+                </TabsTrigger>
+                <TabsTrigger value="FINALIZADAS" data-testid="tab-finalizadas" className="text-xs">
+                  Finalizadas <span className="ml-1 px-1.5 py-0.5 bg-green-100 text-green-700 rounded-full text-[10px]">{counts.FINALIZADAS}</span>
+                </TabsTrigger>
+              </TabsList>
 
-            {/* Lista de tickets com scroll interno - ALTURA FIXA para mostrar ~7 tickets */}
-            <div className="flex-1 overflow-y-auto px-2 pb-2" style={{ maxHeight: '480px' }}>
-              <div className="space-y-2">
-                {tickets.map(ticket => (
+              {/* Lista de tickets com scroll interno - ALTURA FIXA para mostrar ~7 tickets */}
+              <div className="flex-1 overflow-y-auto px-2 pb-2" style={{ maxHeight: '480px' }}>
+                <div className="space-y-2">
+                  {tickets.map(ticket => (
                   <Card
                     key={ticket.id}
                     data-testid={`ticket-${ticket.id}`}
