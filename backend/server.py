@@ -1293,9 +1293,12 @@ async def send_message(data: MessageCreate, request: Request, current_user: dict
     
     # Processar com IA se houver agente IA vinculado ao departamento
     if data.from_type == "client" and data.kind == "text":
+        ai_logger.info(f"🟡 Mensagem de cliente detectada! from_type={data.from_type}, kind={data.kind}, ticket_id={ticket_id}")
         # Buscar ticket atualizado
         ticket = await db.tickets.find_one({"id": ticket_id})
+        ai_logger.info(f"🟡 Ticket encontrado: {ticket.get('id') if ticket else 'None'}, department_id={ticket.get('department_id') if ticket else 'None'}")
         if ticket and ticket.get("department_id"):
+            ai_logger.info(f"🟡 Chamando process_message_with_ai para ticket {ticket['id']}")
             # Chamar IA de forma assíncrona (não bloqueia resposta)
             asyncio.create_task(process_message_with_ai(ticket, text, reseller_id))
     
