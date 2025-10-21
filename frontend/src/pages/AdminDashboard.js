@@ -63,20 +63,21 @@ const AdminDashboard = () => {
   const loadData = async () => {
     try {
       const [agentsRes, resellersRes, hierarchyRes, configRes, noticesRes, departmentsRes] = await Promise.all([
-        api.get('/agents'),
+        api.get('/agents').catch(() => ({ data: [] })),
         api.get('/resellers').catch(() => ({ data: [] })),
         api.get('/resellers/hierarchy').catch(() => ({ data: { hierarchy: [] } })),
-        api.get('/config'),
-        api.get('/notices'),
+        api.get('/config').catch(() => ({ data: { quick_blocks: [], auto_reply: [], apps: [], pix_key: '', allowed_data: {}, api_integration: {}, ai_agent: {} } })),
+        api.get('/notices').catch(() => ({ data: [] })),
         api.get('/ai/departments').catch(() => ({ data: [] }))
       ]);
-      setAgents(agentsRes.data);
-      setResellers(resellersRes.data);
-      setHierarchy(hierarchyRes.data);
-      setConfig(configRes.data);
-      setNotices(noticesRes.data);
-      setDepartments(departmentsRes.data);
+      setAgents(Array.isArray(agentsRes.data) ? agentsRes.data : []);
+      setResellers(Array.isArray(resellersRes.data) ? resellersRes.data : []);
+      setHierarchy(hierarchyRes.data || { hierarchy: [] });
+      setConfig(configRes.data || { quick_blocks: [], auto_reply: [], apps: [], pix_key: '', allowed_data: {}, api_integration: {}, ai_agent: {} });
+      setNotices(Array.isArray(noticesRes.data) ? noticesRes.data : []);
+      setDepartments(Array.isArray(departmentsRes.data) ? departmentsRes.data : []);
     } catch (error) {
+      console.error('Error loading data:', error);
       toast.error('Erro ao carregar dados');
     } finally {
       setLoading(false);
