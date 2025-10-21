@@ -478,6 +478,21 @@ backend:
         agent: "testing"
         comment: "✅ TESTADO: Botão 'Replicar Configurações' funcionando em todas as 3 abas! Aba 'Dados Permitidos': botão presente e visível ✓. Aba 'Integração API': botão presente e visível ✓. Aba 'Inteligência Artificial': botão presente e visível ✓. Design consistente com destaque visual (cor âmbar) ✓. Funcionalidade de replicação para todas as revendas implementada."
 
+  - task: "Testar fluxo completo de mensagens para som de notificação"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "Teste solicitado pelo usuário: verificar fluxo completo de mensagens e WebSocket para som de notificação. Cenário: Login cliente (5511999999999/00) → enviar mensagem → login agente → responder → verificar WebSocket e from_type='agent'."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO COMPLETAMENTE: Fluxo de mensagens funcionando 100%! Login cliente ✓ (WhatsApp: 5511999999999, PIN: 00), Cliente envia mensagem ✓, Login agente ✓, Agente responde ✓, Mensagens armazenadas corretamente ✓, WebSocket conectando ✓ (endpoint: /api/ws/{user_id}/{session_id}), Estrutura from_type='agent' confirmada ✓ (deve acionar som), Múltiplas mensagens testadas ✓. IMPORTANTE: WebSocket usa user_id + session_id, NÃO token. Frontend deve conectar em /api/ws/{client_id}/{session_id} e tocar som quando receber mensagem com from_type='agent'."
+
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
