@@ -231,6 +231,14 @@ const ClientChat = () => {
     };
   }, []);
 
+  // Reconectar WebSocket quando userData estiver disponível
+  useEffect(() => {
+    if (userData?.id && (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN)) {
+      console.log('🔄 Conectando WebSocket com userId:', userData.id);
+      connectWebSocket();
+    }
+  }, [userData]);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
