@@ -69,14 +69,45 @@ const ClientChat = () => {
           
           // Som de notificação para mensagens do agente ou IA
           if (data.message.from_type === 'agent' || data.message.from_type === 'ai') {
+            // Tocar som de notificação do WhatsApp
             try {
               const audio = new Audio('/notification.mp3');
-              audio.volume = 0.7;
-              audio.play().catch(() => {});
-            } catch (e) {}
+              audio.volume = 1.0; // Volume máximo
+              audio.play().catch((error) => {
+                console.log('Erro ao tocar som:', error);
+              });
+            } catch (e) {
+              console.error('Erro ao criar áudio:', e);
+            }
             
+            // Vibrar dispositivo (se suportado)
             if ('vibrate' in navigator) {
               navigator.vibrate([200, 100, 200]);
+            }
+            
+            // Mostrar notificação do navegador se página não estiver em foco
+            if ('Notification' in window && Notification.permission === 'granted' && document.hidden) {
+              try {
+                const notification = new Notification('Nova mensagem de Suporte', {
+                  body: data.message.text || 'Você recebeu uma nova mensagem',
+                  icon: '/icon-192.png',
+                  badge: '/icon-192.png',
+                  tag: 'chat-message',
+                  requireInteraction: false,
+                  silent: false // Não silenciar - queremos o som do sistema também
+                });
+                
+                // Clicar na notificação foca na janela
+                notification.onclick = () => {
+                  window.focus();
+                  notification.close();
+                };
+                
+                // Fechar notificação automaticamente após 5 segundos
+                setTimeout(() => notification.close(), 5000);
+              } catch (e) {
+                console.error('Erro ao mostrar notificação:', e);
+              }
             }
           }
           
