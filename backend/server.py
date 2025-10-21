@@ -1595,6 +1595,42 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str, session_id: str
     except WebSocketDisconnect:
         manager.disconnect(websocket, user_id)
 
+# Auto-Responder endpoints
+@api_router.get("/config/auto-responses")
+async def get_auto_responses(current_user: dict = Depends(get_current_user)):
+    config = await db.config.find_one({"id": "auto_responses"}) or {}
+    return config.get("responses", [])
+
+@api_router.post("/config/auto-responses")
+async def save_auto_responses(data: dict, current_user: dict = Depends(get_current_user)):
+    if current_user["user_type"] != "admin":
+        raise HTTPException(status_code=403, detail="Apenas admin")
+    
+    await db.config.update_one(
+        {"id": "auto_responses"},
+        {"$set": {"responses": data.get("responses", [])}},
+        upsert=True
+    )
+    return {"ok": True}
+
+# Tutoriais endpoints
+@api_router.get("/config/tutorials")
+async def get_tutorials(current_user: dict = Depends(get_current_user)):
+    config = await db.config.find_one({"id": "tutorials"}) or {}
+    return config.get("tutorials", [])
+
+@api_router.post("/config/tutorials")
+async def save_tutorials(data: dict, current_user: dict = Depends(get_current_user)):
+    if current_user["user_type"] != "admin":
+        raise HTTPException(status_code=403, detail="Apenas admin")
+    
+    await db.config.update_one(
+        {"id": "tutorials"},
+        {"$set": {"tutorials": data.get("tutorials", [])}},
+        upsert=True
+    )
+    return {"ok": True}
+
 app.include_router(api_router)
 
 # Include reseller routes
