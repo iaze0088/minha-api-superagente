@@ -229,6 +229,12 @@ async def process_message_with_ai(ticket: Dict, message_text: str, reseller_id: 
             logger.error("IA não gerou resposta")
             return
         
+        # Aguardar tempo de resposta para humanização (response_delay_seconds)
+        delay_seconds = ai_agent.get("response_delay_seconds", 3)
+        if delay_seconds > 0:
+            logger.info(f"⏱️ Aguardando {delay_seconds} segundos para humanizar resposta...")
+            await asyncio.sleep(delay_seconds)
+        
         # Criar mensagem de resposta da IA
         ai_message = {
             "id": str(uuid.uuid4()),
