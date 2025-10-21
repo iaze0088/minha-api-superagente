@@ -653,48 +653,78 @@ class ComprehensiveBackendTester:
                 print(f"❌ Failed to delete reseller {reseller_id}: {response}")
                 
     def run_all_tests(self):
-        """Run all tests in sequence"""
-        print("🚀 Starting Multi-Tenant System Tests")
-        print("=" * 50)
+        """Run all critical backend tests"""
+        print("🚀 TESTE COMPLETO DO BACKEND - APÓS CORREÇÕES CRÍTICAS")
+        print("=" * 60)
         
         tests = [
+            # Authentication Tests
             self.test_admin_login,
-            self.test_create_root_reseller,
-            self.test_create_sub_reseller,
+            self.test_agent_login,
+            self.test_client_login,
+            
+            # Agents Tests
+            self.test_list_agents,
+            self.test_create_agent,
+            
+            # AI Agents Tests (HIGH PRIORITY)
+            self.test_list_ai_agents,
+            self.test_create_ai_agent,
+            self.test_update_ai_agent,
+            self.test_delete_ai_agent,
+            
+            # Departments Tests (HIGH PRIORITY)
+            self.test_list_departments,
+            self.test_create_department,
+            self.test_update_department,
+            self.test_delete_department,
+            
+            # Config Tests
+            self.test_get_config,
+            self.test_update_config,
+            
+            # Resellers Tests
             self.test_list_resellers,
-            self.test_hierarchy_view,
-            self.test_update_custom_domain,
-            self.test_delete_with_children_blocked,
+            self.test_create_reseller,
             self.test_reseller_login,
-            self.test_transfer_reseller,
-            self.test_data_isolation_agents,
-            self.test_list_agents_isolation,
-            self.test_config_per_tenant,
-            self.test_update_reseller_config,
-            self.test_replicate_config
+            
+            # Special Tests
+            self.test_database_consistency,
+            
+            # WhatsApp & PIN Tests (Phase 4)
+            self.test_whatsapp_popup_status,
+            self.test_whatsapp_confirm,
+            self.test_update_pin,
+            self.test_invalid_pin
         ]
         
         passed = 0
         total = len(tests)
+        failed_tests = []
         
         for test in tests:
             try:
                 if test():
                     passed += 1
-                time.sleep(0.5)  # Small delay between tests
+                else:
+                    failed_tests.append(test.__name__)
+                time.sleep(0.3)  # Small delay between tests
             except Exception as e:
                 self.log_result(test.__name__, False, f"Exception: {str(e)}")
+                failed_tests.append(test.__name__)
                 
-        print("\n" + "=" * 50)
-        print(f"📊 Test Results: {passed}/{total} tests passed")
+        print("\n" + "=" * 60)
+        print(f"📊 RESULTADO FINAL: {passed}/{total} testes passaram")
         
         if passed == total:
-            print("🎉 All tests passed! Multi-tenant system is working correctly.")
+            print("🎉 TODOS OS TESTES PASSARAM! Backend funcionando corretamente.")
         else:
-            print(f"⚠️  {total - passed} tests failed. Check the issues above.")
+            print(f"⚠️  {total - passed} testes falharam:")
+            for failed_test in failed_tests:
+                print(f"   ❌ {failed_test}")
             
         # Cleanup
-        if self.created_resellers:
+        if any([self.created_agents, self.created_ai_agents, self.created_departments, self.created_resellers]):
             self.cleanup()
             
         return passed, total, self.test_results
