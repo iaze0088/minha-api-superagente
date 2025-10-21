@@ -774,6 +774,7 @@ const AgentDashboard = () => {
 
               {/* Área de Mensagens - Com scroll interno APENAS aqui - ALTURA FIXA */}
               <div 
+                ref={messagesContainerRef}
                 className="overflow-y-auto bg-slate-50 p-4" 
                 style={{ 
                   height: 'calc(100vh - 420px)',
@@ -781,26 +782,20 @@ const AgentDashboard = () => {
                   maxHeight: '500px'
                 }}
               >
-                {messages.length > 7 && (
-                  <div className="text-center text-xs text-slate-500 py-2 bg-white/80 backdrop-blur-sm rounded-lg mb-3 shadow-sm">
-                    ↑ Role para cima para ver {messages.length - 7} mensagem(ns) anterior(es)
-                  </div>
-                )}
                 <div className="space-y-3">
-                  {console.log('🎨 Renderizando mensagens:', messages.length, 'total, exibindo:', messages.slice(-7).length)}
+                  {console.log('🎨 Renderizando mensagens:', messages.length, 'total')}
                   {messages.length === 0 ? (
                     <div className="text-center text-slate-500 py-8 bg-white rounded-lg shadow-sm">
                       <p className="font-medium">Nenhuma mensagem ainda</p>
                       <p className="text-sm mt-2">Aguardando mensagens do cliente...</p>
                     </div>
                   ) : (
-                    messages.slice(-7).map((msg, index) => {
+                    messages.map((msg, index) => {
                       console.log(`📝 Mensagem ${index}:`, msg.from_type, msg.text?.substring(0, 30));
                       
                       // Verificar se deve mostrar data (primeira mensagem ou mudança de dia)
-                      const slicedMessages = messages.slice(-7);
                       const showDate = index === 0 || 
-                        new Date(slicedMessages[index - 1].created_at).toDateString() !== new Date(msg.created_at).toDateString();
+                        new Date(messages[index - 1].created_at).toDateString() !== new Date(msg.created_at).toDateString();
                       
                       return (
                         <div key={msg.id}>
