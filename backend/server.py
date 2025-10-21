@@ -1142,11 +1142,17 @@ async def get_messages(ticket_id: str, limit: int = 50, offset: int = 0, current
 
 @api_router.post("/messages")
 async def send_message(data: MessageCreate, request: Request, current_user: dict = Depends(get_current_user)):
-    # Validate sender
-    logger.info(f"Message from: {data.from_id}, User: {current_user['user_id']}, Type: {current_user['user_type']}")
-    if str(data.from_id) != str(current_user["user_id"]):
-        logger.error(f"Authorization failed: from_id={data.from_id}, user_id={current_user['user_id']}")
-        raise HTTPException(status_code=403, detail=f"Não autorizado - ID não corresponde")
+    # Validate sender - APENAS para clientes (admin e atendentes podem enviar por qualquer ID)
+    user_type = current_user.get("user_type", "")
+    
+    if user_type == "client":
+        # Clientes só podem enviar como eles mesmos
+        if str(data.from_id) != str(current_user["user_id"]):
+            logger.error(f"Client authorization failed: from_id={data.from_id}, user_id={current_user['user_id']}")
+            raise HTTPException(status_code=403, detail=f"Não autorizado - ID não corresponde")
+    else:
+        # Admin e atendentes podem enviar mensagens em nome de qualquer ticket
+        logger.info(f"Message from {user_type}: {data.from_id} (logged as {current_user['user_id']})")
     
     # Pegar tenant do request ou do token
     tenant = get_request_tenant(request)
