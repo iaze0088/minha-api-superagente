@@ -630,6 +630,7 @@ const AgentConfigDialog = ({ agent, open, onClose }) => {
         </div>
       </DialogContent>
     </Dialog>
+    </>
   );
 };
 
