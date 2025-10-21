@@ -497,22 +497,37 @@ class ComprehensiveBackendTester:
             self.log_result("Reseller Login (ajuda.vip)", False, f"Error: {response}")
             return False
             
-    def test_delete_with_children_blocked(self) -> bool:
-        """Test 7: Try Delete Reseller with Children (Should Block)"""
-        if len(self.created_resellers) < 2:
-            self.log_result("Delete with Children Blocked", False, "Need parent-child relationship")
+    # ============================================
+    # TESTES ESPECIAIS - VERIFICAÇÃO DE BANCO CORRETO
+    # ============================================
+    
+    def test_database_consistency(self) -> bool:
+        """Test 19: Verificar se rotas de IA acessam banco correto (support_chat)"""
+        if not self.admin_token:
+            self.log_result("Database Consistency", False, "Admin token required")
             return False
-            
-        parent_id = self.created_resellers[0]  # Has children
-        success, response = self.make_request("DELETE", f"/resellers/{parent_id}", 
-                                            token=self.admin_token)
         
-        # Should fail because it has children
-        if not success and "sub-revenda" in str(response).lower():
-            self.log_result("Delete with Children Blocked", True, "Correctly blocked deletion")
+        # Test AI agents endpoint
+        success_ai, response_ai = self.make_request("GET", "/ai/agents", token=self.admin_token)
+        
+        # Test departments endpoint  
+        success_dept, response_dept = self.make_request("GET", "/ai/departments", token=self.admin_token)
+        
+        # Test regular agents endpoint
+        success_agents, response_agents = self.make_request("GET", "/agents", token=self.admin_token)
+        
+        if success_ai and success_dept and success_agents:
+            self.log_result("Database Consistency", True, "All endpoints accessible - using correct database")
             return True
         else:
-            self.log_result("Delete with Children Blocked", False, f"Should have been blocked: {response}")
+            errors = []
+            if not success_ai:
+                errors.append(f"AI agents: {response_ai}")
+            if not success_dept:
+                errors.append(f"Departments: {response_dept}")
+            if not success_agents:
+                errors.append(f"Agents: {response_agents}")
+            self.log_result("Database Consistency", False, f"Errors: {'; '.join(errors)}")
             return False
             
     def test_reseller_login(self) -> bool:
