@@ -1791,6 +1791,106 @@ async def delete_tutorial_advanced(tutorial_id: str, current_user: dict = Depend
     
     return {"ok": True}
 
+# ====== NOVO: Gestão de Domínios para Revendas ======
+@api_router.get("/reseller/domain-info")
+async def get_reseller_domain_info(request: Request, current_user: dict = Depends(get_current_user)):
+    """Retorna informações de domínio da revenda"""
+    from tenant_middleware import get_current_tenant
+    tenant_ctx = get_current_tenant()
+    reseller_id = tenant_ctx.reseller_id
+    
+    if not reseller_id:
+        raise HTTPException(status_code=400, detail="Apenas revendedores podem acessar")
+    
+    # Buscar informações da revenda
+    reseller = await db.resellers.find_one({"id": reseller_id})
+    if not reseller:
+        raise HTTPException(status_code=404, detail="Revenda não encontrada")
+    
+    # IP do servidor (você deve configurar este valor)
+    # Em produção, isso viria de uma configuração
+    server_ip = os.environ.get('SERVER_IP', '198.51.100.1')  # IP de exemplo
+    
+    # Domínio de teste (gerado automaticamente)
+    test_domain = reseller.get('domain', f"{reseller_id}.preview.emergentagent.com")
+    
+    return {
+        "test_domain": test_domain,
+        "custom_domain": reseller.get('custom_domain', ''),
+        "custom_domain_verified": reseller.get('custom_domain_verified', False),
+        "server_ip": server_ip,
+        "ssl_enabled": True
+    }
+
+@api_router.post("/reseller/update-domain")
+async def update_reseller_domain(data: dict, request: Request, current_user: dict = Depends(get_current_user)):
+    """Atualiza o domínio personalizado da revenda"""
+    from tenant_middleware import get_current_tenant
+    tenant_ctx = get_current_tenant()
+    reseller_id = tenant_ctx.reseller_id
+    
+    if not reseller_id:
+        raise HTTPException(status_code=400, detail="Apenas revendedores podem atualizar")
+    
+    custom_domain = data.get('custom_domain', '').strip().lower()
+    
+    if not custom_domain:
+        raise HTTPException(status_code=400, detail="Domínio inválido")
+    
+    # Atualizar revenda
+    await db.resellers.update_one(
+        {"id": reseller_id},
+        {"$set": {
+            "custom_domain": custom_domain,
+            "custom_domain_verified": False,  # Precisa verificar DNS
+            "custom_domain_updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {"ok": True, "message": "Domínio salvo. Configure o DNS e aguarde verificação."}
+
+@api_router.get("/reseller/verify-domain")
+async def verify_reseller_domain(request: Request, current_user: dict = Depends(get_current_user)):
+    """Verifica se o DNS do domínio personalizado está configurado corretamente"""
+    from tenant_middleware import get_current_tenant
+    tenant_ctx = get_current_tenant()
+    reseller_id = tenant_ctx.reseller_id
+    
+    if not reseller_id:
+        raise HTTPException(status_code=400, detail="Apenas revendedores podem verificar")
+    
+    reseller = await db.resellers.find_one({"id": reseller_id})
+    if not reseller or not reseller.get('custom_domain'):
+        raise HTTPException(status_code=400, detail="Nenhum domínio personalizado configurado")
+    
+    custom_domain = reseller['custom_domain']
+    
+    # Aqui você implementaria a verificação DNS real
+    # Por ora, vamos simular
+    try:
+        import socket
+        # Tentar resolver o domínio
+        ip = socket.gethostbyname(custom_domain)
+        server_ip = os.environ.get('SERVER_IP', '198.51.100.1')
+        
+        if ip == server_ip:
+            # DNS configurado corretamente
+            await db.resellers.update_one(
+                {"id": reseller_id},
+                {"$set": {
+                    "custom_domain_verified": True,
+                    "custom_domain_verified_at": datetime.now(timezone.utc).isoformat()
+                }}
+            )
+            return {"verified": True, "message": "Domínio verificado com sucesso!"}
+        else:
+            return {"verified": False, "message": f"DNS aponta para {ip}, esperado {server_ip}"}
+    
+    except socket.gaierror:
+        return {"verified": False, "message": "Domínio não encontrado. Aguarde propagação DNS."}
+    except Exception as e:
+        return {"verified": False, "message": f"Erro ao verificar: {str(e)}"}
+
 # Tutoriais endpoints (legado - mantido para compatibilidade)
 @api_router.get("/config/tutorials")
 async def get_tutorials(current_user: dict = Depends(get_current_user)):
