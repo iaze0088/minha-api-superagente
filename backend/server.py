@@ -152,25 +152,31 @@ async def send_department_selection(ticket_id: str, client_id: str, reseller_id:
 async def process_message_with_ai(ticket: Dict, message_text: str, reseller_id: str):
     """Processa mensagem e gera resposta da IA se houver agente vinculado"""
     try:
-        # Verificar se IA está desativada para este ticket
+        logger.info(f"🔍 process_message_with_ai chamado - Ticket: {ticket.get('id')}, Cliente: {ticket.get('client_name')}")
+        
+        # Verificar se IA foi desativada manualmente
         ai_disabled_until = ticket.get("ai_disabled_until")
         if ai_disabled_until:
             try:
                 disabled_until = datetime.fromisoformat(ai_disabled_until)
                 if datetime.now(timezone.utc) < disabled_until:
-                    logger.info(f"IA desativada para ticket {ticket['id']} até {disabled_until}")
+                    logger.info(f"❌ IA desativada para ticket {ticket['id']} até {disabled_until}")
                     return
             except:
                 pass
         
         # Verificar se o ticket tem departamento
         department_id = ticket.get("department_id")
+        logger.info(f"📂 Ticket {ticket['id']} - department_id: {department_id}")
         if not department_id:
+            logger.info(f"❌ Ticket {ticket['id']} sem departamento, IA não responderá")
             return
         
         # Buscar departamento
         department = await db.departments.find_one({"id": department_id, "reseller_id": reseller_id})
+        logger.info(f"📂 Departamento encontrado: {department.get('name') if department else 'Nenhum'} - AI Agent ID: {department.get('ai_agent_id') if department else 'Nenhum'}")
         if not department or not department.get("ai_agent_id"):
+            logger.info(f"❌ Departamento {department_id} sem IA vinculada")
             return  # Departamento sem IA
         
         # Buscar agente IA
@@ -179,25 +185,27 @@ async def process_message_with_ai(ticket: Dict, message_text: str, reseller_id: 
             "reseller_id": reseller_id,
             "is_active": True
         })
+        logger.info(f"🤖 Agente IA: {ai_agent.get('name') if ai_agent else 'Não encontrado'} - Ativo: {ai_agent.get('is_active') if ai_agent else False}")
         
         if not ai_agent:
-            logger.info(f"Agente IA não encontrado ou inativo para departamento {department_id}")
+            logger.info(f"❌ Agente IA não encontrado ou inativo para departamento {department_id}")
             return
         
         # Verificar se há um atendente atribuído ao ticket e se ele está na lista de linked_agents
         assigned_agent_id = ticket.get("assigned_agent_id")
         linked_agents = ai_agent.get("linked_agents", [])
+        logger.info(f"👤 Atendente atribuído: {assigned_agent_id} - Linked agents: {linked_agents}")
         
         if linked_agents:  # Se tem lista de atendentes vinculados
             if not assigned_agent_id:
-                logger.info(f"Ticket {ticket['id']} sem atendente atribuído, IA não responderá")
+                logger.info(f"❌ Ticket {ticket['id']} sem atendente atribuído, IA não responderá")
                 return
             
             if assigned_agent_id not in linked_agents:
-                logger.info(f"Atendente {assigned_agent_id} não está na lista de linked_agents da IA")
+                logger.info(f"❌ Atendente {assigned_agent_id} não está na lista de linked_agents da IA")
                 return
         
-        logger.info(f"🤖 IA ativada para ticket {ticket['id']} - Agente: {ai_agent.get('name', 'Sem nome')}")
+        logger.info(f"✅ TODAS AS VERIFICAÇÕES PASSARAM! 🤖 IA ativada para ticket {ticket['id']} - Agente: {ai_agent.get('name', 'Sem nome')}")
         
         # Buscar histórico de mensagens do ticket
         messages = await db.messages.find({"ticket_id": ticket["id"]}).sort("created_at", 1).to_list(20)
