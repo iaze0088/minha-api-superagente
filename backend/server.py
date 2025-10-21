@@ -1068,6 +1068,8 @@ async def send_message(data: MessageCreate, request: Request, current_user: dict
             )
     else:
         ticket_id = data.ticket_id
+        if not ticket_id:
+            raise HTTPException(status_code=400, detail="ticket_id é obrigatório para mensagens de agente")
         # When agent sends, reset unread count
         if data.from_type == "agent":
             await db.tickets.update_one(
