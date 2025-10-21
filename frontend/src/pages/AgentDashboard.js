@@ -816,11 +816,20 @@ const AgentDashboard = () => {
                             <code className="text-xs bg-black/10 px-2 py-1 rounded block">{msg.text}</code>
                           </div>
                         )}
-                        <p className="text-[10px] mt-1.5 opacity-70">
-                          {new Date(msg.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                        </p>
-                      </div>
-                    </div>
+                            {/* Nome e horário */}
+                            <div className="flex items-center justify-between mt-1 gap-2">
+                              {msg.from_type === 'client' && selectedTicket?.client_name && (
+                                <span className="text-[10px] font-semibold opacity-80">
+                                  {selectedTicket.client_name}
+                                </span>
+                              )}
+                              <p className="text-[10px] opacity-70 ml-auto">
+                                {new Date(msg.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        </div>
                       );
                     })
                   )}
