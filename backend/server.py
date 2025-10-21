@@ -168,80 +168,133 @@ async def send_department_selection(ticket_id: str, client_id: str, reseller_id:
 
 async def process_message_with_ai(ticket: Dict, message_text: str, reseller_id: str):
     """Processa mensagem e gera resposta da IA se houver agente vinculado"""
+    ai_logger.info("🟢 " + "="*80)
+    ai_logger.info(f"🔍 NOVA MENSAGEM RECEBIDA PARA PROCESSAMENTO IA")
+    ai_logger.info(f"📋 Ticket ID: {ticket.get('id')}")
+    ai_logger.info(f"👤 Cliente: {ticket.get('client_name', 'N/A')}")
+    ai_logger.info(f"🏢 Reseller ID: {reseller_id}")
+    ai_logger.info(f"💬 Mensagem: {message_text[:100]}...")
+    
     try:
-        logger.info(f"🔍 process_message_with_ai chamado - Ticket: {ticket.get('id')}, Cliente: {ticket.get('client_name')}")
-        
         # Verificar se IA foi desativada manualmente
         ai_disabled_until = ticket.get("ai_disabled_until")
         if ai_disabled_until:
             try:
                 disabled_until = datetime.fromisoformat(ai_disabled_until)
                 if datetime.now(timezone.utc) < disabled_until:
-                    logger.info(f"❌ IA desativada para ticket {ticket['id']} até {disabled_until}")
+                    ai_logger.info(f"❌ IA DESATIVADA MANUALMENTE para ticket {ticket['id']} até {disabled_until}")
+                    ai_logger.info("🔴 " + "="*80)
                     return
-            except:
-                pass
+                else:
+                    ai_logger.info(f"✅ Tempo de desativação expirou, IA pode responder novamente")
+            except Exception as e:
+                ai_logger.warning(f"⚠️ Erro ao verificar ai_disabled_until: {e}")
         
         # Verificar se o ticket tem departamento
         department_id = ticket.get("department_id")
-        logger.info(f"📂 Ticket {ticket['id']} - department_id: {department_id}")
+        ai_logger.info(f"📂 Verificando departamento...")
+        ai_logger.info(f"   Department ID: {department_id}")
+        
         if not department_id:
-            logger.info(f"❌ Ticket {ticket['id']} sem departamento, IA não responderá")
+            ai_logger.info(f"❌ BLOQUEIO: Ticket {ticket['id']} sem departamento atribuído")
+            ai_logger.info(f"💡 Ação necessária: Cliente deve selecionar um departamento")
+            ai_logger.info("🔴 " + "="*80)
             return
         
         # Buscar departamento
+        ai_logger.info(f"🔎 Buscando departamento no banco de dados...")
         department = await db.departments.find_one({"id": department_id, "reseller_id": reseller_id})
-        logger.info(f"📂 Departamento encontrado: {department.get('name') if department else 'Nenhum'} - AI Agent ID: {department.get('ai_agent_id') if department else 'Nenhum'}")
-        if not department or not department.get("ai_agent_id"):
-            logger.info(f"❌ Departamento {department_id} sem IA vinculada")
-            return  # Departamento sem IA
+        
+        if not department:
+            ai_logger.error(f"💥 ERRO: Departamento {department_id} não encontrado no banco!")
+            ai_logger.info("🔴 " + "="*80)
+            return
+        
+        ai_logger.info(f"✅ Departamento encontrado:")
+        ai_logger.info(f"   Nome: {department.get('name')}")
+        ai_logger.info(f"   AI Agent ID: {department.get('ai_agent_id', 'NENHUM')}")
+        
+        if not department.get("ai_agent_id"):
+            ai_logger.info(f"❌ BLOQUEIO: Departamento '{department.get('name')}' sem IA vinculada")
+            ai_logger.info(f"💡 Ação necessária: Vincular um agente IA ao departamento")
+            ai_logger.info("🔴 " + "="*80)
+            return
         
         # Buscar agente IA
+        ai_logger.info(f"🔎 Buscando agente IA no banco de dados...")
         ai_agent = await db.ai_agents.find_one({
             "id": department["ai_agent_id"],
             "reseller_id": reseller_id,
             "is_active": True
         })
-        logger.info(f"🤖 Agente IA: {ai_agent.get('name') if ai_agent else 'Não encontrado'} - Ativo: {ai_agent.get('is_active') if ai_agent else False}")
         
         if not ai_agent:
-            logger.info(f"❌ Agente IA não encontrado ou inativo para departamento {department_id}")
+            ai_logger.error(f"💥 ERRO: Agente IA {department['ai_agent_id']} não encontrado ou inativo!")
+            ai_logger.info(f"💡 Ação necessária: Verificar se agente IA existe e está ativo")
+            ai_logger.info("🔴 " + "="*80)
             return
+        
+        ai_logger.info(f"✅ Agente IA encontrado:")
+        ai_logger.info(f"   Nome: {ai_agent.get('name')}")
+        ai_logger.info(f"   ID: {ai_agent.get('id')}")
+        ai_logger.info(f"   Ativo: {ai_agent.get('is_active')}")
+        ai_logger.info(f"   Modelo: {ai_agent.get('llm_provider', 'N/A')}/{ai_agent.get('llm_model', 'N/A')}")
         
         # Verificar se há um atendente atribuído ao ticket e se ele está na lista de linked_agents
         assigned_agent_id = ticket.get("assigned_agent_id")
         linked_agents = ai_agent.get("linked_agents", [])
-        logger.info(f"👤 Atendente atribuído: {assigned_agent_id} - Linked agents: {linked_agents}")
+        
+        ai_logger.info(f"👥 Verificando vinculação de atendentes...")
+        ai_logger.info(f"   Atendente atribuído ao ticket: {assigned_agent_id if assigned_agent_id else 'NENHUM'}")
+        ai_logger.info(f"   Linked agents do IA: {linked_agents if linked_agents else 'NENHUM (IA responde para todos)'}")
         
         if linked_agents:  # Se tem lista de atendentes vinculados
             if not assigned_agent_id:
-                logger.info(f"❌ Ticket {ticket['id']} sem atendente atribuído, IA não responderá")
+                ai_logger.info(f"❌ BLOQUEIO: IA configurada para responder apenas para atendentes específicos")
+                ai_logger.info(f"❌ Ticket {ticket['id']} sem atendente atribuído")
+                ai_logger.info(f"💡 Ação necessária: Atribuir ticket a um atendente")
+                ai_logger.info("🔴 " + "="*80)
                 return
             
             if assigned_agent_id not in linked_agents:
-                logger.info(f"❌ Atendente {assigned_agent_id} não está na lista de linked_agents da IA")
+                ai_logger.info(f"❌ BLOQUEIO: Atendente {assigned_agent_id} não está na lista de linked_agents")
+                ai_logger.info(f"💡 Ação necessária: Adicionar atendente à lista de linked_agents do agente IA")
+                ai_logger.info("🔴 " + "="*80)
                 return
+            
+            ai_logger.info(f"✅ Atendente {assigned_agent_id} está na lista de linked_agents")
+        else:
+            ai_logger.info(f"✅ IA responde para qualquer atendente (linked_agents vazio)")
         
-        logger.info(f"✅ TODAS AS VERIFICAÇÕES PASSARAM! 🤖 IA ativada para ticket {ticket['id']} - Agente: {ai_agent.get('name', 'Sem nome')}")
+        ai_logger.info(f"🎉 TODAS AS VERIFICAÇÕES PASSARAM!")
+        ai_logger.info(f"🤖 IA '{ai_agent.get('name', 'Sem nome')}' vai processar a mensagem")
         
         # Buscar histórico de mensagens do ticket (LIMITADO a últimas 10 para evitar Context Window Exceeded)
+        ai_logger.info(f"📚 Carregando histórico de mensagens (últimas 10)...")
         all_messages = await db.messages.find({"ticket_id": ticket["id"]}).sort("created_at", -1).limit(10).to_list(10)
         # Reverter ordem (mais antigas primeiro)
         messages = list(reversed(all_messages))
+        ai_logger.info(f"   {len(messages)} mensagens carregadas")
         
         # Truncar mensagens muito longas para economizar tokens
         for msg in messages:
             if msg.get("text") and len(msg["text"]) > 500:
+                original_len = len(msg["text"])
                 msg["text"] = msg["text"][:500] + "..."
+                ai_logger.info(f"   ⚠️ Mensagem truncada: {original_len} → 500 caracteres")
         
         # Buscar dados do cliente (para credenciais se permitido)
+        ai_logger.info(f"👤 Buscando dados do cliente...")
         client = await db.users.find_one({"id": ticket["client_id"], "reseller_id": reseller_id})
         client_data = {
             "pinned_user": client.get("pinned_user") if client else None,
             "pinned_pass": client.get("pinned_pass") if client else None
         }
+        ai_logger.info(f"   Cliente: {client.get('name', 'N/A') if client else 'N/A'}")
+        ai_logger.info(f"   Credenciais disponíveis: {bool(client_data['pinned_user'] or client_data['pinned_pass'])}")
         
         # Gerar resposta da IA
+        ai_logger.info(f"🚀 Chamando serviço de IA para gerar resposta...")
         ai_response = await ai_service.generate_response(
             agent_config=ai_agent,
             message=message_text,
@@ -250,16 +303,19 @@ async def process_message_with_ai(ticket: Dict, message_text: str, reseller_id: 
         )
         
         if not ai_response:
-            logger.error("IA não gerou resposta")
+            ai_logger.error("💥 ERRO: IA não gerou resposta (retornou None)")
+            ai_logger.error("💡 Verificar logs acima para detalhes do erro")
+            ai_logger.info("🔴 " + "="*80)
             return
         
         # Aguardar tempo de resposta para humanização (response_delay_seconds)
         delay_seconds = ai_agent.get("response_delay_seconds", 3)
         if delay_seconds > 0:
-            logger.info(f"⏱️ Aguardando {delay_seconds} segundos para humanizar resposta...")
+            ai_logger.info(f"⏱️ Aguardando {delay_seconds} segundos para humanizar resposta...")
             await asyncio.sleep(delay_seconds)
         
         # Criar mensagem de resposta da IA
+        ai_logger.info(f"💾 Salvando resposta da IA no banco de dados...")
         ai_message = {
             "id": str(uuid.uuid4()),
             "ticket_id": ticket["id"],
@@ -271,6 +327,7 @@ async def process_message_with_ai(ticket: Dict, message_text: str, reseller_id: 
         }
         
         await db.messages.insert_one(ai_message)
+        ai_logger.info(f"✅ Mensagem da IA salva com sucesso (ID: {ai_message['id']})")
         
         # Atualizar última mensagem do ticket
         await db.tickets.update_one(
@@ -284,6 +341,10 @@ async def process_message_with_ai(ticket: Dict, message_text: str, reseller_id: 
                 "updated_at": datetime.now(timezone.utc).isoformat()
             }}
         )
+        
+        ai_logger.info(f"✅ Ticket atualizado com última mensagem da IA")
+        ai_logger.info(f"🎉 PROCESSO COMPLETO! IA respondeu com sucesso")
+        ai_logger.info("🟢 " + "="*80)
         
         # Enviar via WebSocket para cliente e atendentes
         await manager.send_to_user(ticket["client_id"], {
