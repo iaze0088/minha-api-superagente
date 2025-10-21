@@ -19,16 +19,16 @@ const AdminLogin = () => {
 
     try {
       const { data } = await api.post('/auth/admin/login', { password });
-      console.log('Admin login response:', data);
-      console.log('Setting auth with user_type:', data.user_type);
-      setAuth(data.token, data.user_type, data.user_data);
-      console.log('Auth set, navigating to /admin');
+      
+      // Salvar auth no localStorage
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user_type', 'admin');
+      localStorage.setItem('user_data', JSON.stringify(data.user_data));
+      
       toast.success('Login realizado com sucesso!');
       
-      // Aguardar um pouco antes de navegar
-      setTimeout(() => {
-        navigate('/admin');
-      }, 100);
+      // Redirecionar usando window.location para forçar reload completo
+      window.location.href = '/admin';
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Senha incorreta');
     } finally {
