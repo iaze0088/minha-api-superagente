@@ -460,6 +460,28 @@ const AgentDashboard = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {/* Campo de Pesquisa */}
+            <div className="relative">
+              <Input
+                placeholder="Buscar em conversas..."
+                value={searchTerm}
+                onChange={(e) => handleSearch(e.target.value)}
+                className="w-64 pr-20 h-9"
+              />
+              {isSearching && searchTerm && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={clearSearch}
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0"
+                  title="Limpar pesquisa"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              )}
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+            </div>
+            
             {tutorials.length > 0 && (
               <Button 
                 onClick={() => setShowTutorials(true)} 
