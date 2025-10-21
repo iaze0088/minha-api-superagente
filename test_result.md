@@ -1038,4 +1038,50 @@ agent_communication:
       
       🚀 SISTEMA DE IA 100% FUNCIONAL E ROBUSTO!
       Todas as funcionalidades especificadas no review request estão implementadas e testadas.
+  - agent: "testing"
+    message: |
+      🔊 TESTE COMPLETO DE FLUXO DE MENSAGENS E WEBSOCKET - 100% FUNCIONAL!
+      
+      CONTEXTO: Teste solicitado pelo usuário para verificar som de notificação
+      CENÁRIO TESTADO: Login cliente → enviar mensagem → login agente → responder → verificar WebSocket
+      
+      ✅ RESULTADO FINAL: TODOS OS TESTES PASSARAM (100% SUCCESS RATE)
+      
+      🔧 CREDENCIAIS TESTADAS:
+      - Cliente: WhatsApp 5511999999999, PIN 00 ✓
+      - Agente: admin/admin123 ✓ (criado automaticamente se não existir)
+      
+      ✅ FLUXO COMPLETO TESTADO (8/8):
+      1. ✅ Login cliente funcionando (WhatsApp: 5511999999999, PIN: 00)
+      2. ✅ Cliente consegue enviar mensagens
+      3. ✅ Login agente funcionando (admin/admin123)
+      4. ✅ Agente consegue responder mensagens
+      5. ✅ Mensagens sendo armazenadas corretamente no banco
+      6. ✅ WebSocket conectando corretamente (endpoint: /api/ws/{user_id}/{session_id})
+      7. ✅ Estrutura das mensagens correta para WebSocket
+      8. ✅ from_type='agent' confirmado para acionar som de notificação
+      
+      🔍 DESCOBERTA IMPORTANTE - CORREÇÃO DE WEBSOCKET:
+      ❌ ERRO COMUM: WebSocket NÃO usa /api/ws/{token}
+      ✅ CORRETO: WebSocket usa /api/ws/{user_id}/{session_id}
+      
+      📡 VERIFICAÇÕES WEBSOCKET:
+      - Endpoint correto: /api/ws/{client_id}/{session_id} ✓
+      - Conexão WebSocket funcionando ✓
+      - Mensagens sendo entregues via WebSocket ✓
+      - Estrutura da mensagem correta ✓
+      
+      🔊 ESTRUTURA PARA SOM DE NOTIFICAÇÃO:
+      - Mensagem do agente tem from_type='agent' ✓
+      - Estrutura completa: {id, from_type, from_id, to_type, to_id, kind, text, created_at} ✓
+      - WebSocket envia: {type: 'new_message', message: {...}} ✓
+      
+      🎯 INSTRUÇÕES PARA FRONTEND:
+      1. Conectar WebSocket: /api/ws/{client_id}/{session_id}
+      2. Ao receber mensagem com from_type='agent':
+         - Mostrar: "✅ Nova mensagem adicionada"
+         - Tocar som e mostrar: "🔊 Som de notificação tocado com sucesso!" OU "⚠️ Não foi possível tocar o som"
+      
+      ✅ BACKEND 100% PREPARADO PARA SOM DE NOTIFICAÇÃO!
+      O problema (se existir) está no frontend, não no backend.
 
