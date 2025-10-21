@@ -1292,8 +1292,9 @@ async def send_message(data: MessageCreate, request: Request, current_user: dict
                     break
     
     # Processar com IA se houver agente IA vinculado ao departamento
+    ai_logger.info(f"🟡 Verificando se deve chamar IA: from_type={data.from_type}, kind={data.kind}")
     if data.from_type == "client" and data.kind == "text":
-        ai_logger.info(f"🟡 Mensagem de cliente detectada! from_type={data.from_type}, kind={data.kind}, ticket_id={ticket_id}")
+        ai_logger.info(f"🟡 Mensagem de cliente detectada! ticket_id={ticket_id}")
         # Buscar ticket atualizado
         ticket = await db.tickets.find_one({"id": ticket_id})
         ai_logger.info(f"🟡 Ticket encontrado: {ticket.get('id') if ticket else 'None'}, department_id={ticket.get('department_id') if ticket else 'None'}")
@@ -1301,6 +1302,12 @@ async def send_message(data: MessageCreate, request: Request, current_user: dict
             ai_logger.info(f"🟡 Chamando process_message_with_ai para ticket {ticket['id']}")
             # Chamar IA de forma assíncrona (não bloqueia resposta)
             asyncio.create_task(process_message_with_ai(ticket, text, reseller_id))
+        elif ticket and not ticket.get("department_id"):
+            ai_logger.info(f"⚠️ Ticket {ticket['id']} existe mas NÃO TEM department_id definido. IA não será chamada.")
+        elif not ticket:
+            ai_logger.error(f"💥 Ticket {ticket_id} não encontrado no banco!")
+    else:
+        ai_logger.info(f"⚪ Mensagem não é de cliente ou não é texto: from_type={data.from_type}, kind={data.kind}")
     
     # Send via WebSocket
     await manager.send_to_user(data.to_id, {
