@@ -30,6 +30,7 @@ const AgentDashboard = () => {
   const [clientCredentials, setClientCredentials] = useState({ pinned_user: '', pinned_pass: '' });
   const [myDepartments, setMyDepartments] = useState([]); // Departamentos do atendente
   const [selectedDepartment, setSelectedDepartment] = useState('all'); // Filtro de departamento
+  const [aiEnabled, setAiEnabled] = useState(true); // Estado da IA para o ticket atual
   const wsRef = useRef(null);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
