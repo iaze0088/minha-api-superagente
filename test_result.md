@@ -118,6 +118,12 @@ user_problem_statement: |
   
   Modificação adicional:
   - Tela "Atendendo" do Atendente deve mostrar até 10 números com scroll para ver mais
+  
+  Novas funcionalidades solicitadas (2025-01-21):
+  - Auto-Responder: suporte a múltiplas respostas sequenciais com diferentes tipos de mídia (texto, áudio, vídeo, foto) e delays configuráveis (0-60s)
+  - Tutorials/Aplicativos: mesma funcionalidade do Auto-Responder
+  - Tutorials visíveis no Agent Dashboard
+  - Funcionalidade de editar revendas pelo admin (nome, email, senha, domínio, status ativo)
 
 backend:
   - task: "Atualizar models.py com reseller_id e hierarquia"
