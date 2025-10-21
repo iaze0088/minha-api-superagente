@@ -23,13 +23,8 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 && error.config?.url?.includes('/users/me')) {
-      // Only redirect to login if the /users/me endpoint fails (true auth error)
-      localStorage.removeItem('token');
-      localStorage.removeItem('user_type');
-      localStorage.removeItem('user_data');
-      window.location.href = '/';
-    }
+    // Não desconectar automaticamente - apenas rejeitar o erro
+    // A sessão persiste até o usuário fazer logout manual
     return Promise.reject(error);
   }
 );
