@@ -15,6 +15,8 @@ import AIAgentsManager from '../components/AIAgentsManager';
 import DepartmentsManager from '../components/DepartmentsManager';
 import AutoResponder from '../components/AutoResponder';
 import TutorialsApps from '../components/TutorialsApps';
+import AutoResponderAdvanced from '../components/AutoResponderAdvanced';
+import TutorialsAdvanced from '../components/TutorialsAdvanced';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
