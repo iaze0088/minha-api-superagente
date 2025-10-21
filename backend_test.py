@@ -1120,8 +1120,33 @@ class ComprehensiveBackendTester:
                                             self.log_result("Complete AI Flow", True, "✅ IA RESPONDEU APÓS CORREÇÃO! O problema era a falta de assigned_agent_id no ticket.")
                                             return True
                                         else:
-                                            self.log_result("Complete AI Flow", False, "❌ IA ainda não respondeu mesmo com assigned_agent_id definido. Verifique logs do backend.")
-                                            return False
+                                            # Check backend logs for specific AI errors
+                                            print("   🔍 Verificando logs do backend para erros específicos da IA...")
+                                            try:
+                                                import subprocess
+                                                result = subprocess.run(['tail', '-n', '50', '/var/log/supervisor/backend.err.log'], 
+                                                                      capture_output=True, text=True)
+                                                logs = result.stdout
+                                                
+                                                if "ContextWindowExceededError" in logs:
+                                                    self.log_result("Complete AI Flow", False, "❌ PROBLEMA IDENTIFICADO: IA está sendo acionada corretamente, mas falha por excesso de contexto (ContextWindowExceededError). O histórico de conversas está muito longo para o modelo GPT-4o-mini (limite: 128k tokens). SOLUÇÃO: Limitar histórico de mensagens ou usar modelo com contexto maior.")
+                                                    return False
+                                                elif "Erro ao gerar resposta da IA" in logs:
+                                                    error_line = [line for line in logs.split('\n') if 'Erro ao gerar resposta da IA' in line]
+                                                    if error_line:
+                                                        self.log_result("Complete AI Flow", False, f"❌ PROBLEMA IDENTIFICADO: IA falhou ao gerar resposta. Erro: {error_line[-1]}")
+                                                    else:
+                                                        self.log_result("Complete AI Flow", False, "❌ IA falhou ao gerar resposta. Verifique logs completos do backend.")
+                                                    return False
+                                                elif "TODAS AS VERIFICAÇÕES PASSARAM" in logs:
+                                                    self.log_result("Complete AI Flow", False, "❌ IA está sendo acionada corretamente (todas verificações passaram), mas não está gerando resposta. Verifique configuração do modelo LLM ou API key.")
+                                                    return False
+                                                else:
+                                                    self.log_result("Complete AI Flow", False, "❌ IA não respondeu. Não foram encontrados logs específicos de erro. Verifique configuração completa da IA.")
+                                                    return False
+                                            except Exception as e:
+                                                self.log_result("Complete AI Flow", False, f"❌ IA não respondeu e não foi possível verificar logs: {str(e)}")
+                                                return False
                                     else:
                                         self.log_result("Complete AI Flow", False, f"Erro ao buscar mensagens após correção: {messages2}")
                                         return False
