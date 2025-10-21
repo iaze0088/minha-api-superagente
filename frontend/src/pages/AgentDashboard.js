@@ -181,6 +181,26 @@ const AgentDashboard = () => {
     }
   };
 
+  const loadTutorials = async () => {
+    try {
+      const { data } = await api.get('/config/tutorials');
+      setTutorials(data.filter(t => t.active) || []);
+    } catch (error) {
+      console.error('Error loading tutorials:', error);
+    }
+  };
+
+  const sendTutorial = (tutorial) => {
+    let tutorialText = `📚 ${tutorial.category} - ${tutorial.appName}\n\n`;
+    if (tutorial.code) tutorialText += `🔑 Código/Provedor: ${tutorial.code}\n\n`;
+    if (tutorial.instructions) tutorialText += `📝 Instruções:\n${tutorial.instructions}\n\n`;
+    if (tutorial.videoUrl) tutorialText += `🎥 Vídeo Tutorial: ${tutorial.videoUrl}`;
+    
+    setMessageText(tutorialText);
+    setShowTutorials(false);
+    toast.success('Tutorial adicionado ao campo de mensagem!');
+  };
+
   const loadMessages = async (ticketId) => {
     try {
       console.log('🔍 Carregando mensagens do ticket:', ticketId);
