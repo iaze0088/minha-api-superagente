@@ -11,15 +11,30 @@ import { toast } from 'sonner';
 
 const AIAgentsManager = () => {
   const [agents, setAgents] = useState([]);
+  const [allAgentsUsers, setAllAgentsUsers] = useState([]); // Lista de atendentes disponíveis
   const [selectedAgent, setSelectedAgent] = useState(null);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showConfigDialog, setShowConfigDialog] = useState(false);
+  const [showLinkAgentsDialog, setShowLinkAgentsDialog] = useState(false);
+  const [agentToLink, setAgentToLink] = useState(null);
+  const [selectedAgentsUsers, setSelectedAgentsUsers] = useState([]);
   const [newAgentName, setNewAgentName] = useState('');
   const [newAgentDesc, setNewAgentDesc] = useState('');
 
   useEffect(() => {
     loadAgents();
+    loadAllAgentsUsers();
   }, []);
+  
+  const loadAllAgentsUsers = async () => {
+    try {
+      const { data } = await api.get('/agents');
+      setAllAgentsUsers(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Error loading agents users:', error);
+      setAllAgentsUsers([]);
+    }
+  };
 
   const loadAgents = async () => {
     try {
