@@ -31,6 +31,7 @@ class UserBase(BaseModel):
     pinned_pass: Optional[str] = ""  # Credenciais PRIVADAS do cliente
     whatsapp_confirmed: Optional[str] = ""  # WhatsApp confirmado pelo cliente
     whatsapp_asked_at: Optional[str] = ""  # Última vez que perguntou WhatsApp
+    name_asked_at: Optional[str] = ""  # Última vez que perguntou o nome
     reseller_id: Optional[str] = None  # Tenant isolation
 
 class UserCreate(BaseModel):
