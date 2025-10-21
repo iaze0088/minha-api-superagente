@@ -50,19 +50,33 @@ class AIAgentService:
         Returns:
             Resposta da IA ou None se houver erro
         """
+        logger.info("="*80)
+        logger.info(f"🤖 INICIANDO GERAÇÃO DE RESPOSTA DA IA")
+        logger.info(f"📝 Mensagem recebida: {message[:100]}...")
+        logger.info(f"👤 Agente IA: {agent_config.get('name', 'Sem nome')} (ID: {agent_config.get('id', 'N/A')})")
+        
         try:
             # Usar API key do agente ou fallback para Emergent key
             api_key = agent_config.get('api_key', self.api_key)
             if not api_key:
-                logger.error("Nenhuma API key configurada para IA")
+                logger.error("💥 ERRO CRÍTICO: Nenhuma API key configurada para IA")
                 return None
+            
+            logger.info(f"🔑 API Key presente: {api_key[:10]}...{api_key[-4:] if len(api_key) > 14 else ''}")
             
             # Construir system message com todas as instruções
             system_message = self._build_system_prompt(agent_config, client_data)
+            logger.info(f"📋 System Prompt construído ({len(system_message)} caracteres)")
+            logger.info(f"📋 System Prompt preview: {system_message[:200]}...")
             
             # Configurar chat
             provider = agent_config.get('llm_provider', 'openai')
             model = agent_config.get('llm_model', 'gpt-4o-mini')
+            
+            logger.info(f"🔧 Configuração LLM:")
+            logger.info(f"   - Provider: {provider}")
+            logger.info(f"   - Model: {model}")
+            logger.info(f"   - Session ID: agent_{agent_config.get('id', 'default')}")
             
             chat = LlmChat(
                 api_key=api_key,
@@ -70,17 +84,28 @@ class AIAgentService:
                 system_message=system_message
             ).with_model(provider, model)
             
+            logger.info(f"✅ LlmChat configurado com sucesso")
+            
             # Criar mensagem do usuário
             user_message = UserMessage(text=message)
+            logger.info(f"📨 Enviando mensagem para LLM...")
             
             # Enviar e obter resposta
             response = await chat.send_message(user_message)
             
-            logger.info(f"IA respondeu para mensagem: {message[:50]}...")
+            logger.info(f"✅ RESPOSTA RECEBIDA DO LLM!")
+            logger.info(f"📤 Resposta ({len(response)} caracteres): {response[:200]}...")
+            logger.info("="*80)
+            
             return response
             
         except Exception as e:
-            logger.error(f"Erro ao gerar resposta da IA: {str(e)}")
+            logger.error(f"💥 ERRO CRÍTICO ao gerar resposta da IA:")
+            logger.error(f"   Tipo: {type(e).__name__}")
+            logger.error(f"   Mensagem: {str(e)}")
+            import traceback
+            logger.error(f"   Traceback:\n{traceback.format_exc()}")
+            logger.info("="*80)
             return None
     
     def _build_system_prompt(self, agent_config: Dict, client_data: Dict = None) -> str:
