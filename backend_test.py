@@ -433,25 +433,68 @@ class ComprehensiveBackendTester:
             self.log_result("Update Config", False, f"Error: {response}")
             return False
             
-    def test_update_custom_domain(self) -> bool:
-        """Test 6: Update Custom Domain"""
-        if not self.created_resellers:
-            self.log_result("Update Custom Domain", False, "No resellers available")
+    # ============================================
+    # TESTES DE REVENDAS
+    # ============================================
+    
+    def test_list_resellers(self) -> bool:
+        """Test 16: GET /api/resellers (listar)"""
+        if not self.admin_token:
+            self.log_result("List Resellers", False, "Admin token required")
             return False
             
-        reseller_id = self.created_resellers[0]
-        update_data = {
-            "custom_domain": "custom.domain.com"
-        }
+        success, response = self.make_request("GET", "/resellers", token=self.admin_token)
         
-        success, response = self.make_request("PUT", f"/resellers/{reseller_id}", 
-                                            update_data, self.admin_token)
-        
-        if success and response.get("ok"):
-            self.log_result("Update Custom Domain", True, "Domain updated successfully")
+        if success and isinstance(response, list):
+            count = len(response)
+            self.log_result("List Resellers", True, f"Found {count} resellers")
             return True
         else:
-            self.log_result("Update Custom Domain", False, f"Error: {response}")
+            self.log_result("List Resellers", False, f"Error: {response}")
+            return False
+    
+    def test_create_reseller(self) -> bool:
+        """Test 17: POST /api/resellers (criar)"""
+        if not self.admin_token:
+            self.log_result("Create Reseller", False, "Admin token required")
+            return False
+            
+        reseller_data = {
+            "name": "Revenda Teste Backend",
+            "email": "teste@backend.com",
+            "password": "senha123",
+            "domain": "teste.backend.com",
+            "parent_id": None
+        }
+        
+        success, response = self.make_request("POST", "/resellers", reseller_data, self.admin_token)
+        
+        if success and response.get("ok"):
+            reseller_id = response.get("reseller_id")
+            if reseller_id:
+                self.created_resellers.append(reseller_id)
+            self.log_result("Create Reseller", True, f"Reseller created with ID: {reseller_id}")
+            return True
+        else:
+            self.log_result("Create Reseller", False, f"Error: {response}")
+            return False
+    
+    def test_reseller_login(self) -> bool:
+        """Test 18: Reseller Login (michaelrv@gmail.com / ab181818ab)"""
+        login_data = {
+            "email": "michaelrv@gmail.com",
+            "password": "ab181818ab"
+        }
+        
+        success, response = self.make_request("POST", "/resellers/login", login_data)
+        
+        if success and "token" in response:
+            self.reseller_token = response["token"]
+            reseller_id = response.get("reseller_id")
+            self.log_result("Reseller Login (ajuda.vip)", True, f"Reseller logged in: {reseller_id}")
+            return True
+        else:
+            self.log_result("Reseller Login (ajuda.vip)", False, f"Error: {response}")
             return False
             
     def test_delete_with_children_blocked(self) -> bool:
