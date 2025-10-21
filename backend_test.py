@@ -17,10 +17,15 @@ API_BASE = f"{BACKEND_URL}/api"
 # Test credentials
 ADMIN_PASSWORD = "102030@ab"  # From .env file
 
-class MultiTenantTester:
+class ComprehensiveBackendTester:
     def __init__(self):
         self.admin_token = None
-        self.reseller_tokens = {}
+        self.agent_token = None
+        self.client_token = None
+        self.reseller_token = None
+        self.created_agents = []
+        self.created_ai_agents = []
+        self.created_departments = []
         self.created_resellers = []
         self.test_results = []
         
