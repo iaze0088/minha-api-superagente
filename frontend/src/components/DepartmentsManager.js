@@ -129,7 +129,7 @@ const DepartmentsManager = () => {
 
       {/* Lista de Departamentos */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {departments.map(dept => {
+        {(departments || []).map(dept => {
           const linkedAgent = agents.find(a => a.id === dept.ai_agent_id);
           
           return (
