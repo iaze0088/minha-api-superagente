@@ -42,6 +42,7 @@ const AgentDashboard = () => {
     loadCounts();
     loadConfig();
     loadMyDepartments();
+    loadTutorials();
     const interval = setInterval(loadCounts, 5000);
     return () => clearInterval(interval);
   }, [status]);
