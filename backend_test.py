@@ -616,10 +616,37 @@ class ComprehensiveBackendTester:
         """Clean up created test data"""
         print("\n🧹 Cleaning up test data...")
         
+        if not self.admin_token:
+            print("❌ No admin token for cleanup")
+            return
+        
+        # Delete created AI agents
+        for agent_id in self.created_ai_agents:
+            success, response = self.make_request("DELETE", f"/ai/agents/{agent_id}", token=self.admin_token)
+            if success:
+                print(f"✅ Deleted AI agent: {agent_id}")
+            else:
+                print(f"❌ Failed to delete AI agent {agent_id}: {response}")
+        
+        # Delete created departments
+        for dept_id in self.created_departments:
+            success, response = self.make_request("DELETE", f"/ai/departments/{dept_id}", token=self.admin_token)
+            if success:
+                print(f"✅ Deleted department: {dept_id}")
+            else:
+                print(f"❌ Failed to delete department {dept_id}: {response}")
+        
+        # Delete created agents
+        for agent_id in self.created_agents:
+            success, response = self.make_request("DELETE", f"/agents/{agent_id}", token=self.admin_token)
+            if success:
+                print(f"✅ Deleted agent: {agent_id}")
+            else:
+                print(f"❌ Failed to delete agent {agent_id}: {response}")
+        
         # Delete created resellers (in reverse order to handle hierarchy)
         for reseller_id in reversed(self.created_resellers):
-            success, response = self.make_request("DELETE", f"/resellers/{reseller_id}", 
-                                                token=self.admin_token)
+            success, response = self.make_request("DELETE", f"/resellers/{reseller_id}", token=self.admin_token)
             if success:
                 print(f"✅ Deleted reseller: {reseller_id}")
             else:
