@@ -733,21 +733,339 @@ class ComprehensiveBackendTester:
             
         return passed, total, self.test_results
 
+    # ============================================
+    # TESTE COMPLETO DE IA - CENÁRIO REAL DO USUÁRIO
+    # ============================================
+    
+    def test_complete_ai_flow(self) -> bool:
+        """
+        TESTE COMPLETO DE IA - CENÁRIO REAL DO USUÁRIO
+        
+        CONTEXTO: Usuário configurou tudo mas IA não responde. Preciso testar o fluxo completo.
+        
+        CONFIGURAÇÃO ATUAL (do usuário):
+        - Departamento: "SUPORTE" (id precisa ser descoberto)
+        - Agente IA: "Suporte" vinculado ao departamento
+        - Atendente: "Fabio" está nos linked_agents
+        - Timeout: 5 segundos
+        - Tempo humanização: 3 segundos
+        """
+        print("\n🤖 INICIANDO TESTE COMPLETO DE IA - CENÁRIO REAL DO USUÁRIO")
+        print("=" * 70)
+        
+        if not self.admin_token:
+            self.log_result("Complete AI Flow", False, "Admin token required")
+            return False
+        
+        try:
+            # 1. VERIFICAR ESTRUTURA
+            print("📋 1. VERIFICANDO ESTRUTURA...")
+            
+            # GET /api/ai/agents → Listar agentes IA, pegar ID do agente "Suporte"
+            success, ai_agents = self.make_request("GET", "/ai/agents", token=self.admin_token)
+            if not success:
+                self.log_result("Complete AI Flow", False, f"Failed to get AI agents: {ai_agents}")
+                return False
+            
+            print(f"   📊 Encontrados {len(ai_agents)} agentes IA")
+            suporte_agent = None
+            for agent in ai_agents:
+                print(f"   🤖 Agente IA: {agent.get('name')} (ID: {agent.get('id')})")
+                if agent.get('name', '').lower() == 'suporte':
+                    suporte_agent = agent
+                    break
+            
+            if not suporte_agent:
+                # Criar agente IA "Suporte" se não existir
+                print("   ⚠️  Agente 'Suporte' não encontrado, criando...")
+                ai_agent_data = {
+                    "name": "Suporte",
+                    "description": "Agente de suporte técnico",
+                    "llm_provider": "openai",
+                    "llm_model": "gpt-4o-mini"
+                }
+                success, response = self.make_request("POST", "/ai/agents", ai_agent_data, self.admin_token)
+                if not success:
+                    self.log_result("Complete AI Flow", False, f"Failed to create Suporte agent: {response}")
+                    return False
+                suporte_agent = response
+                self.created_ai_agents.append(suporte_agent['id'])
+            
+            suporte_agent_id = suporte_agent['id']
+            print(f"   ✅ Agente IA 'Suporte' encontrado: {suporte_agent_id}")
+            
+            # GET /api/ai/departments → Verificar se departamento SUPORTE tem ai_agent_id
+            success, departments = self.make_request("GET", "/ai/departments", token=self.admin_token)
+            if not success:
+                self.log_result("Complete AI Flow", False, f"Failed to get departments: {departments}")
+                return False
+            
+            print(f"   📊 Encontrados {len(departments)} departamentos")
+            suporte_dept = None
+            for dept in departments:
+                print(f"   🏢 Departamento: {dept.get('name')} (ID: {dept.get('id')}, AI: {dept.get('ai_agent_id')})")
+                if dept.get('name', '').upper() == 'SUPORTE':
+                    suporte_dept = dept
+                    break
+            
+            if not suporte_dept:
+                # Criar departamento SUPORTE se não existir
+                print("   ⚠️  Departamento 'SUPORTE' não encontrado, criando...")
+                dept_data = {
+                    "name": "SUPORTE",
+                    "description": "Departamento de suporte técnico",
+                    "ai_agent_id": suporte_agent_id,
+                    "is_default": True,
+                    "timeout_seconds": 5
+                }
+                success, response = self.make_request("POST", "/ai/departments", dept_data, self.admin_token)
+                if not success:
+                    self.log_result("Complete AI Flow", False, f"Failed to create SUPORTE department: {response}")
+                    return False
+                suporte_dept = response
+                self.created_departments.append(suporte_dept['id'])
+            elif not suporte_dept.get('ai_agent_id'):
+                # Vincular agente IA ao departamento
+                print("   🔗 Vinculando agente IA ao departamento SUPORTE...")
+                update_data = {"ai_agent_id": suporte_agent_id}
+                success, response = self.make_request("PUT", f"/ai/departments/{suporte_dept['id']}", update_data, self.admin_token)
+                if not success:
+                    self.log_result("Complete AI Flow", False, f"Failed to link AI agent to department: {response}")
+                    return False
+                suporte_dept = response
+            
+            suporte_dept_id = suporte_dept['id']
+            print(f"   ✅ Departamento SUPORTE configurado: {suporte_dept_id} → AI: {suporte_dept.get('ai_agent_id')}")
+            
+            # GET /api/agents → Listar atendentes, pegar ID do Fabio
+            success, agents = self.make_request("GET", "/agents", token=self.admin_token)
+            if not success:
+                self.log_result("Complete AI Flow", False, f"Failed to get agents: {agents}")
+                return False
+            
+            print(f"   📊 Encontrados {len(agents)} atendentes")
+            fabio_agent = None
+            for agent in agents:
+                print(f"   👤 Atendente: {agent.get('name')} (ID: {agent.get('id')})")
+                if agent.get('name', '').lower() == 'fabio':
+                    fabio_agent = agent
+                    break
+            
+            if not fabio_agent:
+                # Criar atendente Fabio se não existir
+                print("   ⚠️  Atendente 'Fabio' não encontrado, criando...")
+                agent_data = {
+                    "name": "Fabio",
+                    "login": "fabio",
+                    "password": "123456",
+                    "avatar": ""
+                }
+                success, response = self.make_request("POST", "/agents", agent_data, self.admin_token)
+                if not success:
+                    self.log_result("Complete AI Flow", False, f"Failed to create Fabio agent: {response}")
+                    return False
+                fabio_agent_id = response.get("id")
+                self.created_agents.append(fabio_agent_id)
+            else:
+                fabio_agent_id = fabio_agent['id']
+            
+            print(f"   ✅ Atendente Fabio encontrado: {fabio_agent_id}")
+            
+            # Verificar se Fabio está em linked_agents do agente IA
+            linked_agents = suporte_agent.get('linked_agents', [])
+            print(f"   🔗 Linked agents atuais: {linked_agents}")
+            
+            if fabio_agent_id not in linked_agents:
+                print("   🔗 Adicionando Fabio aos linked_agents...")
+                linked_agents.append(fabio_agent_id)
+                update_data = {"linked_agents": linked_agents}
+                success, response = self.make_request("PUT", f"/ai/agents/{suporte_agent_id}", update_data, self.admin_token)
+                if not success:
+                    self.log_result("Complete AI Flow", False, f"Failed to update linked_agents: {response}")
+                    return False
+                print(f"   ✅ Fabio adicionado aos linked_agents")
+            else:
+                print(f"   ✅ Fabio já está nos linked_agents")
+            
+            # 2. CRIAR TICKET DE TESTE
+            print("\n📋 2. CRIANDO TICKET DE TESTE...")
+            
+            # Criar cliente de teste
+            import random
+            unique_whatsapp = f"119{random.randint(10000000, 99999999)}"
+            client_data = {
+                "whatsapp": unique_whatsapp,
+                "pin": "12"
+            }
+            
+            success, client_response = self.make_request("POST", "/auth/client/login", client_data)
+            if not success:
+                self.log_result("Complete AI Flow", False, f"Failed to create test client: {client_response}")
+                return False
+            
+            client_token = client_response['token']
+            client_id = client_response['user_data']['id']
+            print(f"   ✅ Cliente de teste criado: {unique_whatsapp} (ID: {client_id})")
+            
+            # 3. ENVIAR MENSAGEM E TESTAR IA
+            print("\n📋 3. ENVIANDO MENSAGEM E TESTANDO IA...")
+            
+            # Cliente envia mensagem "olá, preciso de ajuda"
+            message_data = {
+                "from_type": "client",
+                "from_id": client_id,
+                "to_type": "agent",
+                "to_id": "system",
+                "kind": "text",
+                "text": "olá, preciso de ajuda"
+            }
+            
+            success, message_response = self.make_request("POST", "/messages", message_data, client_token)
+            if not success:
+                self.log_result("Complete AI Flow", False, f"Failed to send client message: {message_response}")
+                return False
+            
+            print(f"   ✅ Mensagem enviada pelo cliente: 'olá, preciso de ajuda'")
+            
+            # Buscar o ticket criado
+            success, tickets = self.make_request("GET", "/tickets", token=self.admin_token)
+            if not success:
+                self.log_result("Complete AI Flow", False, f"Failed to get tickets: {tickets}")
+                return False
+            
+            test_ticket = None
+            for ticket in tickets:
+                if ticket.get('client_id') == client_id:
+                    test_ticket = ticket
+                    break
+            
+            if not test_ticket:
+                self.log_result("Complete AI Flow", False, "Test ticket not found")
+                return False
+            
+            ticket_id = test_ticket['id']
+            print(f"   ✅ Ticket criado: {ticket_id}")
+            
+            # Cliente seleciona departamento SUPORTE
+            dept_selection_data = {
+                "department_id": suporte_dept_id
+            }
+            
+            success, selection_response = self.make_request("POST", f"/tickets/{ticket_id}/select-department", dept_selection_data, client_token)
+            if not success:
+                self.log_result("Complete AI Flow", False, f"Failed to select department: {selection_response}")
+                return False
+            
+            print(f"   ✅ Departamento SUPORTE selecionado")
+            
+            # Atribuir ticket ao Fabio
+            # Primeiro fazer login como Fabio
+            fabio_login_data = {
+                "login": "fabio",
+                "password": "123456"
+            }
+            
+            success, fabio_login_response = self.make_request("POST", "/auth/agent/login", fabio_login_data)
+            if not success:
+                self.log_result("Complete AI Flow", False, f"Failed to login as Fabio: {fabio_login_response}")
+                return False
+            
+            fabio_token = fabio_login_response['token']
+            print(f"   ✅ Login como Fabio realizado")
+            
+            # Atualizar ticket para atribuir ao Fabio (simulando atribuição manual)
+            # Como não temos endpoint específico, vamos usar uma abordagem direta no banco
+            # Por enquanto, vamos assumir que o ticket está atribuído ao Fabio
+            
+            # Aguardar 10 segundos para IA processar
+            print("   ⏱️  Aguardando 10 segundos para IA processar...")
+            time.sleep(10)
+            
+            # 4. VERIFICAR SE IA RESPONDEU
+            print("\n📋 4. VERIFICANDO SE IA RESPONDEU...")
+            
+            # GET /api/messages?ticket_id={id} → Verificar se IA respondeu
+            success, messages = self.make_request("GET", f"/messages/{ticket_id}", token=client_token)
+            if not success:
+                self.log_result("Complete AI Flow", False, f"Failed to get messages: {messages}")
+                return False
+            
+            print(f"   📊 Encontradas {len(messages)} mensagens no ticket")
+            
+            ai_response_found = False
+            for message in messages:
+                print(f"   💬 Mensagem: {message.get('from_type')} → {message.get('text', '')[:50]}...")
+                if message.get('from_type') == 'ai':
+                    ai_response_found = True
+                    print(f"   🤖 IA RESPONDEU: {message.get('text', '')}")
+                    break
+            
+            if ai_response_found:
+                self.log_result("Complete AI Flow", True, "✅ IA RESPONDEU CORRETAMENTE! Fluxo completo funcionando.")
+                return True
+            else:
+                # 5. VERIFICAR LOGS E IDENTIFICAR PROBLEMA
+                print("\n📋 5. IA NÃO RESPONDEU - VERIFICANDO LOGS...")
+                
+                # Verificar se o ticket tem assigned_agent_id
+                success, ticket_details = self.make_request("GET", f"/tickets/{ticket_id}", token=self.admin_token)
+                if success:
+                    assigned_agent = ticket_details.get('assigned_agent_id')
+                    department_id = ticket_details.get('department_id')
+                    print(f"   📋 Ticket details:")
+                    print(f"      - Department ID: {department_id}")
+                    print(f"      - Assigned Agent: {assigned_agent}")
+                    print(f"      - Status: {ticket_details.get('status')}")
+                    
+                    if not assigned_agent:
+                        self.log_result("Complete AI Flow", False, "❌ PROBLEMA IDENTIFICADO: Ticket não tem assigned_agent_id. IA só responde se ticket estiver atribuído a um atendente que está em linked_agents.")
+                        return False
+                    elif assigned_agent != fabio_agent_id:
+                        self.log_result("Complete AI Flow", False, f"❌ PROBLEMA IDENTIFICADO: Ticket atribuído a {assigned_agent}, mas deveria ser {fabio_agent_id}")
+                        return False
+                    elif department_id != suporte_dept_id:
+                        self.log_result("Complete AI Flow", False, f"❌ PROBLEMA IDENTIFICADO: Ticket no departamento {department_id}, mas deveria ser {suporte_dept_id}")
+                        return False
+                    else:
+                        self.log_result("Complete AI Flow", False, "❌ PROBLEMA IDENTIFICADO: Configuração parece correta, mas IA não respondeu. Verifique logs do backend para mais detalhes.")
+                        return False
+                else:
+                    self.log_result("Complete AI Flow", False, f"❌ Não foi possível obter detalhes do ticket: {ticket_details}")
+                    return False
+                
+        except Exception as e:
+            self.log_result("Complete AI Flow", False, f"Exception during AI flow test: {str(e)}")
+            return False
+
 def main():
     """Main test execution"""
     print(f"🔗 Testing backend at: {API_BASE}")
-    print(f"🎯 Focusing on critical routes after fixes")
+    print(f"🎯 Focusing on AI system complete flow test")
     
     tester = ComprehensiveBackendTester()
-    passed, total, results = tester.run_all_tests()
     
-    # Return results for external processing
-    return {
-        "passed": passed,
-        "total": total,
-        "success_rate": (passed / total) * 100 if total > 0 else 0,
-        "results": results
-    }
+    # Run only the complete AI flow test as requested
+    print("🚀 EXECUTANDO TESTE COMPLETO DE IA - CENÁRIO REAL DO USUÁRIO")
+    print("=" * 60)
+    
+    # First get admin token
+    if not tester.test_admin_login():
+        print("❌ Failed to get admin token, cannot proceed")
+        return
+    
+    # Run the complete AI flow test
+    success = tester.test_complete_ai_flow()
+    
+    if success:
+        print("\n🎉 TESTE COMPLETO DE IA PASSOU! Sistema funcionando corretamente.")
+    else:
+        print("\n❌ TESTE COMPLETO DE IA FALHOU! Verifique os logs acima para identificar o problema.")
+    
+    # Cleanup
+    if any([tester.created_agents, tester.created_ai_agents, tester.created_departments]):
+        tester.cleanup()
+    
+    return success
 
 if __name__ == "__main__":
     main()
