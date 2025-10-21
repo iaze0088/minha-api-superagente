@@ -1826,11 +1826,10 @@ async def get_reseller_domain_info(request: Request, current_user: dict = Depend
 @api_router.post("/reseller/update-domain")
 async def update_reseller_domain(data: dict, request: Request, current_user: dict = Depends(get_current_user)):
     """Atualiza o domínio personalizado da revenda"""
-    from tenant_middleware import get_current_tenant
-    tenant_ctx = get_current_tenant()
-    reseller_id = tenant_ctx.reseller_id
+    # Use reseller_id from token instead of tenant middleware
+    reseller_id = current_user.get("reseller_id")
     
-    if not reseller_id:
+    if not reseller_id or current_user.get("user_type") != "reseller":
         raise HTTPException(status_code=400, detail="Apenas revendedores podem atualizar")
     
     custom_domain = data.get('custom_domain', '').strip().lower()
