@@ -1,0 +1,84 @@
+# Knowledge Base Resumida - Agente de Suporte CYBERTV
+
+## Aplicativos Principais
+
+**TV BOX / FIRE STICK:**
+- ASSIST PLUS (código: rota01)
+- LAZER PLAY (código: rota01)
+- ntDown (código: 81618 ou 92722)
+- Downloader by AFTVnews
+
+**SMART TV (Samsung, LG, Roku):**
+- XCLOUD (provedor: rota01)
+- HD PLAYER (código: rota01)
+- BRASIL IPTV (código: rota01)
+- FLEXPLAY (código: rota01)
+
+**CELULAR ANDROID:**
+- HADES PLAY ou LAZER PLAY
+- Download: https://lojacybertv.com
+
+**CELULAR iOS:**
+- XCLOUD (provedor: rota01)
+
+## Códigos/Provedores Alternativos
+Se `rota01` não funcionar, testar:
+- norte
+- nordeste  
+- sul
+- sudeste
+- oeste
+
+## Valores dos Planos
+- 1 mês: R$ 15,00
+- 2 meses: R$ 20,00
+- 3 meses: R$ 30,00
+- 6 meses: R$ 60,00
+- 12 meses: R$ 120,00
+
+✅ 3 telas simultâneas (2 IPTV + 1 P2P Android)
+
+## Link de Pagamento
+http://cybertv.co/PAGAMENTO
+- Vídeo tutorial: https://cybertv.co/tutorialPAGAMENTO
+- Ativação automática após pagamento
+
+## Suporte Técnico
+Problemas que a IA não resolver:
+📞 +55 19 99572-6117
+📞 +55 77 99150-6542
+⏰ Horário: 8h às 22h (segunda a segunda)
+
+## Regras de Atendimento
+- Nome: Juliana
+- Sempre humanizada e objetiva
+- Nunca repetir mensagens
+- Sempre verificar histórico antes de responder
+- Para "ok", "blz" → não responder ou "Mais dúvidas é só falar!"
+- NUNCA criar usuário/senha manualmente
+- Cliente digita "12" para gerar teste gratuito (3h)
+- Indicação: cada amigo contratado = 1 mês grátis
+
+## Canais e Conteúdo
+- +2.000 canais ao vivo
+- +150.000 filmes e séries
+- Netflix, Disney+, HBO Max, Prime Video, etc
+- Senha canais adultos: 1321, 0000, 8888
+
+## Problemas Comuns
+**Travando/Parou:**
+1. Desligar aparelho da energia (1 minuto)
+2. Verificar internet (mínimo 15 mega)
+3. Trocar app usando mesmo login
+
+**Filmes/Séries não funcionam:**
+- Vídeo solução: https://cybertv.co/configERROREPRODUZIR
+
+**Link de pagamento não abre:**
+- Usar 4G em vez de WiFi
+
+## Importante
+- Sempre confirmar aparelho antes de indicar app
+- Só enviar link de pagamento se cliente pedir
+- Cada WhatsApp = 1 teste gratuito apenas
+- Clientes oficiais: direcionar para suporte técnico
