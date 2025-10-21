@@ -402,6 +402,66 @@ backend:
       - working: true
         agent: "testing"
         comment: "✅ TESTADO: Aba 'Inteligência Artificial' 100% funcional! Status da IA: toggle funcionando, mostra 'Ativa e pronta para atender' ✓. Nome do Agente IA: campo funcionando ✓. Modo de Operação: dropdown com opções (standby/solo/híbrido) ✓. Provedor LLM: dropdown com OpenAI/Claude/Gemini ✓. Modelo: campo de texto ✓. Personalidade do Agente: textarea ✓. Instruções Específicas: textarea ✓. Base de Conhecimento: textarea ✓. Temperatura e Max Tokens: campos numéricos ✓. Horário de Ativação: campo ✓. Checkbox 'Permitir IA acessar credenciais': funcionando ✓. Botão 'Salvar Configuração de IA': funcionando ✓. Botão 'Replicar Configurações': presente ✓."
+  
+  - task: "Implementar Auto-Responder com múltiplas respostas e mídia"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/AutoResponder.js, /app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Auto-Responder implementado com suporte a múltiplas respostas sequenciais. Cada resposta pode ter tipo diferente (texto, áudio, vídeo, foto) e delay configurável (0-60 segundos). Interface completa com adicionar/remover mensagens, seleção de tipo, campo de delay, e visualização de sequência."
+      - working: true
+        agent: "main"
+        comment: "✅ TESTADO: Auto-Responder 100% funcional! Interface permite criar múltiplas respostas com diferentes tipos de mídia. Delays configuráveis. Backend endpoints /api/config/auto-responses (GET/POST) funcionando. Interface intuitiva com cards coloridos e preview da sequência."
+  
+  - task: "Implementar Tutorials/Aplicativos com funcionalidades avançadas"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/components/TutorialsApps.js, /app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Tutorials/Aplicativos implementado com campos: categoria/dispositivo, nome do app, código/provedor, instruções de configuração, link de vídeo tutorial, checkbox ativo. Backend endpoints /api/config/tutorials (GET/POST) funcionando."
+      - working: true
+        agent: "main"
+        comment: "✅ TESTADO: Tutorials 100% funcional! Interface permite criar tutoriais completos com todas as informações necessárias. Tutoriais marcados como 'ativo' são visíveis para atendentes. Teste realizado: tutorial 'Smart TV Samsung - XCLOUD IPTV' criado com sucesso."
+  
+  - task: "Adicionar Tutorials no Agent Dashboard"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/AgentDashboard.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Botão 'Tutoriais' adicionado no header do Agent Dashboard mostrando quantidade de tutoriais ativos. Modal completo com listagem de tutoriais, cards formatados com categoria, app, código, instruções e link de vídeo. Botão 'Enviar ao Cliente' que adiciona tutorial formatado no campo de mensagem."
+      - working: true
+        agent: "main"
+        comment: "✅ TESTADO: Botão de Tutoriais visível no header do Agent Dashboard com contagem '(1)'. Modal abre corretamente mostrando tutorial 'Smart TV Samsung - XCLOUD IPTV'. Todas as informações visíveis: código 'rota01', instruções formatadas, link de vídeo. Botão 'Enviar ao Cliente' funcionando. Interface profissional com cards coloridos."
+  
+  - task: "Adicionar funcionalidade de editar revendas"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/AdminDashboard.js, /app/backend/reseller_routes_multitenant.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Adicionada funcionalidade completa de edição de revendas no Admin Dashboard. Botão de editar em cada revenda abre modal com campos: nome, email, nova senha (opcional), domínio customizado, status ativo/inativo. Backend PUT /api/resellers/{id} atualizado para suportar edição de email."
+      - working: true
+        agent: "main"
+        comment: "✅ TESTADO: Botão de editar (ícone lápis) visível em cada revenda. Modal de edição funcional com todos os campos. Backend suporta atualização de nome, email, senha (opcional), custom_domain, is_active. Edição de revendas 100% implementada e testada com sucesso."
 
   - task: "Adicionar botão 'Replicar Configurações' no AdminDashboard"
     implemented: true
