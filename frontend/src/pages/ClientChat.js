@@ -568,7 +568,6 @@ const ClientChat = () => {
                   )}
                   {msg.kind === 'pix' && (
                     <div className="space-y-2">
-                      <p className="text-sm">{msg.text}</p>
                       <Button
                         size="sm"
                         onClick={() => {
@@ -587,7 +586,8 @@ const ClientChat = () => {
                   </p>
                 </div>
               </div>
-            ))}
+              );
+            })}
             <div ref={messagesEndRef} />
           </div>
         </div>
