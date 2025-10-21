@@ -83,15 +83,32 @@ const AIAgentsManager = () => {
   };
 
   const handleToggleActive = async (agent) => {
+    // Abrir diálogo para selecionar atendentes
+    setAgentToLink(agent);
+    setSelectedAgentsUsers(agent.linked_agents || []);
+    setShowLinkAgentsDialog(true);
+  };
+  
+  const handleSaveLinkAgents = async () => {
     try {
-      await api.put(`/ai/agents/${agent.id}`, {
-        is_active: !agent.is_active
+      await api.put(`/ai/agents/${agentToLink.id}`, {
+        is_active: selectedAgentsUsers.length > 0, // Ativo se tiver atendentes vinculados
+        linked_agents: selectedAgentsUsers
       });
-      toast.success(agent.is_active ? 'Agente desativado' : 'Agente ativado');
+      toast.success('Atendentes vinculados com sucesso!');
+      setShowLinkAgentsDialog(false);
       loadAgents();
     } catch (error) {
-      toast.error('Erro ao atualizar agente');
+      toast.error('Erro ao vincular atendentes');
     }
+  };
+  
+  const toggleAgentUser = (agentUserId) => {
+    setSelectedAgentsUsers(prev => 
+      prev.includes(agentUserId) 
+        ? prev.filter(id => id !== agentUserId)
+        : [...prev, agentUserId]
+    );
   };
 
   return (
