@@ -546,10 +546,10 @@ const ClientChat = () => {
               
               return (
               <div key={msg.id}>
-                {/* Separador de data */}
+                {/* Separador de data - Estilo WhatsApp */}
                 {showDate && (
-                  <div className="flex justify-center my-3">
-                    <span className="bg-slate-200 text-slate-600 text-xs px-3 py-1 rounded-full">
+                  <div className="flex justify-center my-2">
+                    <span className="bg-[#E1F5FE] text-gray-700 text-xs px-3 py-1 rounded-md shadow-sm">
                       {new Date(msg.created_at).toLocaleDateString('pt-BR', { 
                         day: '2-digit', 
                         month: 'long', 
