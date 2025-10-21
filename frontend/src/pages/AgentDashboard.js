@@ -379,10 +379,23 @@ const AgentDashboard = () => {
               <p className="text-sm text-slate-600">{userData?.name}</p>
             </div>
           </div>
-          <Button data-testid="agent-logout-btn" onClick={() => { clearAuth(); navigate('/'); }} variant="outline" size="sm">
-            <LogOut className="w-4 h-4 mr-2" />
-            Sair
-          </Button>
+          <div className="flex items-center gap-2">
+            {tutorials.length > 0 && (
+              <Button 
+                onClick={() => setShowTutorials(true)} 
+                variant="outline" 
+                size="sm"
+                className="bg-purple-50 hover:bg-purple-100 border-purple-300"
+              >
+                <BookOpen className="w-4 h-4 mr-2" />
+                Tutoriais ({tutorials.length})
+              </Button>
+            )}
+            <Button data-testid="agent-logout-btn" onClick={() => { clearAuth(); navigate('/'); }} variant="outline" size="sm">
+              <LogOut className="w-4 h-4 mr-2" />
+              Sair
+            </Button>
+          </div>
         </div>
       </header>
 
