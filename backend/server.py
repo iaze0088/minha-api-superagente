@@ -148,6 +148,103 @@ async def send_department_selection(ticket_id: str, client_id: str, reseller_id:
         {"$set": {"department_choice_sent_at": datetime.now(timezone.utc).isoformat()}}
     )
 
+async def process_message_with_ai(ticket: Dict, message_text: str, reseller_id: str):
+    """Processa mensagem e gera resposta da IA se houver agente vinculado"""
+    try:
+        # Verificar se o ticket tem departamento
+        department_id = ticket.get("department_id")
+        if not department_id:
+            return
+        
+        # Buscar departamento
+        department = await db.departments.find_one({"id": department_id, "reseller_id": reseller_id})
+        if not department or not department.get("ai_agent_id"):
+            return  # Departamento sem IA
+        
+        # Buscar agente IA
+        ai_agent = await db.ai_agents.find_one({
+            "id": department["ai_agent_id"],
+            "reseller_id": reseller_id,
+            "is_active": True
+        })
+        
+        if not ai_agent:
+            logger.info(f"Agente IA não encontrado ou inativo para departamento {department_id}")
+            return
+        
+        logger.info(f"🤖 IA ativada para ticket {ticket['id']} - Agente: {ai_agent.get('name', 'Sem nome')}")
+        
+        # Buscar histórico de mensagens do ticket
+        messages = await db.messages.find({"ticket_id": ticket["id"]}).sort("created_at", 1).to_list(20)
+        
+        # Buscar dados do cliente (para credenciais se permitido)
+        client = await db.users.find_one({"id": ticket["client_id"], "reseller_id": reseller_id})
+        client_data = {
+            "pinned_user": client.get("pinned_user") if client else None,
+            "pinned_pass": client.get("pinned_pass") if client else None
+        }
+        
+        # Gerar resposta da IA
+        ai_response = await ai_service.generate_response(
+            agent_config=ai_agent,
+            message=message_text,
+            conversation_history=messages,
+            client_data=client_data
+        )
+        
+        if not ai_response:
+            logger.error("IA não gerou resposta")
+            return
+        
+        # Criar mensagem de resposta da IA
+        ai_message = {
+            "id": str(uuid.uuid4()),
+            "ticket_id": ticket["id"],
+            "from_type": "ai",
+            "from_name": ai_agent.get("name", "Assistente IA"),
+            "text": ai_response,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "reseller_id": reseller_id
+        }
+        
+        await db.messages.insert_one(ai_message)
+        
+        # Atualizar última mensagem do ticket
+        await db.tickets.update_one(
+            {"id": ticket["id"]},
+            {"$set": {
+                "last_message": {
+                    "text": ai_response[:100],
+                    "from_type": "ai",
+                    "created_at": ai_message["created_at"]
+                },
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+        
+        # Enviar via WebSocket para cliente e atendentes
+        await manager.send_to_user(ticket["client_id"], {
+            "type": "new_message",
+            "message": ai_message
+        })
+        
+        # Enviar para atendentes do departamento
+        agents_in_dept = await db.agents.find({
+            "reseller_id": reseller_id,
+            "departments": department_id
+        }).to_list(None)
+        
+        for agent in agents_in_dept:
+            await manager.send_to_user(agent["id"], {
+                "type": "new_message",
+                "message": ai_message
+            })
+        
+        logger.info(f"✅ IA respondeu no ticket {ticket['id']}")
+        
+    except Exception as e:
+        logger.error(f"Erro ao processar mensagem com IA: {str(e)}", exc_info=True)
+
 # Background task para verificar timeouts
 async def check_department_timeouts():
     """Verifica tickets aguardando escolha de departamento e aplica timeout"""
