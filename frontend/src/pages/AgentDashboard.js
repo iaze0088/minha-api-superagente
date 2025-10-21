@@ -293,13 +293,22 @@ const AgentDashboard = () => {
     setSearchResults([]);
   };
 
-  const loadMessages = async (ticketId) => {
+  const loadMessages = async (ticketId, resetScroll = true) => {
     try {
       console.log('🔍 Carregando mensagens do ticket:', ticketId);
       const { data } = await api.get(`/messages/${ticketId}`);
       console.log('✅ Mensagens carregadas:', data.length, 'mensagens');
       console.log('📨 Primeiras 3 mensagens:', data.slice(0, 3));
       setMessages(data);
+      setMessageOffset(0);
+      setHasMoreMessages(false); // Já carrega todas as mensagens
+      
+      if (resetScroll) {
+        // Scroll para o final após carregar
+        setTimeout(() => {
+          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+      }
     } catch (error) {
       console.error('❌ Erro ao carregar mensagens:', error);
       toast.error('Erro ao carregar mensagens');
