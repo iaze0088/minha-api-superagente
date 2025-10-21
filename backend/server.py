@@ -1744,7 +1744,8 @@ async def get_tutorials_advanced(current_user: dict = Depends(get_current_user))
     reseller_id = tenant_ctx.reseller_id
     
     tutorials = await db.tutorials_advanced.find(
-        {"reseller_id": reseller_id}
+        {"reseller_id": reseller_id},
+        {"_id": 0}  # Exclude MongoDB ObjectId
     ).to_list(length=None)
     
     return tutorials
