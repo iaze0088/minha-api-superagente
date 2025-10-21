@@ -339,6 +339,14 @@ const ClientChat = () => {
       toast.success('Mensagem enviada!');
       setTimeout(loadMessages, 500);
       
+      // Marcar que enviou primeira mensagem e verificar se deve pedir nome
+      if (!firstMessageSent) {
+        setFirstMessageSent(true);
+        setTimeout(() => {
+          checkNamePopup();
+        }, 2000);
+      }
+      
       // Show queue popup after 10 seconds (once per day)
       if (shouldShowQueuePopup()) {
         queueTimerRef.current = setTimeout(async () => {
