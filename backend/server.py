@@ -151,6 +151,17 @@ async def send_department_selection(ticket_id: str, client_id: str, reseller_id:
 async def process_message_with_ai(ticket: Dict, message_text: str, reseller_id: str):
     """Processa mensagem e gera resposta da IA se houver agente vinculado"""
     try:
+        # Verificar se IA está desativada para este ticket
+        ai_disabled_until = ticket.get("ai_disabled_until")
+        if ai_disabled_until:
+            try:
+                disabled_until = datetime.fromisoformat(ai_disabled_until)
+                if datetime.now(timezone.utc) < disabled_until:
+                    logger.info(f"IA desativada para ticket {ticket['id']} até {disabled_until}")
+                    return
+            except:
+                pass
+        
         # Verificar se o ticket tem departamento
         department_id = ticket.get("department_id")
         if not department_id:
