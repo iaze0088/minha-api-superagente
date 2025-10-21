@@ -72,18 +72,78 @@ class ComprehensiveBackendTester:
         except json.JSONDecodeError:
             return False, {"error": "Invalid JSON response"}
             
+    # ============================================
+    # TESTES DE AUTENTICAÇÃO
+    # ============================================
+    
     def test_admin_login(self) -> bool:
-        """Test 1: Admin Master Authentication"""
+        """Test 1: POST /api/auth/admin/login (senha: 102030@ab)"""
         success, response = self.make_request("POST", "/auth/admin/login", {
             "password": ADMIN_PASSWORD
         })
         
         if success and "token" in response:
             self.admin_token = response["token"]
-            self.log_result("Admin Master Login", True, f"Token received: {response['user_type']}")
+            self.log_result("Admin Login", True, f"Token received: {response['user_type']}")
             return True
         else:
-            self.log_result("Admin Master Login", False, f"Error: {response}")
+            self.log_result("Admin Login", False, f"Error: {response}")
+            return False
+    
+    def test_agent_login(self) -> bool:
+        """Test 2: POST /api/auth/agent/login"""
+        # First create an agent
+        if not self.admin_token:
+            self.log_result("Agent Login", False, "Admin token required")
+            return False
+            
+        agent_data = {
+            "name": "Agente Teste",
+            "login": "agente_teste",
+            "password": "123456",
+            "avatar": ""
+        }
+        
+        success, response = self.make_request("POST", "/agents", agent_data, self.admin_token)
+        if not success:
+            self.log_result("Agent Login", False, f"Failed to create agent: {response}")
+            return False
+            
+        agent_id = response.get("id")
+        if agent_id:
+            self.created_agents.append(agent_id)
+        
+        # Now test login
+        login_data = {
+            "login": "agente_teste",
+            "password": "123456"
+        }
+        
+        success, response = self.make_request("POST", "/auth/agent/login", login_data)
+        
+        if success and "token" in response:
+            self.agent_token = response["token"]
+            self.log_result("Agent Login", True, f"Agent logged in: {response.get('user_data', {}).get('name')}")
+            return True
+        else:
+            self.log_result("Agent Login", False, f"Error: {response}")
+            return False
+    
+    def test_client_login(self) -> bool:
+        """Test 3: POST /api/auth/client/login"""
+        login_data = {
+            "whatsapp": "11999999999",
+            "pin": "12"
+        }
+        
+        success, response = self.make_request("POST", "/auth/client/login", login_data)
+        
+        if success and "token" in response:
+            self.client_token = response["token"]
+            self.log_result("Client Login", True, f"Client logged in: {response.get('user_data', {}).get('whatsapp')}")
+            return True
+        else:
+            self.log_result("Client Login", False, f"Error: {response}")
             return False
             
     def test_create_root_reseller(self) -> bool:
