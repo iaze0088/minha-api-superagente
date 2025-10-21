@@ -142,20 +142,9 @@ const ClientChat = () => {
       checkOnlineStatus();
     }, 60000);
     
-    // Manter sessão ativa - Keep alive
-    const keepAliveInterval = setInterval(() => {
-      if (auth.token) {
-        api.get('/users/me').catch(() => {
-          console.log('⚠️ Keep-alive falhou, reconectando WebSocket...');
-          connectWebSocket();
-        });
-      }
-    }, 30000);
-    
     return () => {
       clearInterval(noticesInterval);
       clearInterval(statusInterval);
-      clearInterval(keepAliveInterval);
       if (wsRef.current) {
         wsRef.current.close();
       }
