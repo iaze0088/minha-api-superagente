@@ -455,52 +455,61 @@ const ClientChat = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50 flex items-center justify-center p-4">
       <div className="phone-mockup w-full max-w-md shadow-2xl">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-              <MessageCircle className="w-6 h-6" />
+        {/* Header - Estilo WhatsApp */}
+        <div className="bg-[#075E54] text-white p-3 rounded-t-2xl">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3 flex-1">
+              <div className="relative">
+                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center overflow-hidden">
+                  <MessageCircle className="w-5 h-5" />
+                </div>
+                {onlineStatus && (
+                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-[#075E54]"></span>
+                )}
+              </div>
+              <div className="flex-1">
+                <h1 className="font-semibold text-base">Suporte</h1>
+                <p className="text-xs text-white/80">
+                  {onlineStatus ? 'online' : 'offline'}
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="font-semibold">Suporte</h1>
-              <p className="text-xs opacity-90">{onlineStatus}</p>
+            <div className="flex items-center gap-1">
+              <Button
+                data-testid="notices-btn"
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  setShowNotices(true);
+                  setHasNewNotices(false);
+                  localStorage.setItem('last_notice_count', lastNoticeCount.toString());
+                }}
+                className={`text-white hover:bg-white/10 h-9 w-9 relative ${hasNewNotices ? 'pulse' : ''}`}
+              >
+                <Bell className={`w-5 h-5 ${hasNewNotices ? 'text-red-300' : ''}`} />
+                {hasNewNotices && (
+                  <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                )}
+              </Button>
+              <Button
+                data-testid="settings-btn"
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowSettings(true)}
+                className="text-white hover:bg-white/10 h-9 w-9"
+              >
+                <Settings className="w-5 h-5" />
+              </Button>
+              <Button
+                data-testid="client-logout-btn"
+                variant="ghost"
+                size="icon"
+                onClick={() => { clearAuth(); navigate('/'); }}
+                className="text-white hover:bg-white/10 h-9 w-9"
+              >
+                <LogOut className="w-5 h-5" />
+              </Button>
             </div>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              data-testid="notices-btn"
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                setShowNotices(true);
-                setHasNewNotices(false);
-                localStorage.setItem('last_notice_count', lastNoticeCount.toString());
-              }}
-              className={`text-white hover:bg-white/20 relative ${hasNewNotices ? 'pulse' : ''}`}
-            >
-              <Bell className={`w-5 h-5 ${hasNewNotices ? 'text-red-300' : ''}`} />
-              {hasNewNotices && (
-                <span className="absolute top-0 right-0 w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
-              )}
-            </Button>
-            <Button
-              data-testid="settings-btn"
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowSettings(true)}
-              className="text-white hover:bg-white/20"
-            >
-              <Settings className="w-5 h-5" />
-            </Button>
-            <Button
-              data-testid="client-logout-btn"
-              variant="ghost"
-              size="icon"
-              onClick={() => { clearAuth(); navigate('/'); }}
-              className="text-white hover:bg-white/20"
-            >
-              <LogOut className="w-5 h-5" />
-            </Button>
           </div>
         </div>
 
