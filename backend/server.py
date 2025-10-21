@@ -500,9 +500,20 @@ def create_token(user_id: str, user_type: str, reseller_id: Optional[str] = None
 
 def verify_token(token: str) -> dict:
     try:
-        return jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
-    except:
-        raise HTTPException(status_code=401, detail="Invalid token")
+        payload = jwt.decode(token, JWT_SECRET, algorithms=["HS256"])
+        return payload
+    except jwt.ExpiredSignatureError:
+        # Token expirado - não deve acontecer com 365 dias
+        logger.error("Token expirado (não deveria acontecer)")
+        raise HTTPException(status_code=401, detail="Token expirado")
+    except jwt.InvalidTokenError as e:
+        # Token inválido
+        logger.error(f"Token inválido: {str(e)}")
+        raise HTTPException(status_code=401, detail="Token inválido")
+    except Exception as e:
+        # Outro erro
+        logger.error(f"Erro ao verificar token: {str(e)}")
+        raise HTTPException(status_code=401, detail="Erro ao verificar token")
 
 async def get_current_user(authorization: Optional[str] = Header(None)):
     if not authorization or not authorization.startswith("Bearer "):
