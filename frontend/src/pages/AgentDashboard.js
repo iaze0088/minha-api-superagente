@@ -556,21 +556,25 @@ const AgentDashboard = () => {
                 )}
                 <div className="space-y-3">
                   {console.log('🎨 Renderizando mensagens:', messages.length, 'total, exibindo:', messages.slice(-7).length)}
-                  {messages.length === 0 && (
-                    <div className="text-center text-slate-500 py-8">
-                      <p>Nenhuma mensagem ainda</p>
-                      <p className="text-sm mt-2">Envie uma mensagem para iniciar a conversa</p>
+                  {messages.length === 0 ? (
+                    <div className="text-center text-slate-500 py-8 bg-white rounded-lg shadow-sm">
+                      <p className="font-medium">Nenhuma mensagem ainda</p>
+                      <p className="text-sm mt-2">Aguardando mensagens do cliente...</p>
                     </div>
-                  )}
-                  {messages.slice(-7).map(msg => (
-                    <div key={msg.id} className={`flex ${msg.from_type === 'agent' ? 'justify-end' : 'justify-start'} animate-fadeIn`}>
-                      <div
-                        className={`max-w-[70%] p-3 rounded-2xl shadow-sm ${
-                          msg.from_type === 'agent'
-                            ? 'bg-indigo-600 text-white rounded-br-sm'
-                            : 'bg-white text-slate-900 rounded-bl-sm border border-slate-200'
-                        }`}
-                      >
+                  ) : (
+                    messages.slice(-7).map((msg, index) => {
+                      console.log(`📝 Mensagem ${index}:`, msg.from_type, msg.text?.substring(0, 30));
+                      return (
+                        <div key={msg.id} className={`flex ${msg.from_type === 'agent' ? 'justify-end' : 'justify-start'} animate-fadeIn`}>
+                          <div
+                            className={`max-w-[70%] p-3 rounded-2xl shadow-sm ${
+                              msg.from_type === 'agent'
+                                ? 'bg-indigo-600 text-white rounded-br-sm'
+                                : msg.from_type === 'ai'
+                                ? 'bg-purple-100 text-purple-900 rounded-bl-sm border border-purple-200'
+                                : 'bg-white text-slate-900 rounded-bl-sm border border-slate-200'
+                            }`}
+                          >
                         {msg.kind === 'text' && <p className="whitespace-pre-wrap break-words text-sm">{msg.text}</p>}
                         {msg.kind === 'image' && <img src={msg.file_url} alt="" className="max-w-full rounded-lg" />}
                         {msg.kind === 'video' && <video src={msg.file_url} controls className="max-w-full rounded-lg" />}
