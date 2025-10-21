@@ -131,8 +131,12 @@ class ComprehensiveBackendTester:
     
     def test_client_login(self) -> bool:
         """Test 3: POST /api/auth/client/login"""
+        # Try with a unique WhatsApp number for testing
+        import random
+        unique_whatsapp = f"119{random.randint(10000000, 99999999)}"
+        
         login_data = {
-            "whatsapp": "11999999999",
+            "whatsapp": unique_whatsapp,
             "pin": "12"
         }
         
