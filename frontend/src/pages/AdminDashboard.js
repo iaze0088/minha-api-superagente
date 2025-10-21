@@ -293,7 +293,40 @@ const AdminDashboard = () => {
           {/* Resellers Tab */}
           <TabsContent value="resellers" className="space-y-6">
             <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Gerenciar Revendas</h3>
+              <h3 className="text-lg font-semibold mb-4">Nova Revenda</h3>
+              <p className="text-sm text-slate-600 mb-4">Crie sub-revendas com isolamento completo de dados</p>
+              <div className="grid md:grid-cols-2 gap-4 mb-4">
+                <Input
+                  placeholder="Nome da Revenda"
+                  value={newReseller.name}
+                  onChange={(e) => setNewReseller({ ...newReseller, name: e.target.value })}
+                />
+                <Input
+                  placeholder="Email"
+                  type="email"
+                  value={newReseller.email}
+                  onChange={(e) => setNewReseller({ ...newReseller, email: e.target.value })}
+                />
+                <Input
+                  placeholder="Senha"
+                  type="password"
+                  value={newReseller.password}
+                  onChange={(e) => setNewReseller({ ...newReseller, password: e.target.value })}
+                />
+                <Input
+                  placeholder="Domínio customizado (opcional)"
+                  value={newReseller.domain}
+                  onChange={(e) => setNewReseller({ ...newReseller, domain: e.target.value })}
+                />
+              </div>
+              <Button onClick={handleCreateReseller} className="bg-purple-600 hover:bg-purple-700">
+                <Plus className="w-4 h-4 mr-2" />
+                Criar Revenda
+              </Button>
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-4">Revendas Existentes</h3>
               <p className="text-sm text-slate-600 mb-4">Sistema multi-tenant ativo com isolamento de dados</p>
               <div className="grid gap-4">
                 {(resellers || []).map((reseller) => (
