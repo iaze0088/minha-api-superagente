@@ -275,16 +275,88 @@ class ComprehensiveBackendTester:
             self.log_result("Delete AI Agent", False, f"Error: {response}")
             return False
             
-    def test_list_resellers(self) -> bool:
-        """Test 4: List All Resellers (Admin)"""
-        success, response = self.make_request("GET", "/resellers", token=self.admin_token)
+    # ============================================
+    # TESTES DE DEPARTAMENTOS (PRIORIDADE ALTA)
+    # ============================================
+    
+    def test_list_departments(self) -> bool:
+        """Test 10: GET /api/ai/departments (listar departamentos)"""
+        if not self.admin_token:
+            self.log_result("List Departments", False, "Admin token required")
+            return False
+            
+        success, response = self.make_request("GET", "/ai/departments", token=self.admin_token)
         
         if success and isinstance(response, list):
             count = len(response)
-            self.log_result("List All Resellers", True, f"Found {count} resellers")
+            self.log_result("List Departments", True, f"Found {count} departments")
             return True
         else:
-            self.log_result("List All Resellers", False, f"Error: {response}")
+            self.log_result("List Departments", False, f"Error: {response}")
+            return False
+    
+    def test_create_department(self) -> bool:
+        """Test 11: POST /api/ai/departments (criar departamento)"""
+        if not self.admin_token:
+            self.log_result("Create Department", False, "Admin token required")
+            return False
+            
+        dept_data = {
+            "name": "Suporte Técnico",
+            "description": "Departamento de suporte técnico",
+            "is_default": True,
+            "timeout_seconds": 120
+        }
+        
+        success, response = self.make_request("POST", "/ai/departments", dept_data, self.admin_token)
+        
+        if success and "id" in response:
+            dept_id = response.get("id")
+            self.created_departments.append(dept_id)
+            self.log_result("Create Department", True, f"Department created: {response.get('name')} (ID: {dept_id})")
+            return True
+        else:
+            self.log_result("Create Department", False, f"Error: {response}")
+            return False
+    
+    def test_update_department(self) -> bool:
+        """Test 12: PUT /api/ai/departments/{id} (atualizar)"""
+        if not self.admin_token or not self.created_departments:
+            self.log_result("Update Department", False, "Admin token or department required")
+            return False
+            
+        dept_id = self.created_departments[0]
+        update_data = {
+            "name": "Suporte Técnico Atualizado",
+            "description": "Descrição atualizada do departamento",
+            "timeout_seconds": 180
+        }
+        
+        success, response = self.make_request("PUT", f"/ai/departments/{dept_id}", update_data, self.admin_token)
+        
+        if success and "id" in response:
+            self.log_result("Update Department", True, f"Department updated: {response.get('name')}")
+            return True
+        else:
+            self.log_result("Update Department", False, f"Error: {response}")
+            return False
+    
+    def test_delete_department(self) -> bool:
+        """Test 13: DELETE /api/ai/departments/{id} (deletar)"""
+        if not self.admin_token or not self.created_departments:
+            self.log_result("Delete Department", False, "Admin token or department required")
+            return False
+            
+        dept_id = self.created_departments[-1]  # Delete the last one
+        
+        success, response = self.make_request("DELETE", f"/ai/departments/{dept_id}", token=self.admin_token)
+        
+        if success and response.get("ok"):
+            self.created_departments.remove(dept_id)
+            self.log_result("Delete Department", True, f"Department deleted: {dept_id}")
+            return True
+        else:
+            self.log_result("Delete Department", False, f"Error: {response}")
             return False
             
     def test_hierarchy_view(self) -> bool:
