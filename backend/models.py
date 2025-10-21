@@ -141,6 +141,35 @@ class AutoReply(BaseModel):
     q: str
     a: str
 
+# Novo modelo para Auto-Responder Avançado
+class AutoResponseItem(BaseModel):
+    id: str  # UUID único
+    type: str  # "text", "audio", "video", "photo"
+    content: str  # Texto ou URL do arquivo
+    delay: int = 0  # Delay em segundos (0-60)
+
+class AutoResponderSequence(BaseModel):
+    id: str  # UUID único da sequência
+    trigger: str  # Palavra-chave que aciona a sequência
+    responses: List[AutoResponseItem] = []  # Lista de respostas sequenciais
+    enabled: bool = True
+    reseller_id: Optional[str] = None  # Tenant isolation
+
+# Novo modelo para Tutorials/Aplicativos Avançado
+class TutorialItem(BaseModel):
+    id: str  # UUID único
+    type: str  # "text", "audio", "video", "photo"
+    content: str  # Texto ou URL do arquivo
+    delay: int = 0  # Delay em segundos (0-60)
+
+class Tutorial(BaseModel):
+    id: str  # UUID único do tutorial
+    category: str  # Categoria (ex: "Setup", "Uso", "FAQ")
+    title: str  # Título do tutorial
+    items: List[TutorialItem] = []  # Lista de itens sequenciais
+    enabled: bool = True
+    reseller_id: Optional[str] = None  # Tenant isolation
+
 class AppItem(BaseModel):
     cat: str
     title: str
