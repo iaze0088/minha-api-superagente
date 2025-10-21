@@ -48,7 +48,12 @@ const ClientChat = () => {
       return; // Já conectado
     }
     
-    const ws = createWebSocket(auth.token);
+    if (!userData?.id) {
+      console.warn('⚠️ Aguardando dados do usuário para conectar WebSocket');
+      return;
+    }
+    
+    const ws = createWebSocket(userData.id);
     wsRef.current = ws;
 
     ws.onopen = () => {
