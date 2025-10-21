@@ -154,6 +154,17 @@ const ClientChat = () => {
   };
 
   useEffect(() => {
+    // Pre-carregar o áudio de notificação
+    try {
+      const audio = new Audio('/notification.mp3');
+      audio.preload = 'auto';
+      audio.volume = 1.0;
+      notificationAudioRef.current = audio;
+      console.log('✅ Áudio de notificação pré-carregado');
+    } catch (e) {
+      console.error('❌ Erro ao pré-carregar áudio:', e);
+    }
+    
     loadMessages();
     loadNotices();
     loadUserData();
@@ -186,6 +197,10 @@ const ClientChat = () => {
       }
       if (queueTimerRef.current) {
         clearTimeout(queueTimerRef.current);
+      }
+      if (notificationAudioRef.current) {
+        notificationAudioRef.current.pause();
+        notificationAudioRef.current = null;
       }
     };
   }, []);
