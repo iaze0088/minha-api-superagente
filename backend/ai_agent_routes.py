@@ -87,6 +87,7 @@ async def create_ai_agent(
         "knowledge_restriction": False,
         "timezone": "America/Sao_Paulo",
         "is_active": True,
+        "linked_agents": getattr(data, 'linked_agents', []),
         "reseller_id": reseller_id,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "updated_at": datetime.now(timezone.utc).isoformat()
