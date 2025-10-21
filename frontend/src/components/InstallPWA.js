@@ -71,7 +71,7 @@ const InstallPWA = () => {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 z-50 animate-slide-up">
-      <div className="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl shadow-2xl p-4 text-white">
+      <div className="bg-gradient-to-br from-green-600 to-emerald-600 rounded-2xl shadow-2xl p-4 text-white">
         <div className="flex items-start gap-3">
           <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center flex-shrink-0">
             <Download className="w-6 h-6 text-white" />
@@ -79,7 +79,7 @@ const InstallPWA = () => {
           
           <div className="flex-1">
             <h3 className="font-bold mb-1">
-              Instalar App CYBERTV
+              Instalar WA Suporte
             </h3>
             <p className="text-sm text-white/90 mb-3">
               Acesso rápido e funciona offline!
@@ -88,7 +88,7 @@ const InstallPWA = () => {
             <div className="flex gap-2">
               <Button
                 onClick={handleInstall}
-                className="flex-1 bg-white text-blue-600 hover:bg-white/90"
+                className="flex-1 bg-white text-green-600 hover:bg-white/90"
                 size="sm"
               >
                 Instalar Agora
