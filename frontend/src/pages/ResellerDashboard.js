@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import api from '../lib/api';
 import { clearAuth, getAuth } from '../lib/auth';
+import ResellerDomainManager from '../components/ResellerDomainManager';
 
 const ResellerDashboard = () => {
   const navigate = useNavigate();
