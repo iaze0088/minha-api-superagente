@@ -1042,6 +1042,14 @@ async def send_message(data: MessageCreate, request: Request, current_user: dict
                         })
                     break
     
+    # Processar com IA se houver agente IA vinculado ao departamento
+    if data.from_type == "client" and data.kind == "text":
+        # Buscar ticket atualizado
+        ticket = await db.tickets.find_one({"id": ticket_id})
+        if ticket and ticket.get("department_id"):
+            # Chamar IA de forma assíncrona (não bloqueia resposta)
+            asyncio.create_task(process_message_with_ai(ticket, text, reseller_id))
+    
     # Send via WebSocket
     await manager.send_to_user(data.to_id, {
         "type": "message",
