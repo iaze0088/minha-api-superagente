@@ -732,8 +732,9 @@ class ComprehensiveBackendTester:
 def main():
     """Main test execution"""
     print(f"🔗 Testing backend at: {API_BASE}")
+    print(f"🎯 Focusing on critical routes after fixes")
     
-    tester = MultiTenantTester()
+    tester = ComprehensiveBackendTester()
     passed, total, results = tester.run_all_tests()
     
     # Return results for external processing
