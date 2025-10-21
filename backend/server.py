@@ -45,7 +45,8 @@ api_router = APIRouter(prefix="/api")
 async def startup_event():
     """Inicia background tasks ao iniciar o servidor"""
     asyncio.create_task(check_department_timeouts())
-    print("✅ Background task de timeout de departamentos iniciada")
+    asyncio.create_task(reactivate_ai_after_timeout())
+    print("✅ Background tasks iniciadas: timeout de departamentos e reativação de IA")
 
 
 # WebSocket connection manager
