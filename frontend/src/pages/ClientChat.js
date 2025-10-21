@@ -507,18 +507,18 @@ const ClientChat = () => {
                     </div>
                   )}
                   {msg.kind === 'pix' && (
-                    <div>
-                      <p className="font-semibold text-sm mb-2">Chave PIX</p>
-                      <code className="text-xs bg-black/10 px-2 py-1 rounded block mb-2">{msg.text}</code>
+                    <div className="space-y-2">
+                      <p className="text-sm">{msg.text}</p>
                       <Button
                         size="sm"
                         onClick={() => {
-                          navigator.clipboard.writeText(msg.text);
-                          toast.success('PIX copiado!');
+                          const pixKey = msg.pix_key || msg.text;
+                          navigator.clipboard.writeText(pixKey);
+                          toast.success('Chave PIX copiada!');
                         }}
-                        className="w-full"
+                        className="w-full bg-green-600 hover:bg-green-700 text-white"
                       >
-                        Copiar PIX
+                        💰 Copiar Chave PIX
                       </Button>
                     </div>
                   )}
