@@ -33,6 +33,9 @@ const AgentDashboard = () => {
   const [myDepartments, setMyDepartments] = useState([]); // Departamentos do atendente
   const [selectedDepartment, setSelectedDepartment] = useState('all'); // Filtro de departamento
   const [aiEnabled, setAiEnabled] = useState(true); // Estado da IA para o ticket atual
+  const [searchTerm, setSearchTerm] = useState(''); // Termo de pesquisa
+  const [searchResults, setSearchResults] = useState([]); // Resultados da pesquisa
+  const [isSearching, setIsSearching] = useState(false); // Estado da pesquisa
   const wsRef = useRef(null);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
