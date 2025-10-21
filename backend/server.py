@@ -1797,11 +1797,10 @@ async def delete_tutorial_advanced(tutorial_id: str, current_user: dict = Depend
 @api_router.get("/reseller/domain-info")
 async def get_reseller_domain_info(request: Request, current_user: dict = Depends(get_current_user)):
     """Retorna informações de domínio da revenda"""
-    from tenant_middleware import get_current_tenant
-    tenant_ctx = get_current_tenant()
-    reseller_id = tenant_ctx.reseller_id
+    # Use reseller_id from token instead of tenant middleware
+    reseller_id = current_user.get("reseller_id")
     
-    if not reseller_id:
+    if not reseller_id or current_user.get("user_type") != "reseller":
         raise HTTPException(status_code=400, detail="Apenas revendedores podem acessar")
     
     # Buscar informações da revenda
