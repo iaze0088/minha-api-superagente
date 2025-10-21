@@ -478,7 +478,7 @@ const AdminDashboard = () => {
                 </Button>
               </div>
               <div className="space-y-4">
-                {config.quick_blocks.map((block, idx) => (
+                {(config.quick_blocks || []).map((block, idx) => (
                   <div key={idx} className="border border-slate-200 rounded-lg p-4 space-y-3">
                     <div className="flex items-center justify-between">
                       <Input
