@@ -471,6 +471,47 @@ test_plan:
 agent_communication:
   - agent: "testing"
     message: |
+      🤖 TESTE COMPLETO DE IA - CENÁRIO REAL DO USUÁRIO - PROBLEMA IDENTIFICADO E DIAGNOSTICADO!
+      
+      CONTEXTO: Usuário configurou tudo mas IA não responde. Teste completo do fluxo realizado.
+      
+      ✅ ESTRUTURA VERIFICADA (4/4):
+      - GET /api/ai/agents ✓ (Agente "Suporte" encontrado: 55a70e0e-bddd-46fa-a34f-642c1d0b3ef4)
+      - GET /api/ai/departments ✓ (Departamento "SUPORTE" vinculado ao agente IA)
+      - GET /api/agents ✓ (Atendente "Fabio" encontrado: 149fb157-196b-40f2-b481-e53675458e3b)
+      - Verificação linked_agents ✓ (Fabio está na lista de linked_agents do agente IA)
+      
+      ✅ FLUXO DE TICKET TESTADO (5/5):
+      - POST /api/auth/client/login ✓ (Cliente de teste criado)
+      - POST /api/messages ✓ (Mensagem "olá, preciso de ajuda" enviada)
+      - Ticket criado automaticamente ✓
+      - POST /tickets/{id}/select-department ✓ (Departamento SUPORTE selecionado)
+      - Atribuição de ticket ao atendente ✓ (via correção manual do assigned_agent_id)
+      
+      ❌ PROBLEMA CRÍTICO IDENTIFICADO:
+      1. **FALTA DE ENDPOINT PARA ATRIBUIÇÃO**: Sistema não possui endpoint para atribuir tickets a agentes (assigned_agent_id). IA só responde se ticket estiver atribuído.
+      2. **CONTEXT WINDOW EXCEEDED**: Após correção manual, IA é acionada corretamente mas falha por excesso de contexto.
+      
+      🔍 LOGS DETALHADOS CAPTURADOS:
+      - ✅ process_message_with_ai chamado
+      - ✅ Departamento encontrado: SUPORTE
+      - ✅ Agente IA encontrado e ativo: Suporte
+      - ✅ Atendente atribuído encontrado
+      - ✅ Verificação linked_agents passou
+      - ✅ "TODAS AS VERIFICAÇÕES PASSARAM! IA ativada"
+      - ❌ ContextWindowExceededError: 195739 tokens > 128000 tokens (limite GPT-4o-mini)
+      
+      🎯 DIAGNÓSTICO FINAL:
+      A IA está configurada corretamente e sendo acionada, mas falha por dois problemas:
+      1. Sistema precisa de endpoint para atribuir tickets (assigned_agent_id)
+      2. Histórico de conversas muito longo para o modelo atual
+      
+      💡 SOLUÇÕES NECESSÁRIAS:
+      1. Criar endpoint PUT /tickets/{id}/assign para definir assigned_agent_id
+      2. Limitar histórico de mensagens no ai_service.py (máximo 10-15 mensagens)
+      3. Ou usar modelo com contexto maior (GPT-4 Turbo: 128k → GPT-4: 32k mais eficiente)
+  - agent: "testing"
+    message: |
       🎉 TESTE COMPLETO DO BACKEND REALIZADO - TODAS AS ROTAS CRÍTICAS FUNCIONANDO!
       
       RESULTADO FINAL: 23/23 TESTES PASSARAM (100% SUCCESS RATE)
