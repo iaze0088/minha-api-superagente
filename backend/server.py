@@ -347,10 +347,14 @@ async def process_message_with_ai(ticket: Dict, message_text: str, reseller_id: 
         ai_logger.info("🟢 " + "="*80)
         
         # Enviar via WebSocket para cliente e atendentes
+        ai_logger.info(f"📡 Enviando mensagem via WebSocket...")
+        ai_logger.info(f"   Cliente ID: {ticket['client_id']}")
+        
         await manager.send_to_user(ticket["client_id"], {
             "type": "new_message",
             "message": ai_message
         })
+        ai_logger.info(f"   ✅ Enviado para cliente")
         
         # Enviar para atendentes do departamento
         agents_in_dept = await db.agents.find({
@@ -358,13 +362,16 @@ async def process_message_with_ai(ticket: Dict, message_text: str, reseller_id: 
             "departments": department_id
         }).to_list(None)
         
+        ai_logger.info(f"   👥 Atendentes no departamento: {len(agents_in_dept)}")
+        
         for agent in agents_in_dept:
             await manager.send_to_user(agent["id"], {
                 "type": "new_message",
                 "message": ai_message
             })
+            ai_logger.info(f"   ✅ Enviado para atendente: {agent.get('name', agent['id'][:10])}")
         
-        ai_logger.info(f"📡 Mensagem enviada via WebSocket para cliente e atendentes")
+        ai_logger.info(f"📡 Todas mensagens WebSocket enviadas com sucesso!")
         ai_logger.info(f"✅ IA respondeu no ticket {ticket['id']}")
         
     except Exception as e:
