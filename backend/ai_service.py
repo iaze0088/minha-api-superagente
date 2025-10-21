@@ -6,8 +6,24 @@ import os
 from typing import List, Dict, Optional
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 import logging
+from datetime import datetime
 
-logger = logging.getLogger(__name__)
+# Configurar logger específico para IA com arquivo dedicado
+logger = logging.getLogger("ai_agent")
+logger.setLevel(logging.INFO)
+
+# Handler para arquivo
+file_handler = logging.FileHandler("/var/log/ai_agent.log")
+file_handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
+# Handler para console
+console_handler = logging.StreamHandler()
+console_handler.setLevel(logging.INFO)
+console_handler.setFormatter(formatter)
+logger.addHandler(console_handler)
 
 class AIAgentService:
     """Serviço para gerenciar respostas de IA"""
