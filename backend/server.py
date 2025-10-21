@@ -1009,6 +1009,28 @@ async def toggle_ai_in_ticket(ticket_id: str, data: dict, current_user: dict = D
     
     return {"message": "IA desativada por 1 hora", "ai_enabled": False, "disabled_until": disabled_until.isoformat()}
 
+@api_router.put("/tickets/{ticket_id}/assign")
+async def assign_ticket_to_agent(ticket_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+    """Atribui ticket a um atendente"""
+    if current_user["user_type"] != "agent":
+        raise HTTPException(status_code=403, detail="Não autorizado")
+    
+    agent_id = data.get("agent_id", current_user["user_id"])  # Usa ID do usuário atual se não especificado
+    
+    ticket = await db.tickets.find_one({"id": ticket_id})
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket não encontrado")
+    
+    await db.tickets.update_one(
+        {"id": ticket_id},
+        {"$set": {
+            "assigned_agent_id": agent_id,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {"message": "Ticket atribuído", "assigned_agent_id": agent_id}
+
 # Message routes
 @api_router.get("/messages/{ticket_id}")
 async def get_messages(ticket_id: str, limit: int = 50, offset: int = 0, current_user: dict = Depends(get_current_user)):
