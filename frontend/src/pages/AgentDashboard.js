@@ -24,6 +24,8 @@ const AgentDashboard = () => {
   const [messageText, setMessageText] = useState('');
   const [counts, setCounts] = useState({ EM_ESPERA: 0, ATENDENDO: 0, FINALIZADAS: 0 });
   const [config, setConfig] = useState({ quick_blocks: [] });
+  const [tutorials, setTutorials] = useState([]); // Tutoriais/Aplicativos
+  const [showTutorials, setShowTutorials] = useState(false); // Modal de tutoriais
   const [pinnedUser, setPinnedUser] = useState('');
   const [pinnedPass, setPinnedPass] = useState('');
   const [resetPhone, setResetPhone] = useState('');
