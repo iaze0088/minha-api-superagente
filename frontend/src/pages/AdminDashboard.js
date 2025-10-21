@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, LogOut, Users, MessageSquare, Settings, Bell, Plus, Trash2, Edit, Bot, Folder, Zap, BookOpen } from 'lucide-react';
+import { Shield, LogOut, Users, MessageSquare, Settings, Bell, Plus, Trash2, Edit, Bot, Folder, Zap, BookOpen, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
