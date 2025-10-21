@@ -160,6 +160,16 @@ const AgentDashboard = () => {
     setSelectedTicket(ticket);
     loadMessages(ticket.id);
     
+    // Verificar se IA está habilitada para este ticket
+    const aiDisabledUntil = ticket.ai_disabled_until;
+    if (aiDisabledUntil) {
+      const disabledUntilDate = new Date(aiDisabledUntil);
+      const now = new Date();
+      setAiEnabled(now >= disabledUntilDate);
+    } else {
+      setAiEnabled(true);
+    }
+    
     // Marcar como lido (zerar contador)
     if (ticket.unread_count > 0) {
       try {
