@@ -556,6 +556,12 @@ const AgentDashboard = () => {
                 )}
                 <div className="space-y-3">
                   {console.log('🎨 Renderizando mensagens:', messages.length, 'total, exibindo:', messages.slice(-7).length)}
+                  {messages.length === 0 && (
+                    <div className="text-center text-slate-500 py-8">
+                      <p>Nenhuma mensagem ainda</p>
+                      <p className="text-sm mt-2">Envie uma mensagem para iniciar a conversa</p>
+                    </div>
+                  )}
                   {messages.slice(-7).map(msg => (
                     <div key={msg.id} className={`flex ${msg.from_type === 'agent' ? 'justify-end' : 'justify-start'} animate-fadeIn`}>
                       <div
