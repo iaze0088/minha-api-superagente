@@ -32,12 +32,6 @@ db = client[os.environ.get('DB_NAME', 'support_chat')]
 JWT_SECRET = os.environ.get('JWT_SECRET', 'sua-chave-secreta-super-segura-aqui')
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')
 
-# Allowed PIX keys
-PIX_ALLOWED = [
-    "7c11dc15-ea60-493e-9e7d-adfd317c58a4",
-    "5b80155d-28cb-4c2c-88df-e2240fa8e5c5"
-]
-
 # Uploads directory
 UPLOADS_DIR = ROOT_DIR / "uploads"
 UPLOADS_DIR.mkdir(exist_ok=True)
