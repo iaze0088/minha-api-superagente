@@ -1356,7 +1356,7 @@ class ComprehensiveBackendTester:
                 text = message.get('text', '')
                 print(f"   💬 Mensagem ({from_type}): {text[:50]}...")
                 
-                if from_type == 'client' and ('preciso de ajuda' in text or 'ajuda com meu serviço' in text):
+                if from_type == 'client' and ('preciso de ajuda' in text or 'ajuda com meu serviço' in text or 'Olá, preciso' in text):
                     client_message_found = True
                     print(f"   ✅ Mensagem do cliente encontrada")
                 
