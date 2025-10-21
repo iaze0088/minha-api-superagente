@@ -183,6 +183,19 @@ async def process_message_with_ai(ticket: Dict, message_text: str, reseller_id: 
             logger.info(f"Agente IA não encontrado ou inativo para departamento {department_id}")
             return
         
+        # Verificar se há um atendente atribuído ao ticket e se ele está na lista de linked_agents
+        assigned_agent_id = ticket.get("assigned_agent_id")
+        linked_agents = ai_agent.get("linked_agents", [])
+        
+        if linked_agents:  # Se tem lista de atendentes vinculados
+            if not assigned_agent_id:
+                logger.info(f"Ticket {ticket['id']} sem atendente atribuído, IA não responderá")
+                return
+            
+            if assigned_agent_id not in linked_agents:
+                logger.info(f"Atendente {assigned_agent_id} não está na lista de linked_agents da IA")
+                return
+        
         logger.info(f"🤖 IA ativada para ticket {ticket['id']} - Agente: {ai_agent.get('name', 'Sem nome')}")
         
         # Buscar histórico de mensagens do ticket
