@@ -21,6 +21,23 @@ from ai_service import ai_service
 import mimetypes
 import re
 
+# Logger dedicado para IA (compartilhado com ai_service.py)
+ai_logger = logging.getLogger("ai_agent")
+ai_logger.setLevel(logging.INFO)
+
+# Se não tiver handlers ainda, adicionar
+if not ai_logger.handlers:
+    file_handler = logging.FileHandler("/var/log/ai_agent.log")
+    file_handler.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+    file_handler.setFormatter(formatter)
+    ai_logger.addHandler(file_handler)
+    
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+    console_handler.setFormatter(formatter)
+    ai_logger.addHandler(console_handler)
+
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
