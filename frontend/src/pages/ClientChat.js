@@ -41,36 +41,7 @@ const ClientChat = () => {
   const queueTimerRef = useRef(null);
   const whatsappPopupTimerRef = useRef(null);
 
-  useEffect(() => {
-    loadMessages();
-    loadNotices();
-    loadUserData();
-    loadPixKey();
-    checkOnlineStatus();
-    checkWhatsAppPopup();
-    
-    // Conectar WebSocket com reconexão automática
-    connectWebSocket();
-    
-    // Manter sessão ativa
-    const keepAliveInterval = setInterval(() => {
-      // Ping para manter conexão ativa
-      if (auth.token) {
-        api.get('/users/me').catch(() => {
-          // Se falhar, reconectar WebSocket
-          connectWebSocket();
-        });
-      }
-    }, 30000); // A cada 30 segundos
-    
-    return () => {
-      clearInterval(keepAliveInterval);
-      if (wsRef.current) {
-        wsRef.current.close();
-      }
-    };
-  }, []);
-  
+  // Função para conectar WebSocket com reconexão automática
   const connectWebSocket = () => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       return; // Já conectado
@@ -80,19 +51,28 @@ const ClientChat = () => {
     wsRef.current = ws;
 
     ws.onopen = () => {
-      console.log('✅ WebSocket conectado');
+      console.log('✅ WebSocket conectado - Mensagens em tempo real ativas');
     };
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
+      console.log('📨 Nova mensagem via WebSocket:', data);
+      
       if (data.type === 'new_message' && data.message) {
         setMessages(prev => {
           // Evitar duplicação
           if (prev.some(m => m.id === data.message.id)) {
+            console.log('⚠️ Mensagem duplicada ignorada');
             return prev;
           }
+          console.log('✅ Nova mensagem adicionada:', data.message.text?.substring(0, 50));
           return [...prev, data.message];
         });
+        
+        // Scroll automático para a nova mensagem
+        setTimeout(() => {
+          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
       }
     };
 
@@ -110,6 +90,17 @@ const ClientChat = () => {
       }, 3000);
     };
   };
+
+  useEffect(() => {
+    loadMessages();
+    loadNotices();
+    loadUserData();
+    loadPixKey();
+    checkOnlineStatus();
+    checkWhatsAppPopup();
+    
+    // Conectar WebSocket
+    connectWebSocket();
     
     // Check notices every 30 seconds
     const noticesInterval = setInterval(() => {
@@ -121,9 +112,23 @@ const ClientChat = () => {
       checkOnlineStatus();
     }, 60000);
     
+    // Manter sessão ativa - Keep alive
+    const keepAliveInterval = setInterval(() => {
+      if (auth.token) {
+        api.get('/users/me').catch(() => {
+          console.log('⚠️ Keep-alive falhou, reconectando WebSocket...');
+          connectWebSocket();
+        });
+      }
+    }, 30000);
+    
     return () => {
       clearInterval(noticesInterval);
       clearInterval(statusInterval);
+      clearInterval(keepAliveInterval);
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
       if (queueTimerRef.current) {
         clearTimeout(queueTimerRef.current);
       }
