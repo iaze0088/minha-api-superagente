@@ -733,6 +733,57 @@ async def update_pin(data: dict, current_user: dict = Depends(get_current_user))
     await db.users.update_one({"id": current_user["user_id"]}, {"$set": {"pin_hash": pin_hash}})
     return {"ok": True}
 
+@api_router.get("/users/name-popup-status")
+async def check_name_popup_status(current_user: dict = Depends(get_current_user)):
+    """Verifica se deve mostrar o pop-up de nome (após primeira mensagem)"""
+    user = await db.users.find_one({"id": current_user["user_id"]})
+    if not user:
+        return {"should_show": False}
+    
+    # Se já tem nome cadastrado, não mostrar
+    if user.get("display_name") and user.get("display_name").strip():
+        return {"should_show": False, "has_name": True}
+    
+    # Se nunca perguntou, mostrar
+    if not user.get("name_asked_at"):
+        return {"should_show": True, "has_name": False}
+    
+    return {"should_show": False, "has_name": False}
+
+@api_router.put("/users/me/name")
+async def update_user_name(data: dict, current_user: dict = Depends(get_current_user)):
+    """Atualiza o nome do usuário"""
+    name = data.get("name", "").strip()
+    
+    # Validação: apenas nomes válidos (letras e espaços)
+    if not name:
+        raise HTTPException(status_code=400, detail="Nome não pode ser vazio")
+    
+    if len(name) < 2:
+        raise HTTPException(status_code=400, detail="Nome muito curto")
+    
+    if len(name) > 50:
+        raise HTTPException(status_code=400, detail="Nome muito longo")
+    
+    # Verificar se contém apenas letras, espaços e acentos
+    import re
+    if not re.match(r'^[A-Za-zÀ-ÿ\s]+$', name):
+        raise HTTPException(status_code=400, detail="Nome deve conter apenas letras")
+    
+    # Verificar se não é uma frase (máximo 3 palavras)
+    words = name.split()
+    if len(words) > 3:
+        raise HTTPException(status_code=400, detail="Digite apenas seu nome (máximo 3 palavras)")
+    
+    await db.users.update_one(
+        {"id": current_user["user_id"]},
+        {"$set": {
+            "display_name": name,
+            "name_asked_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    return {"ok": True, "name": name}
+
 # Agent routes (admin/reseller)
 @api_router.get("/agents")
 async def list_agents(request: Request, current_user: dict = Depends(get_current_user)):
