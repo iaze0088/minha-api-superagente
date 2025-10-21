@@ -179,9 +179,13 @@ const AgentDashboard = () => {
 
   const loadMessages = async (ticketId) => {
     try {
+      console.log('🔍 Carregando mensagens do ticket:', ticketId);
       const { data } = await api.get(`/messages/${ticketId}`);
+      console.log('✅ Mensagens carregadas:', data.length, 'mensagens');
+      console.log('📨 Primeiras 3 mensagens:', data.slice(0, 3));
       setMessages(data);
     } catch (error) {
+      console.error('❌ Erro ao carregar mensagens:', error);
       toast.error('Erro ao carregar mensagens');
     }
   };
