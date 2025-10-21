@@ -357,6 +357,25 @@ const ClientChat = () => {
   const handleSendMessage = async () => {
     if (!messageText.trim()) return;
     
+    // Habilitar áudio na primeira interação do usuário (contornar autoplay policy)
+    if (!audioEnabled && notificationAudioRef.current) {
+      try {
+        // Tentar tocar e pausar imediatamente para "desbloquear" o áudio
+        notificationAudioRef.current.volume = 0.01;
+        notificationAudioRef.current.play().then(() => {
+          notificationAudioRef.current.pause();
+          notificationAudioRef.current.currentTime = 0;
+          notificationAudioRef.current.volume = 1.0;
+          setAudioEnabled(true);
+          console.log('✅ Áudio habilitado após interação do usuário');
+        }).catch(e => {
+          console.log('⚠️ Não foi possível habilitar áudio:', e);
+        });
+      } catch (e) {
+        console.error('Erro ao habilitar áudio:', e);
+      }
+    }
+    
     if (!userData?.id) {
       toast.error('Erro: Dados do usuário não carregados');
       return;
