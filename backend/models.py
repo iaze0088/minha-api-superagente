@@ -283,6 +283,7 @@ class AIAgentFull(BaseModel):
     auto_detect_language: bool = True
     knowledge_restriction: bool = False
     timezone: str = "America/Sao_Paulo"
+    response_delay_seconds: int = 3  # Tempo de espera antes de responder (0-60 segundos)
     
     # Status
     is_active: bool = True
