@@ -86,7 +86,7 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 ❌ ERRADO:
 ```javascript
-const API_URL = "https://cybertv-support-1.preview.emergentagent.com";
+const API_URL = "https://multi-chat-system.preview.emergentagent.com";
 ```
 
 ---
