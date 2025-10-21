@@ -91,10 +91,47 @@ async def reseller_login(data: ResellerLogin):
             "domain": reseller.get("domain", ""),
             "custom_domain": reseller.get("custom_domain", ""),
             "level": reseller.get("level", 0),
-            "parent_id": reseller.get("parent_id")
+            "parent_id": reseller.get("parent_id"),
+            "first_login": reseller.get("first_login", False)  # Avisar frontend
         },
         reseller_id=reseller["id"]
     )
+
+# Trocar senha (obrigatório no primeiro login ou via perfil)
+@reseller_router.post("/change-password")
+async def change_password(data: dict, current_user: dict = Depends(get_current_user)):
+    db = get_db_dep()
+    
+    if current_user["user_type"] != "reseller":
+        raise HTTPException(status_code=403, detail="Apenas revendas")
+    
+    old_password = data.get("old_password")
+    new_password = data.get("new_password")
+    
+    if not new_password or len(new_password) < 6:
+        raise HTTPException(status_code=400, detail="Nova senha deve ter no mínimo 6 caracteres")
+    
+    reseller = await db.resellers.find_one({"id": current_user["user_id"]})
+    
+    # Se first_login, não precisa validar senha antiga
+    if not reseller.get("first_login", False):
+        if not old_password or not bcrypt.checkpw(old_password.encode(), reseller["pass_hash"].encode()):
+            raise HTTPException(status_code=401, detail="Senha atual incorreta")
+    
+    # Atualizar senha
+    new_pass_hash = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode()
+    
+    await db.resellers.update_one(
+        {"id": current_user["user_id"]},
+        {"$set": {
+            "pass_hash": new_pass_hash,
+            "first_login": False  # Remover flag de primeiro login
+        }}
+    )
+    
+    logger.info(f"✅ Senha alterada: {reseller['name']}")
+    
+    return {"ok": True, "message": "Senha alterada com sucesso!"}
 
 # List all resellers with hierarchy (admin/reseller)
 @reseller_router.get("")
