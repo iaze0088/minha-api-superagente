@@ -54,16 +54,32 @@ const AgentDashboard = () => {
     
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      console.log('📩 Mensagem recebida:', data);
+      console.log('📩 Mensagem recebida (Atendente):', data);
       
-      if (data.type === 'message') {
+      // Aceitar tanto 'message' quanto 'new_message' (da IA)
+      if (data.type === 'message' || data.type === 'new_message') {
         if (selectedTicket && data.message.ticket_id === selectedTicket.id) {
           setMessages(prev => {
             const exists = prev.some(m => m.id === data.message.id);
-            if (exists) return prev;
+            if (exists) {
+              console.log('⚠️ Mensagem duplicada ignorada');
+              return prev;
+            }
+            console.log('✅ Nova mensagem adicionada ao chat ativo');
+            
+            // Som de notificação para mensagem de cliente
+            if (data.message.from_type === 'client') {
+              try {
+                const audio = new Audio('/notification.mp3');
+                audio.volume = 0.7;
+                audio.play().catch(() => {});
+              } catch (e) {}
+            }
+            
             return [...prev, data.message];
           });
         }
+        // Recarregar lista de tickets para atualizar contadores
         loadTickets();
       }
       
@@ -72,6 +88,20 @@ const AgentDashboard = () => {
         alert('Você foi desconectado porque outra pessoa fez login com suas credenciais.');
         navigate('/');
       }
+    };
+    
+    ws.onerror = (error) => {
+      console.error('❌ WebSocket erro:', error);
+    };
+    
+    ws.onclose = () => {
+      console.log('⚠️ WebSocket desconectado, tentando reconectar...');
+      // Reconectar após 3 segundos
+      setTimeout(() => {
+        if (userData?.id) {
+          console.log('🔄 Reconectando WebSocket...');
+        }
+      }, 3000);
     };
     
     wsRef.current = ws;
