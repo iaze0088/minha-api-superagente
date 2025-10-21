@@ -744,6 +744,66 @@ const AgentDashboard = () => {
           )}
         </div>
       </div>
+
+      {/* Modal de Tutoriais */}
+      <Dialog open={showTutorials} onOpenChange={setShowTutorials}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>📚 Tutoriais e Aplicativos</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            {tutorials.length === 0 ? (
+              <p className="text-center text-slate-500 py-8">Nenhum tutorial disponível no momento.</p>
+            ) : (
+              tutorials.map((tutorial) => (
+                <Card key={tutorial.id} className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-200">
+                  <div className="flex items-start justify-between mb-3">
+                    <div>
+                      <h3 className="font-bold text-lg text-purple-900">{tutorial.category}</h3>
+                      <p className="font-semibold text-indigo-700">{tutorial.appName}</p>
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={() => sendTutorial(tutorial)}
+                      className="bg-purple-600 hover:bg-purple-700"
+                    >
+                      <Send className="w-4 h-4 mr-2" />
+                      Enviar ao Cliente
+                    </Button>
+                  </div>
+                  
+                  {tutorial.code && (
+                    <div className="mb-2">
+                      <span className="text-xs font-semibold text-slate-600">Código/Provedor:</span>
+                      <p className="text-sm font-mono bg-white px-2 py-1 rounded border border-slate-300 mt-1">{tutorial.code}</p>
+                    </div>
+                  )}
+                  
+                  {tutorial.instructions && (
+                    <div className="mb-2">
+                      <span className="text-xs font-semibold text-slate-600">Instruções:</span>
+                      <p className="text-sm whitespace-pre-wrap bg-white px-3 py-2 rounded border border-slate-300 mt-1">{tutorial.instructions}</p>
+                    </div>
+                  )}
+                  
+                  {tutorial.videoUrl && (
+                    <div className="mt-2">
+                      <a 
+                        href={tutorial.videoUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-xs text-blue-600 hover:text-blue-800 underline flex items-center gap-1"
+                      >
+                        🎥 Assistir vídeo tutorial
+                      </a>
+                    </div>
+                  )}
+                </Card>
+              ))
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
