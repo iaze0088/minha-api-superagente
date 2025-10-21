@@ -226,33 +226,51 @@ const ClientChat = () => {
     }
   };
 
-  const checkWhatsAppPopup = async () => {
+  const checkNamePopup = async () => {
     try {
-      const { data } = await api.get('/users/whatsapp-popup-status');
-      if (data.should_show) {
-        // Show popup after 15 seconds if user hasn't confirmed WhatsApp in the last 7 days
-        whatsappPopupTimerRef.current = setTimeout(() => {
-          setShowWhatsAppPopup(true);
-        }, 15000);
+      const { data } = await api.get('/users/name-popup-status');
+      if (data.should_show && firstMessageSent) {
+        // Mostrar popup de nome após enviar primeira mensagem
+        setTimeout(() => {
+          setShowNamePopup(true);
+        }, 2000);
       }
     } catch (error) {
-      console.error('Error checking WhatsApp popup:', error);
+      console.error('Error checking name popup:', error);
     }
   };
 
-  const handleConfirmWhatsApp = async () => {
-    if (!whatsappInput.trim()) {
-      toast.error('Por favor, digite seu WhatsApp');
+  const handleConfirmName = async () => {
+    const name = nameInput.trim();
+    if (!name) {
+      toast.error('Por favor, digite seu nome');
+      return;
+    }
+    
+    // Validação no frontend também
+    if (name.length < 2) {
+      toast.error('Nome muito curto');
+      return;
+    }
+    
+    if (name.split(' ').length > 3) {
+      toast.error('Digite apenas seu nome (máximo 3 palavras)');
+      return;
+    }
+    
+    if (!/^[A-Za-zÀ-ÿ\s]+$/.test(name)) {
+      toast.error('Nome deve conter apenas letras');
       return;
     }
     
     try {
-      await api.put('/users/me/whatsapp-confirm', { whatsapp: whatsappInput });
-      toast.success('WhatsApp confirmado!');
-      setShowWhatsAppPopup(false);
-      setWhatsappInput('');
+      await api.put('/users/me/name', { name });
+      toast.success(`Bem-vindo(a), ${name}!`);
+      setShowNamePopup(false);
+      setNameInput('');
+      loadTicket(); // Recarregar para atualizar nome
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Erro ao confirmar WhatsApp');
+      toast.error(error.response?.data?.detail || 'Erro ao salvar nome');
     }
   };
 
