@@ -280,10 +280,6 @@ const AdminDashboard = () => {
               <Settings className="w-4 h-4 mr-2" />
               API
             </TabsTrigger>
-            <TabsTrigger value="ai" data-testid="tab-ai">
-              <MessageSquare className="w-4 h-4 mr-2" />
-              IA (Legacy)
-            </TabsTrigger>
             <TabsTrigger value="notices" data-testid="tab-notices">
               <Bell className="w-4 h-4 mr-2" />
               Avisos
