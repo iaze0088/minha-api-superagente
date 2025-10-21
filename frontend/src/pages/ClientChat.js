@@ -49,6 +49,68 @@ const ClientChat = () => {
     checkOnlineStatus();
     checkWhatsAppPopup();
     
+    // Conectar WebSocket com reconexão automática
+    connectWebSocket();
+    
+    // Manter sessão ativa
+    const keepAliveInterval = setInterval(() => {
+      // Ping para manter conexão ativa
+      if (auth.token) {
+        api.get('/users/me').catch(() => {
+          // Se falhar, reconectar WebSocket
+          connectWebSocket();
+        });
+      }
+    }, 30000); // A cada 30 segundos
+    
+    return () => {
+      clearInterval(keepAliveInterval);
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+    };
+  }, []);
+  
+  const connectWebSocket = () => {
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      return; // Já conectado
+    }
+    
+    const ws = createWebSocket(auth.token);
+    wsRef.current = ws;
+
+    ws.onopen = () => {
+      console.log('✅ WebSocket conectado');
+    };
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'new_message' && data.message) {
+        setMessages(prev => {
+          // Evitar duplicação
+          if (prev.some(m => m.id === data.message.id)) {
+            return prev;
+          }
+          return [...prev, data.message];
+        });
+      }
+    };
+
+    ws.onerror = (error) => {
+      console.error('❌ Erro no WebSocket:', error);
+    };
+
+    ws.onclose = () => {
+      console.log('⚠️ WebSocket desconectado, reconectando em 3s...');
+      // Reconectar automaticamente após 3 segundos
+      setTimeout(() => {
+        if (auth.token) {
+          connectWebSocket();
+        }
+      }, 3000);
+    };
+  };
+    
     // Check notices every 30 seconds
     const noticesInterval = setInterval(() => {
       checkForNewNotices();
