@@ -240,34 +240,11 @@ async def process_message_with_ai(ticket: Dict, message_text: str, reseller_id: 
         ai_logger.info(f"   Ativo: {ai_agent.get('is_active')}")
         ai_logger.info(f"   Modelo: {ai_agent.get('llm_provider', 'N/A')}/{ai_agent.get('llm_model', 'N/A')}")
         
-        # Verificar se há um atendente atribuído ao ticket e se ele está na lista de linked_agents
-        assigned_agent_id = ticket.get("assigned_agent_id")
-        linked_agents = ai_agent.get("linked_agents", [])
-        
-        ai_logger.info(f"👥 Verificando vinculação de atendentes...")
-        ai_logger.info(f"   Atendente atribuído ao ticket: {assigned_agent_id if assigned_agent_id else 'NENHUM'}")
-        ai_logger.info(f"   Linked agents do IA: {linked_agents if linked_agents else 'NENHUM (IA responde para todos)'}")
-        
-        if linked_agents:  # Se tem lista de atendentes vinculados
-            if not assigned_agent_id:
-                ai_logger.info(f"❌ BLOQUEIO: IA configurada para responder apenas para atendentes específicos")
-                ai_logger.info(f"❌ Ticket {ticket['id']} sem atendente atribuído")
-                ai_logger.info(f"💡 Ação necessária: Atribuir ticket a um atendente")
-                ai_logger.info("🔴 " + "="*80)
-                return
-            
-            if assigned_agent_id not in linked_agents:
-                ai_logger.info(f"❌ BLOQUEIO: Atendente {assigned_agent_id} não está na lista de linked_agents")
-                ai_logger.info(f"💡 Ação necessária: Adicionar atendente à lista de linked_agents do agente IA")
-                ai_logger.info("🔴 " + "="*80)
-                return
-            
-            ai_logger.info(f"✅ Atendente {assigned_agent_id} está na lista de linked_agents")
-        else:
-            ai_logger.info(f"✅ IA responde para qualquer atendente (linked_agents vazio)")
+        # REMOVIDO: Verificação de linked_agents e assigned_agent_id
+        # IA responde SEMPRE que o departamento tem IA configurada e ativa
         
         ai_logger.info(f"🎉 TODAS AS VERIFICAÇÕES PASSARAM!")
-        ai_logger.info(f"🤖 IA '{ai_agent.get('name', 'Sem nome')}' vai processar a mensagem")
+        ai_logger.info(f"🤖 IA '{ai_agent.get('name', 'Sem nome')}' vai processar QUALQUER mensagem do cliente")
         
         # Buscar histórico de mensagens do ticket (LIMITADO a últimas 10 para evitar Context Window Exceeded)
         ai_logger.info(f"📚 Carregando histórico de mensagens (últimas 10)...")
