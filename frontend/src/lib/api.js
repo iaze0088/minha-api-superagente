@@ -19,12 +19,13 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle 401 errors
+// Handle errors - NÃO FORÇAR LOGOUT NUNCA
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Não desconectar automaticamente - apenas rejeitar o erro
-    // A sessão persiste até o usuário fazer logout manual
+    // Apenas rejeitar o erro sem desconectar o usuário
+    // Sessão persiste indefinidamente até logout manual
+    console.log('API Error:', error.response?.status, error.config?.url);
     return Promise.reject(error);
   }
 );
