@@ -330,6 +330,44 @@ async def check_department_timeouts():
         except Exception as e:
             print(f"Error in timeout checker: {e}")
 
+async def reactivate_ai_after_timeout():
+    """Verifica tickets com IA desativada e reativa após 1 hora"""
+    while True:
+        try:
+            await asyncio.sleep(60)  # Verificar a cada 60 segundos
+            
+            # Buscar tickets com IA desativada
+            tickets = await db.tickets.find({
+                "ai_disabled_until": {"$exists": True, "$ne": None}
+            }).to_list(None)
+            
+            now = datetime.now(timezone.utc)
+            
+            for ticket in tickets:
+                try:
+                    disabled_until = datetime.fromisoformat(ticket["ai_disabled_until"])
+                    
+                    if now >= disabled_until:
+                        # Tempo expirou, reativar IA
+                        await db.tickets.update_one(
+                            {"id": ticket["id"]},
+                            {
+                                "$unset": {"ai_disabled_until": "", "ai_disabled_by": ""},
+                                "$set": {"updated_at": now.isoformat()}
+                            }
+                        )
+                        
+                        logger.info(f"✅ IA reativada automaticamente para ticket {ticket['id']}")
+                        
+                        # Opcional: Enviar mensagem ao atendente informando
+                        # (não enviar ao cliente para não poluir conversa)
+                        
+                except Exception as e:
+                    logger.error(f"Erro ao processar ticket {ticket.get('id')}: {e}")
+                    
+        except Exception as e:
+            logger.error(f"Erro na task de reativação de IA: {e}")
+
 
 
 # Tenant helper
