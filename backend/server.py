@@ -892,6 +892,46 @@ async def update_ticket_status(ticket_id: str, data: dict, current_user: dict = 
     
     return {"ok": True}
 
+@api_router.post("/tickets/{ticket_id}/toggle-ai")
+async def toggle_ai_in_ticket(ticket_id: str, data: dict, current_user: dict = Depends(get_current_user)):
+    """Ativa/desativa IA em uma conversa específica por 1 hora"""
+    if current_user["user_type"] != "agent":
+        raise HTTPException(status_code=403, detail="Não autorizado")
+    
+    ticket = await db.tickets.find_one({"id": ticket_id})
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket não encontrado")
+    
+    # Toggle: se está desativado, reativa. Se está ativo, desativa por 1h
+    current_disabled_until = ticket.get("ai_disabled_until")
+    
+    if current_disabled_until:
+        # Se já está desativado, verificar se expirou
+        try:
+            disabled_until = datetime.fromisoformat(current_disabled_until)
+            if datetime.now(timezone.utc) < disabled_until:
+                # Ainda desativado, então reativar
+                await db.tickets.update_one(
+                    {"id": ticket_id},
+                    {"$unset": {"ai_disabled_until": ""}, "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}}
+                )
+                return {"message": "IA reativada", "ai_enabled": True}
+        except:
+            pass
+    
+    # Desativar por 1 hora
+    disabled_until = datetime.now(timezone.utc) + timedelta(hours=1)
+    await db.tickets.update_one(
+        {"id": ticket_id},
+        {"$set": {
+            "ai_disabled_until": disabled_until.isoformat(),
+            "ai_disabled_by": current_user["user_id"],
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    return {"message": "IA desativada por 1 hora", "ai_enabled": False, "disabled_until": disabled_until.isoformat()}
+
 # Message routes
 @api_router.get("/messages/{ticket_id}")
 async def get_messages(ticket_id: str, limit: int = 50, offset: int = 0, current_user: dict = Depends(get_current_user)):
