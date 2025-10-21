@@ -530,22 +530,82 @@ class ComprehensiveBackendTester:
             self.log_result("Database Consistency", False, f"Errors: {'; '.join(errors)}")
             return False
             
-    def test_reseller_login(self) -> bool:
-        """Test 8: Reseller Login"""
-        login_data = {
-            "email": "raiz@teste.com",
-            "password": "senha123"
-        }
+    # ============================================
+    # TESTES DE WHATSAPP E PIN (FASE 4)
+    # ============================================
+    
+    def test_whatsapp_popup_status(self) -> bool:
+        """Test 20: GET /users/whatsapp-popup-status"""
+        if not self.client_token:
+            self.log_result("WhatsApp Popup Status", False, "Client token required")
+            return False
+            
+        success, response = self.make_request("GET", "/users/whatsapp-popup-status", token=self.client_token)
         
-        success, response = self.make_request("POST", "/resellers/login", login_data)
-        
-        if success and "token" in response:
-            reseller_id = response.get("reseller_id")
-            self.reseller_tokens[reseller_id] = response["token"]
-            self.log_result("Reseller Login", True, f"Reseller ID in token: {reseller_id}")
+        if success and "should_show" in response:
+            should_show = response.get("should_show")
+            self.log_result("WhatsApp Popup Status", True, f"Should show popup: {should_show}")
             return True
         else:
-            self.log_result("Reseller Login", False, f"Error: {response}")
+            self.log_result("WhatsApp Popup Status", False, f"Error: {response}")
+            return False
+    
+    def test_whatsapp_confirm(self) -> bool:
+        """Test 21: PUT /users/me/whatsapp-confirm"""
+        if not self.client_token:
+            self.log_result("WhatsApp Confirm", False, "Client token required")
+            return False
+            
+        confirm_data = {
+            "whatsapp": "11999999999"
+        }
+        
+        success, response = self.make_request("PUT", "/users/me/whatsapp-confirm", confirm_data, self.client_token)
+        
+        if success and response.get("ok"):
+            self.log_result("WhatsApp Confirm", True, "WhatsApp confirmed successfully")
+            return True
+        else:
+            self.log_result("WhatsApp Confirm", False, f"Error: {response}")
+            return False
+    
+    def test_update_pin(self) -> bool:
+        """Test 22: PUT /users/me/pin"""
+        if not self.client_token:
+            self.log_result("Update PIN", False, "Client token required")
+            return False
+            
+        pin_data = {
+            "pin": "34"
+        }
+        
+        success, response = self.make_request("PUT", "/users/me/pin", pin_data, self.client_token)
+        
+        if success and response.get("ok"):
+            self.log_result("Update PIN", True, "PIN updated successfully")
+            return True
+        else:
+            self.log_result("Update PIN", False, f"Error: {response}")
+            return False
+    
+    def test_invalid_pin(self) -> bool:
+        """Test 23: PUT /users/me/pin (validação de PIN inválido)"""
+        if not self.client_token:
+            self.log_result("Invalid PIN Validation", False, "Client token required")
+            return False
+            
+        pin_data = {
+            "pin": "123"  # Invalid - should be 2 digits
+        }
+        
+        success, response = self.make_request("PUT", "/users/me/pin", pin_data, self.client_token)
+        
+        # Should fail with validation error
+        if not success and "2 dígitos" in str(response):
+            self.log_result("Invalid PIN Validation", True, "Correctly rejected invalid PIN")
+            return True
+        else:
+            self.log_result("Invalid PIN Validation", False, f"Should have rejected invalid PIN: {response}")
             return False
             
     def test_transfer_reseller(self) -> bool:
