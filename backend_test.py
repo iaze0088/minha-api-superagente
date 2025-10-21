@@ -1527,12 +1527,16 @@ class ComprehensiveBackendTester:
             print("   ✅ Fluxo completo de mensagens funcionando")
             
             print("\n🔊 VERIFICAÇÕES PARA O FRONTEND:")
-            print("   📱 O cliente deve conectar no WebSocket: /api/ws/{token}")
+            print(f"   📱 O cliente deve conectar no WebSocket: /api/ws/{client_id}/{session_id}")
+            print("   📱 IMPORTANTE: WebSocket usa user_id + session_id, NÃO token!")
             print("   📱 Ao receber mensagem com from_type='agent', deve:")
             print("      - Mostrar: '✅ Nova mensagem adicionada'")
             print("      - Tentar tocar som e mostrar:")
             print("        - '🔊 Som de notificação tocado com sucesso!' OU")
             print("        - '⚠️ Não foi possível tocar o som'")
+            print("   📱 Estrutura da mensagem WebSocket:")
+            print("      - type: 'new_message' ou 'message'")
+            print("      - message: { from_type: 'agent', text: '...', ... }")
             
             self.log_result("Message Flow WebSocket Test", True, "✅ FLUXO COMPLETO DE MENSAGENS FUNCIONANDO! Backend preparado para WebSocket e som de notificação.")
             return True
