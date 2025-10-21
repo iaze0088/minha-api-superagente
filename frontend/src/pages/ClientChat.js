@@ -30,8 +30,8 @@ const ClientChat = () => {
   const [onlineStatus, setOnlineStatus] = useState('Carregando...');
   const [lastNoticeCount, setLastNoticeCount] = useState(0);
   const [alertModal, setAlertModal] = useState({ isOpen: false, title: '', message: '', icon: 'info' });
-  const [showWhatsAppPopup, setShowWhatsAppPopup] = useState(false);
-  const [whatsappInput, setWhatsappInput] = useState('');
+  const [showNamePopup, setShowNamePopup] = useState(false);
+  const [nameInput, setNameInput] = useState('');
   const [firstMessageSent, setFirstMessageSent] = useState(false);
   const [pixKey, setPixKey] = useState('');
   const wsRef = useRef(null);
@@ -39,7 +39,6 @@ const ClientChat = () => {
   const fileInputRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const queueTimerRef = useRef(null);
-  const whatsappPopupTimerRef = useRef(null);
 
   // Função para conectar WebSocket com reconexão automática
   const connectWebSocket = () => {
