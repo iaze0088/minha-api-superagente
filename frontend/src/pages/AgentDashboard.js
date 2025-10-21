@@ -204,6 +204,83 @@ const AgentDashboard = () => {
     toast.success('Tutorial adicionado ao campo de mensagem!');
   };
 
+  const handleSearch = async (term) => {
+    setSearchTerm(term);
+    
+    if (!term || term.trim() === '') {
+      setIsSearching(false);
+      setSearchResults([]);
+      return;
+    }
+    
+    setIsSearching(true);
+    
+    try {
+      // Buscar em todos os tickets (de todos os status)
+      const [esperaRes, atendendoRes, finalizadasRes] = await Promise.all([
+        api.get('/tickets', { params: { status: 'EM_ESPERA' } }),
+        api.get('/tickets', { params: { status: 'ATENDENDO' } }),
+        api.get('/tickets', { params: { status: 'FINALIZADAS' } })
+      ]);
+      
+      const allTicketsData = [
+        ...(esperaRes.data || []),
+        ...(atendendoRes.data || []),
+        ...(finalizadasRes.data || [])
+      ];
+      
+      // Buscar mensagens de todos os tickets e filtrar
+      const searchLower = term.toLowerCase();
+      const results = [];
+      
+      for (const ticket of allTicketsData) {
+        let matchFound = false;
+        let matchDetails = [];
+        
+        // Buscar no WhatsApp do cliente
+        if (ticket.client_id && ticket.client_id.toLowerCase().includes(searchLower)) {
+          matchFound = true;
+          matchDetails.push('WhatsApp');
+        }
+        
+        // Buscar nas mensagens do ticket
+        try {
+          const { data: ticketMessages } = await api.get(`/messages/${ticket.id}`);
+          for (const msg of ticketMessages) {
+            if (msg.text && msg.text.toLowerCase().includes(searchLower)) {
+              matchFound = true;
+              if (!matchDetails.includes('Mensagem')) {
+                matchDetails.push('Mensagem');
+              }
+              break;
+            }
+          }
+        } catch (error) {
+          console.error(`Erro ao buscar mensagens do ticket ${ticket.id}:`, error);
+        }
+        
+        if (matchFound) {
+          results.push({
+            ...ticket,
+            matchDetails: matchDetails.join(', ')
+          });
+        }
+      }
+      
+      setSearchResults(results);
+      toast.success(`${results.length} resultado(s) encontrado(s)`);
+    } catch (error) {
+      console.error('Erro na pesquisa:', error);
+      toast.error('Erro ao realizar pesquisa');
+    }
+  };
+
+  const clearSearch = () => {
+    setSearchTerm('');
+    setIsSearching(false);
+    setSearchResults([]);
+  };
+
   const loadMessages = async (ticketId) => {
     try {
       console.log('🔍 Carregando mensagens do ticket:', ticketId);
