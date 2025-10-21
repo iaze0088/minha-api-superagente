@@ -562,6 +562,30 @@ const AgentConfigDialog = ({ agent, open, onClose }) => {
                   onChange={(e) => setConfig({ ...config, max_tokens: parseInt(e.target.value) })}
                 />
               </div>
+              
+              <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4">
+                <label className="text-sm font-medium mb-2 block text-yellow-900">
+                  ⏱️ Tempo de Resposta (Humanização)
+                </label>
+                <div className="flex items-center gap-3">
+                  <Input
+                    type="number"
+                    min="0"
+                    max="60"
+                    value={config.response_delay_seconds || 3}
+                    onChange={(e) => {
+                      const value = Math.min(60, Math.max(0, parseInt(e.target.value) || 0));
+                      setConfig({ ...config, response_delay_seconds: value });
+                    }}
+                    className="w-24"
+                  />
+                  <span className="text-sm text-yellow-800">segundos</span>
+                </div>
+                <p className="text-xs text-yellow-700 mt-2">
+                  🤖 Simula um atendimento humanizado. A IA aguarda esse tempo antes de responder (0-60 segundos).
+                  Recomendado: 3-5 segundos.
+                </p>
+              </div>
             </div>
           </TabsContent>
 
