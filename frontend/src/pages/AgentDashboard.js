@@ -775,17 +775,37 @@ const AgentDashboard = () => {
                   ) : (
                     messages.slice(-7).map((msg, index) => {
                       console.log(`📝 Mensagem ${index}:`, msg.from_type, msg.text?.substring(0, 30));
+                      
+                      // Verificar se deve mostrar data (primeira mensagem ou mudança de dia)
+                      const slicedMessages = messages.slice(-7);
+                      const showDate = index === 0 || 
+                        new Date(slicedMessages[index - 1].created_at).toDateString() !== new Date(msg.created_at).toDateString();
+                      
                       return (
-                        <div key={msg.id} className={`flex ${msg.from_type === 'agent' ? 'justify-end' : 'justify-start'} animate-fadeIn`}>
-                          <div
-                            className={`max-w-[70%] p-3 rounded-2xl shadow-sm ${
-                              msg.from_type === 'agent'
-                                ? 'bg-indigo-600 text-white rounded-br-sm'
-                                : msg.from_type === 'ai'
-                                ? 'bg-purple-100 text-purple-900 rounded-bl-sm border border-purple-200'
-                                : 'bg-white text-slate-900 rounded-bl-sm border border-slate-200'
-                            }`}
-                          >
+                        <div key={msg.id}>
+                          {/* Separador de data */}
+                          {showDate && (
+                            <div className="flex justify-center my-3">
+                              <span className="bg-slate-200 text-slate-600 text-xs px-3 py-1 rounded-full">
+                                {new Date(msg.created_at).toLocaleDateString('pt-BR', { 
+                                  day: '2-digit', 
+                                  month: 'long', 
+                                  year: 'numeric' 
+                                })}
+                              </span>
+                            </div>
+                          )}
+                          
+                          <div className={`flex ${msg.from_type === 'agent' ? 'justify-end' : 'justify-start'} animate-fadeIn`}>
+                            <div
+                              className={`max-w-[70%] p-3 rounded-2xl shadow-sm ${
+                                msg.from_type === 'agent'
+                                  ? 'bg-indigo-600 text-white rounded-br-sm'
+                                  : msg.from_type === 'ai'
+                                  ? 'bg-purple-100 text-purple-900 rounded-bl-sm border border-purple-200'
+                                  : 'bg-white text-slate-900 rounded-bl-sm border border-slate-200'
+                              }`}
+                            >
                         {msg.kind === 'text' && <p className="whitespace-pre-wrap break-words text-sm">{msg.text}</p>}
                         {msg.kind === 'image' && <img src={msg.file_url} alt="" className="max-w-full rounded-lg" />}
                         {msg.kind === 'video' && <video src={msg.file_url} controls className="max-w-full rounded-lg" />}
