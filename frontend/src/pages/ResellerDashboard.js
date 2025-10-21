@@ -390,36 +390,7 @@ const ResellerDashboard = () => {
           </TabsContent>
 
           <TabsContent value="domain" className="space-y-6">
-            <Card className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Domínio Personalizado</h3>
-              <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mb-4">
-                <p className="text-sm text-emerald-900">
-                  <strong>Domínio atual:</strong> {userData?.domain || userData?.custom_domain || 'Não configurado'}
-                </p>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-slate-700 block mb-2">Domínio Customizado</label>
-                  <Input
-                    placeholder="ajuda.vip"
-                    defaultValue={userData?.custom_domain}
-                    disabled
-                  />
-                  <p className="text-xs text-slate-500 mt-2">
-                    Entre em contato com o administrador para configurar um domínio customizado
-                  </p>
-                </div>
-
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-blue-900 mb-2">Como configurar seu domínio:</h4>
-                  <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
-                    <li>Configure DNS apontando para: <code className="bg-blue-100 px-1 py-0.5 rounded">34.57.15.54</code></li>
-                    <li>Solicite ao admin principal para vincular seu domínio</li>
-                    <li>Aguarde propagação (15-30 min)</li>
-                  </ol>
-                </div>
-              </div>
-            </Card>
+            <ResellerDomainManager />
           </TabsContent>
         </Tabs>
       </div>
