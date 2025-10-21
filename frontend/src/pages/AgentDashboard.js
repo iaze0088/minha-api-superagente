@@ -590,7 +590,9 @@ const AgentDashboard = () => {
                         </p>
                       </div>
                     </div>
-                  ))}
+                      );
+                    })
+                  )}
                   <div ref={messagesEndRef} />
                 </div>
               </div>
