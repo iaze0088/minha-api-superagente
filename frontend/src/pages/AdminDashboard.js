@@ -286,6 +286,14 @@ const AdminDashboard = () => {
               <Bell className="w-4 h-4 mr-2" />
               Avisos
             </TabsTrigger>
+            <TabsTrigger value="auto-responder" data-testid="tab-auto-responder">
+              <Zap className="w-4 h-4 mr-2" />
+              Auto-Responder
+            </TabsTrigger>
+            <TabsTrigger value="tutorials" data-testid="tab-tutorials">
+              <BookOpen className="w-4 h-4 mr-2" />
+              Tutoriais/Apps
+            </TabsTrigger>
           </TabsList>
 
           {/* Resellers Tab */}
