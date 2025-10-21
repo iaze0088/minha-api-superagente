@@ -126,7 +126,6 @@ const ClientChat = () => {
     loadUserData();
     loadPixKey();
     checkOnlineStatus();
-    checkWhatsAppPopup();
     
     // Conectar WebSocket
     connectWebSocket();
