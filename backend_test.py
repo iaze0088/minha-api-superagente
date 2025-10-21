@@ -359,16 +359,78 @@ class ComprehensiveBackendTester:
             self.log_result("Delete Department", False, f"Error: {response}")
             return False
             
-    def test_hierarchy_view(self) -> bool:
-        """Test 5: Get Hierarchy Tree (Admin Only)"""
-        success, response = self.make_request("GET", "/resellers/hierarchy", token=self.admin_token)
+    # ============================================
+    # TESTES DE CONFIG
+    # ============================================
+    
+    def test_get_config(self) -> bool:
+        """Test 14: GET /api/config (obter configurações)"""
+        if not self.admin_token:
+            self.log_result("Get Config", False, "Admin token required")
+            return False
+            
+        success, response = self.make_request("GET", "/config", token=self.admin_token)
         
-        if success and "hierarchy" in response:
-            hierarchy = response["hierarchy"]
-            self.log_result("Hierarchy Tree View", True, f"Hierarchy loaded with {len(hierarchy)} root nodes")
+        if success and isinstance(response, dict):
+            # Check for required fields
+            required_fields = ["quick_blocks", "auto_reply", "apps", "pix_key", "allowed_data", "api_integration", "ai_agent"]
+            missing_fields = [field for field in required_fields if field not in response]
+            
+            if not missing_fields:
+                self.log_result("Get Config", True, f"Config loaded with all required fields")
+                return True
+            else:
+                self.log_result("Get Config", False, f"Missing fields: {missing_fields}")
+                return False
+        else:
+            self.log_result("Get Config", False, f"Error: {response}")
+            return False
+    
+    def test_update_config(self) -> bool:
+        """Test 15: PUT /api/config (atualizar configurações)"""
+        if not self.admin_token:
+            self.log_result("Update Config", False, "Admin token required")
+            return False
+            
+        config_data = {
+            "quick_blocks": [{"name": "Teste", "text": "Mensagem de teste"}],
+            "auto_reply": [{"q": "oi", "a": "Olá! Como posso ajudar?"}],
+            "apps": [],
+            "pix_key": "test-pix-key-123",
+            "allowed_data": {
+                "cpfs": ["123.456.789-00"],
+                "emails": ["test@example.com"],
+                "phones": ["11999999999"],
+                "random_keys": ["test-key-123"]
+            },
+            "api_integration": {
+                "api_url": "https://api.test.com",
+                "api_token": "test-token",
+                "api_enabled": True
+            },
+            "ai_agent": {
+                "name": "Assistente IA Teste",
+                "personality": "Amigável e prestativo",
+                "instructions": "Sempre seja educado",
+                "llm_provider": "openai",
+                "llm_model": "gpt-4",
+                "temperature": 0.7,
+                "max_tokens": 500,
+                "mode": "standby",
+                "active_hours": "24/7",
+                "enabled": True,
+                "can_access_credentials": True,
+                "knowledge_base": "Base de conhecimento teste"
+            }
+        }
+        
+        success, response = self.make_request("PUT", "/config", config_data, self.admin_token)
+        
+        if success and response.get("ok"):
+            self.log_result("Update Config", True, "Config updated successfully")
             return True
         else:
-            self.log_result("Hierarchy Tree View", False, f"Error: {response}")
+            self.log_result("Update Config", False, f"Error: {response}")
             return False
             
     def test_update_custom_domain(self) -> bool:
