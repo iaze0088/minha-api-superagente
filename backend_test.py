@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Comprehensive backend testing for multi-tenant system.
-Tests authentication, reseller CRUD, hierarchy, data isolation, and config management.
+TESTE COMPLETO DO BACKEND - APÓS CORREÇÕES CRÍTICAS
+Testa todas as rotas críticas: autenticação, atendentes, agentes IA, departamentos, config, revendas
 """
 
 import requests
