@@ -1181,6 +1181,396 @@ class ComprehensiveBackendTester:
             return False
 
     # ============================================
+    # TESTES DAS NOVAS FUNCIONALIDADES (2025-01-21)
+    # ============================================
+    
+    def test_auto_responder_sequences_get(self) -> bool:
+        """Test 24: GET /api/config/auto-responder-sequences"""
+        if not self.admin_token:
+            self.log_result("Auto-Responder GET", False, "Admin token required")
+            return False
+            
+        success, response = self.make_request("GET", "/config/auto-responder-sequences", token=self.admin_token)
+        
+        if success and isinstance(response, list):
+            self.log_result("Auto-Responder GET", True, f"Found {len(response)} sequences")
+            return True
+        else:
+            self.log_result("Auto-Responder GET", False, f"Error: {response}")
+            return False
+    
+    def test_auto_responder_sequences_post(self) -> bool:
+        """Test 25: POST /api/config/auto-responder-sequences"""
+        if not self.admin_token:
+            self.log_result("Auto-Responder POST", False, "Admin token required")
+            return False
+            
+        sequences_data = {
+            "sequences": [
+                {
+                    "id": "seq1",
+                    "name": "Boas-vindas",
+                    "trigger": "oi",
+                    "responses": [
+                        {
+                            "type": "text",
+                            "content": "Olá! Bem-vindo ao nosso atendimento!",
+                            "delay": 2
+                        },
+                        {
+                            "type": "image",
+                            "content": "https://example.com/welcome.jpg",
+                            "delay": 5
+                        },
+                        {
+                            "type": "text",
+                            "content": "Como posso ajudá-lo hoje?",
+                            "delay": 3
+                        }
+                    ]
+                }
+            ]
+        }
+        
+        success, response = self.make_request("POST", "/config/auto-responder-sequences", sequences_data, self.admin_token)
+        
+        if success and response.get("ok"):
+            count = response.get("count", 0)
+            self.log_result("Auto-Responder POST", True, f"Created {count} sequences with multi-media and delays")
+            return True
+        else:
+            self.log_result("Auto-Responder POST", False, f"Error: {response}")
+            return False
+    
+    def test_auto_responder_sequences_delete(self) -> bool:
+        """Test 26: DELETE /api/config/auto-responder-sequences/{id}"""
+        if not self.admin_token:
+            self.log_result("Auto-Responder DELETE", False, "Admin token required")
+            return False
+            
+        # First get sequences to find one to delete
+        success, sequences = self.make_request("GET", "/config/auto-responder-sequences", token=self.admin_token)
+        if not success or not sequences:
+            self.log_result("Auto-Responder DELETE", False, "No sequences to delete")
+            return False
+            
+        sequence_id = sequences[0].get("id", "seq1")
+        success, response = self.make_request("DELETE", f"/config/auto-responder-sequences/{sequence_id}", token=self.admin_token)
+        
+        if success and response.get("ok"):
+            self.log_result("Auto-Responder DELETE", True, f"Deleted sequence: {sequence_id}")
+            return True
+        else:
+            self.log_result("Auto-Responder DELETE", False, f"Error: {response}")
+            return False
+    
+    def test_tutorials_advanced_get(self) -> bool:
+        """Test 27: GET /api/config/tutorials-advanced"""
+        if not self.admin_token:
+            self.log_result("Tutorials Advanced GET", False, "Admin token required")
+            return False
+            
+        success, response = self.make_request("GET", "/config/tutorials-advanced", token=self.admin_token)
+        
+        if success and isinstance(response, list):
+            self.log_result("Tutorials Advanced GET", True, f"Found {len(response)} tutorials")
+            return True
+        else:
+            self.log_result("Tutorials Advanced GET", False, f"Error: {response}")
+            return False
+    
+    def test_tutorials_advanced_post(self) -> bool:
+        """Test 28: POST /api/config/tutorials-advanced"""
+        if not self.admin_token:
+            self.log_result("Tutorials Advanced POST", False, "Admin token required")
+            return False
+            
+        tutorials_data = {
+            "tutorials": [
+                {
+                    "id": "tut1",
+                    "category": "Smart TV",
+                    "name": "Configuração IPTV",
+                    "items": [
+                        {
+                            "type": "text",
+                            "content": "1. Acesse as configurações da Smart TV",
+                            "delay": 3
+                        },
+                        {
+                            "type": "video",
+                            "content": "https://example.com/tutorial.mp4",
+                            "delay": 10
+                        },
+                        {
+                            "type": "text",
+                            "content": "2. Instale o aplicativo IPTV",
+                            "delay": 2
+                        },
+                        {
+                            "type": "audio",
+                            "content": "https://example.com/instructions.mp3",
+                            "delay": 15
+                        }
+                    ]
+                }
+            ]
+        }
+        
+        success, response = self.make_request("POST", "/config/tutorials-advanced", tutorials_data, self.admin_token)
+        
+        if success and response.get("ok"):
+            count = response.get("count", 0)
+            self.log_result("Tutorials Advanced POST", True, f"Created {count} tutorials with multi-media and delays")
+            return True
+        else:
+            self.log_result("Tutorials Advanced POST", False, f"Error: {response}")
+            return False
+    
+    def test_tutorials_advanced_delete(self) -> bool:
+        """Test 29: DELETE /api/config/tutorials-advanced/{id}"""
+        if not self.admin_token:
+            self.log_result("Tutorials Advanced DELETE", False, "Admin token required")
+            return False
+            
+        # First get tutorials to find one to delete
+        success, tutorials = self.make_request("GET", "/config/tutorials-advanced", token=self.admin_token)
+        if not success or not tutorials:
+            self.log_result("Tutorials Advanced DELETE", False, "No tutorials to delete")
+            return False
+            
+        tutorial_id = tutorials[0].get("id", "tut1")
+        success, response = self.make_request("DELETE", f"/config/tutorials-advanced/{tutorial_id}", token=self.admin_token)
+        
+        if success and response.get("ok"):
+            self.log_result("Tutorials Advanced DELETE", True, f"Deleted tutorial: {tutorial_id}")
+            return True
+        else:
+            self.log_result("Tutorials Advanced DELETE", False, f"Error: {response}")
+            return False
+    
+    def test_reseller_domain_info(self) -> bool:
+        """Test 30: GET /api/reseller/domain-info"""
+        # Need to login as reseller first
+        if not self.reseller_token:
+            # Try to login as reseller
+            if not self.test_reseller_login():
+                self.log_result("Reseller Domain Info", False, "Reseller login required")
+                return False
+                
+        success, response = self.make_request("GET", "/reseller/domain-info", token=self.reseller_token)
+        
+        if success and "test_domain" in response and "server_ip" in response:
+            test_domain = response.get("test_domain")
+            server_ip = response.get("server_ip")
+            custom_domain = response.get("custom_domain", "")
+            self.log_result("Reseller Domain Info", True, f"Test domain: {test_domain}, Server IP: {server_ip}, Custom: {custom_domain}")
+            return True
+        else:
+            self.log_result("Reseller Domain Info", False, f"Error: {response}")
+            return False
+    
+    def test_reseller_update_domain(self) -> bool:
+        """Test 31: POST /api/reseller/update-domain"""
+        if not self.reseller_token:
+            self.log_result("Reseller Update Domain", False, "Reseller token required")
+            return False
+            
+        domain_data = {
+            "custom_domain": "meudominio.teste.com"
+        }
+        
+        success, response = self.make_request("POST", "/reseller/update-domain", domain_data, self.reseller_token)
+        
+        if success and response.get("ok"):
+            message = response.get("message", "")
+            self.log_result("Reseller Update Domain", True, f"Domain updated: {message}")
+            return True
+        else:
+            self.log_result("Reseller Update Domain", False, f"Error: {response}")
+            return False
+    
+    def test_reseller_verify_domain(self) -> bool:
+        """Test 32: GET /api/reseller/verify-domain"""
+        if not self.reseller_token:
+            self.log_result("Reseller Verify Domain", False, "Reseller token required")
+            return False
+            
+        success, response = self.make_request("GET", "/reseller/verify-domain", token=self.reseller_token)
+        
+        if success and "verified" in response:
+            verified = response.get("verified")
+            message = response.get("message", "")
+            self.log_result("Reseller Verify Domain", True, f"Verification result: {verified} - {message}")
+            return True
+        else:
+            self.log_result("Reseller Verify Domain", False, f"Error: {response}")
+            return False
+    
+    def test_file_upload(self) -> bool:
+        """Test 33: POST /api/upload (file upload with type detection)"""
+        if not self.admin_token:
+            self.log_result("File Upload", False, "Admin token required")
+            return False
+        
+        # Create a test file content (simulate image)
+        import tempfile
+        import os
+        
+        try:
+            # Create a temporary test file
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False) as f:
+                f.write("Test file content for upload")
+                temp_file_path = f.name
+            
+            # Prepare multipart form data
+            url = f"{API_BASE}/upload"
+            headers = {"Authorization": f"Bearer {self.admin_token}"}
+            
+            with open(temp_file_path, 'rb') as f:
+                files = {'file': ('test.txt', f, 'text/plain')}
+                response = requests.post(url, files=files, headers=headers, timeout=30)
+            
+            # Clean up temp file
+            os.unlink(temp_file_path)
+            
+            if response.status_code < 400:
+                result = response.json()
+                if result.get("ok") and "url" in result and "kind" in result:
+                    url = result.get("url")
+                    kind = result.get("kind")
+                    self.log_result("File Upload", True, f"File uploaded: {url}, Type: {kind}")
+                    return True
+                else:
+                    self.log_result("File Upload", False, f"Invalid response: {result}")
+                    return False
+            else:
+                self.log_result("File Upload", False, f"HTTP {response.status_code}: {response.text}")
+                return False
+                
+        except Exception as e:
+            self.log_result("File Upload", False, f"Exception: {str(e)}")
+            return False
+    
+    def test_tenant_isolation_auto_responder(self) -> bool:
+        """Test 34: Tenant isolation for auto-responder sequences"""
+        if not self.admin_token or not self.reseller_token:
+            self.log_result("Tenant Isolation Auto-Responder", False, "Both admin and reseller tokens required")
+            return False
+        
+        # Create sequence as admin (master tenant)
+        admin_sequences = {
+            "sequences": [
+                {
+                    "id": "admin_seq",
+                    "name": "Admin Sequence",
+                    "trigger": "admin",
+                    "responses": [{"type": "text", "content": "Admin response", "delay": 1}]
+                }
+            ]
+        }
+        
+        success_admin, _ = self.make_request("POST", "/config/auto-responder-sequences", admin_sequences, self.admin_token)
+        
+        # Create sequence as reseller
+        reseller_sequences = {
+            "sequences": [
+                {
+                    "id": "reseller_seq",
+                    "name": "Reseller Sequence",
+                    "trigger": "reseller",
+                    "responses": [{"type": "text", "content": "Reseller response", "delay": 1}]
+                }
+            ]
+        }
+        
+        success_reseller, _ = self.make_request("POST", "/config/auto-responder-sequences", reseller_sequences, self.reseller_token)
+        
+        if not success_admin or not success_reseller:
+            self.log_result("Tenant Isolation Auto-Responder", False, "Failed to create sequences")
+            return False
+        
+        # Check admin can only see admin sequences
+        success, admin_list = self.make_request("GET", "/config/auto-responder-sequences", token=self.admin_token)
+        if not success:
+            self.log_result("Tenant Isolation Auto-Responder", False, "Failed to get admin sequences")
+            return False
+        
+        # Check reseller can only see reseller sequences  
+        success, reseller_list = self.make_request("GET", "/config/auto-responder-sequences", token=self.reseller_token)
+        if not success:
+            self.log_result("Tenant Isolation Auto-Responder", False, "Failed to get reseller sequences")
+            return False
+        
+        # Verify isolation
+        admin_has_reseller = any(seq.get("id") == "reseller_seq" for seq in admin_list)
+        reseller_has_admin = any(seq.get("id") == "admin_seq" for seq in reseller_list)
+        
+        if admin_has_reseller or reseller_has_admin:
+            self.log_result("Tenant Isolation Auto-Responder", False, "Tenant isolation failed - cross-tenant data visible")
+            return False
+        else:
+            self.log_result("Tenant Isolation Auto-Responder", True, f"Tenant isolation working - Admin: {len(admin_list)}, Reseller: {len(reseller_list)}")
+            return True
+    
+    def test_tenant_isolation_tutorials(self) -> bool:
+        """Test 35: Tenant isolation for tutorials"""
+        if not self.admin_token or not self.reseller_token:
+            self.log_result("Tenant Isolation Tutorials", False, "Both admin and reseller tokens required")
+            return False
+        
+        # Create tutorial as admin
+        admin_tutorials = {
+            "tutorials": [
+                {
+                    "id": "admin_tut",
+                    "category": "Admin Category",
+                    "name": "Admin Tutorial",
+                    "items": [{"type": "text", "content": "Admin content", "delay": 1}]
+                }
+            ]
+        }
+        
+        success_admin, _ = self.make_request("POST", "/config/tutorials-advanced", admin_tutorials, self.admin_token)
+        
+        # Create tutorial as reseller
+        reseller_tutorials = {
+            "tutorials": [
+                {
+                    "id": "reseller_tut",
+                    "category": "Reseller Category", 
+                    "name": "Reseller Tutorial",
+                    "items": [{"type": "text", "content": "Reseller content", "delay": 1}]
+                }
+            ]
+        }
+        
+        success_reseller, _ = self.make_request("POST", "/config/tutorials-advanced", reseller_tutorials, self.reseller_token)
+        
+        if not success_admin or not success_reseller:
+            self.log_result("Tenant Isolation Tutorials", False, "Failed to create tutorials")
+            return False
+        
+        # Check isolation
+        success, admin_list = self.make_request("GET", "/config/tutorials-advanced", token=self.admin_token)
+        success2, reseller_list = self.make_request("GET", "/config/tutorials-advanced", token=self.reseller_token)
+        
+        if not success or not success2:
+            self.log_result("Tenant Isolation Tutorials", False, "Failed to get tutorials")
+            return False
+        
+        # Verify isolation
+        admin_has_reseller = any(tut.get("id") == "reseller_tut" for tut in admin_list)
+        reseller_has_admin = any(tut.get("id") == "admin_tut" for tut in reseller_list)
+        
+        if admin_has_reseller or reseller_has_admin:
+            self.log_result("Tenant Isolation Tutorials", False, "Tenant isolation failed - cross-tenant data visible")
+            return False
+        else:
+            self.log_result("Tenant Isolation Tutorials", True, f"Tenant isolation working - Admin: {len(admin_list)}, Reseller: {len(reseller_list)}")
+            return True
+
+    # ============================================
     # TESTE COMPLETO DE FLUXO DE MENSAGENS E WEBSOCKET
     # ============================================
     
