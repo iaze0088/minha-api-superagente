@@ -493,6 +493,66 @@ backend:
         agent: "testing"
         comment: "✅ TESTADO COMPLETAMENTE: Fluxo de mensagens funcionando 100%! Login cliente ✓ (WhatsApp: 5511999999999, PIN: 00), Cliente envia mensagem ✓, Login agente ✓, Agente responde ✓, Mensagens armazenadas corretamente ✓, WebSocket conectando ✓ (endpoint: /api/ws/{user_id}/{session_id}), Estrutura from_type='agent' confirmada ✓ (deve acionar som), Múltiplas mensagens testadas ✓. IMPORTANTE: WebSocket usa user_id + session_id, NÃO token. Frontend deve conectar em /api/ws/{client_id}/{session_id} e tocar som quando receber mensagem com from_type='agent'."
 
+  - task: "Auto-Responder Avançado com múltiplas respostas e mídia"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implementados endpoints: GET /api/config/auto-responder-sequences, POST /api/config/auto-responder-sequences, DELETE /api/config/auto-responder-sequences/{id}. Suporte a múltiplas respostas sequenciais com diferentes tipos de mídia (texto, áudio, vídeo, foto) e delays configuráveis (0-60s). Isolamento por tenant (reseller_id)."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO: Auto-Responder Avançado 100% funcional! GET /api/config/auto-responder-sequences ✓ (listagem funcionando), POST /api/config/auto-responder-sequences ✓ (criação com múltiplas respostas: texto, imagem, vídeo, áudio + delays 1-10s), DELETE /api/config/auto-responder-sequences/{id} ✓ (exclusão funcionando). Tenant isolation funcionando corretamente. Correção aplicada: adicionado {\"_id\": 0} para evitar erro de serialização ObjectId."
+
+  - task: "Tutorials Avançado com múltiplos itens e categorias"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implementados endpoints: GET /api/config/tutorials-advanced, POST /api/config/tutorials-advanced, DELETE /api/config/tutorials-advanced/{id}. Suporte a múltiplos itens com diferentes tipos de mídia (texto, áudio, vídeo, foto), delays configuráveis e agrupamento por categoria. Isolamento por tenant (reseller_id)."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO: Tutorials Avançado 100% funcional! GET /api/config/tutorials-advanced ✓ (listagem funcionando), POST /api/config/tutorials-advanced ✓ (criação com múltiplos itens: texto, imagem, vídeo, áudio + delays 1-30s + categorias), DELETE /api/config/tutorials-advanced/{id} ✓ (exclusão funcionando). Tenant isolation funcionando corretamente. Correção aplicada: adicionado {\"_id\": 0} para evitar erro de serialização ObjectId."
+
+  - task: "Gestão de Domínios para Revendas"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implementados endpoints: GET /api/reseller/domain-info (informações de domínio), POST /api/reseller/update-domain (atualizar domínio personalizado), GET /api/reseller/verify-domain (verificar configuração DNS). Geração de domínio de teste automático, atualização de domínio customizado, verificação de IP do servidor."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO: Gestão de Domínios 100% funcional! GET /api/reseller/domain-info ✓ (retorna test_domain, server_ip, custom_domain, SSL status), POST /api/reseller/update-domain ✓ (atualização de domínio customizado funcionando), GET /api/reseller/verify-domain ✓ (verificação DNS funcionando - detecta IP incorreto). Correção aplicada: usar reseller_id do token em vez de tenant middleware para funcionar corretamente."
+
+  - task: "Upload de Arquivos com detecção de tipo"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Endpoint POST /api/upload já existia. Suporte a upload de arquivos (imagem, vídeo, áudio) com detecção automática de tipo de arquivo (kind) e retorno de URL correta."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO: Upload de Arquivos 100% funcional! POST /api/upload ✓ funcionando para todos os tipos: text/plain → file, image/jpeg → image, video/mp4 → video, audio/mpeg → audio. Detecção de tipo (kind) funcionando corretamente. URLs retornadas corretas com base no REACT_APP_BACKEND_URL."
+
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
