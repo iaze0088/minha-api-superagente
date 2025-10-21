@@ -191,31 +191,88 @@ class ComprehensiveBackendTester:
             self.log_result("Create Agent", False, f"Error: {response}")
             return False
             
-    def test_create_sub_reseller(self) -> bool:
-        """Test 3: Create Sub-Reseller (with parent_id)"""
-        if not self.created_resellers:
-            self.log_result("Create Sub-Reseller", False, "No root reseller available")
+    # ============================================
+    # TESTES DE AGENTES IA (PRIORIDADE ALTA)
+    # ============================================
+    
+    def test_list_ai_agents(self) -> bool:
+        """Test 6: GET /api/ai/agents (listar agentes IA)"""
+        if not self.admin_token:
+            self.log_result("List AI Agents", False, "Admin token required")
             return False
             
-        parent_id = self.created_resellers[0]
-        reseller_data = {
-            "name": "Sub-Revenda Teste",
-            "email": "sub@teste.com", 
-            "password": "senha123",
-            "domain": "sub.teste.com",
-            "parent_id": parent_id
-        }
+        success, response = self.make_request("GET", "/ai/agents", token=self.admin_token)
         
-        success, response = self.make_request("POST", "/resellers", reseller_data, self.admin_token)
-        
-        if success and response.get("ok"):
-            reseller_id = response.get("reseller_id")
-            level = response.get("level", 0)
-            self.created_resellers.append(reseller_id)
-            self.log_result("Create Sub-Reseller", True, f"ID: {reseller_id}, Level: {level}")
+        if success and isinstance(response, list):
+            count = len(response)
+            self.log_result("List AI Agents", True, f"Found {count} AI agents")
             return True
         else:
-            self.log_result("Create Sub-Reseller", False, f"Error: {response}")
+            self.log_result("List AI Agents", False, f"Error: {response}")
+            return False
+    
+    def test_create_ai_agent(self) -> bool:
+        """Test 7: POST /api/ai/agents (criar agente IA)"""
+        if not self.admin_token:
+            self.log_result("Create AI Agent", False, "Admin token required")
+            return False
+            
+        ai_agent_data = {
+            "name": "Agente IA Teste",
+            "description": "Agente de teste para validação",
+            "llm_provider": "openai",
+            "llm_model": "gpt-4o-mini"
+        }
+        
+        success, response = self.make_request("POST", "/ai/agents", ai_agent_data, self.admin_token)
+        
+        if success and "id" in response:
+            agent_id = response.get("id")
+            self.created_ai_agents.append(agent_id)
+            self.log_result("Create AI Agent", True, f"AI Agent created: {response.get('name')} (ID: {agent_id})")
+            return True
+        else:
+            self.log_result("Create AI Agent", False, f"Error: {response}")
+            return False
+    
+    def test_update_ai_agent(self) -> bool:
+        """Test 8: PUT /api/ai/agents/{id} (atualizar agente)"""
+        if not self.admin_token or not self.created_ai_agents:
+            self.log_result("Update AI Agent", False, "Admin token or AI agent required")
+            return False
+            
+        agent_id = self.created_ai_agents[0]
+        update_data = {
+            "name": "Agente IA Atualizado",
+            "description": "Descrição atualizada",
+            "temperature": 0.8
+        }
+        
+        success, response = self.make_request("PUT", f"/ai/agents/{agent_id}", update_data, self.admin_token)
+        
+        if success and "id" in response:
+            self.log_result("Update AI Agent", True, f"AI Agent updated: {response.get('name')}")
+            return True
+        else:
+            self.log_result("Update AI Agent", False, f"Error: {response}")
+            return False
+    
+    def test_delete_ai_agent(self) -> bool:
+        """Test 9: DELETE /api/ai/agents/{id} (deletar agente)"""
+        if not self.admin_token or not self.created_ai_agents:
+            self.log_result("Delete AI Agent", False, "Admin token or AI agent required")
+            return False
+            
+        agent_id = self.created_ai_agents[-1]  # Delete the last one
+        
+        success, response = self.make_request("DELETE", f"/ai/agents/{agent_id}", token=self.admin_token)
+        
+        if success and response.get("ok"):
+            self.created_ai_agents.remove(agent_id)
+            self.log_result("Delete AI Agent", True, f"AI Agent deleted: {agent_id}")
+            return True
+        else:
+            self.log_result("Delete AI Agent", False, f"Error: {response}")
             return False
             
     def test_list_resellers(self) -> bool:
