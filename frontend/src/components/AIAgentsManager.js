@@ -24,9 +24,10 @@ const AIAgentsManager = () => {
   const loadAgents = async () => {
     try {
       const { data } = await api.get('/ai/agents');
-      setAgents(data);
+      setAgents(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Error loading agents:', error);
+      setAgents([]);
       toast.error('Erro ao carregar agentes');
     }
   };
