@@ -1,10 +1,13 @@
-const CACHE_NAME = 'cybertv-suporte-v1';
+const CACHE_NAME = 'cybertv-suporte-v2';
 const urlsToCache = [
   '/',
   '/static/css/main.css',
   '/static/js/main.js',
   '/logo-cybertv.jpg',
-  '/manifest.json'
+  '/manifest.json',
+  '/notification.mp3',
+  '/icon-192.png',
+  '/icon-512.png'
 ];
 
 // Instalação do Service Worker
