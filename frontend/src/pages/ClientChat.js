@@ -139,63 +139,6 @@ const ClientChat = () => {
   }, []);
 
   useEffect(() => {
-    if (!userData?.id) return;
-    const ws = createWebSocket(userData.id);
-    
-    ws.onopen = () => {
-      console.log('✅ WebSocket conectado - Cliente');
-    };
-    
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log('📩 Mensagem recebida:', data);
-      
-      if (data.type === 'message') {
-        // Adiciona mensagem instantaneamente
-        setMessages(prev => {
-          const exists = prev.some(m => m.id === data.message.id);
-          if (exists) return prev;
-          return [...prev, data.message];
-        });
-        
-        // Som de notificação apenas se mensagem do agente
-        if (data.message.from_type === 'agent') {
-          try {
-            const audio = new Audio('/notification.mp3');
-            audio.volume = 0.7;
-            audio.play().catch(() => {});
-          } catch (e) {}
-          
-          if ('vibrate' in navigator) {
-            navigator.vibrate([200, 100, 200]);
-          }
-        }
-      }
-      
-      if (data.type === 'credentials_updated') {
-        setCredentials({ pinned_user: data.pinned_user, pinned_pass: data.pinned_pass });
-      }
-      
-      if (data.type === 'force_logout') {
-        clearAuth();
-        alert('Você foi desconectado porque outra pessoa fez login com suas credenciais.');
-        navigate('/');
-      }
-    };
-    
-    ws.onerror = (error) => {
-      console.error('❌ WebSocket erro:', error);
-    };
-    
-    ws.onclose = () => {
-      console.log('🔌 WebSocket desconectado');
-    };
-    
-    wsRef.current = ws;
-    return () => ws.close();
-  }, [userData, navigate]);
-
-  useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
