@@ -491,19 +491,50 @@ const ClientChat = () => {
         {/* Messages */}
         <div className="h-[500px] bg-slate-50 p-4 overflow-y-auto">
           <div className="space-y-3">
-            {messages.map(msg => (
+            {messages.map(msg => {
+              // Debug: log mensagem
+              console.log('📝 Renderizando mensagem:', {
+                id: msg.id?.substring(0, 8),
+                from_type: msg.from_type,
+                kind: msg.kind,
+                text: msg.text?.substring(0, 50),
+                has_text: !!msg.text
+              });
+              
+              return (
               <div key={msg.id} className={`flex ${msg.from_type === 'client' ? 'justify-end' : 'justify-start'}`}>
                 <div
                   className={`max-w-[80%] p-3 rounded-2xl shadow-sm ${
                     msg.from_type === 'client'
                       ? 'bg-blue-600 text-white rounded-br-sm'
+                      : msg.from_type === 'ai'
+                      ? 'bg-purple-100 text-purple-900 rounded-bl-sm border border-purple-200'
                       : 'bg-white text-slate-900 rounded-bl-sm'
                   }`}
                 >
-                  {msg.kind === 'text' && <p className="whitespace-pre-wrap break-words text-sm">{msg.text}</p>}
-                  {msg.kind === 'image' && <img src={msg.file_url} alt="" className="max-w-full rounded-lg" />}
-                  {msg.kind === 'video' && <video src={msg.file_url} controls className="max-w-full rounded-lg" />}
-                  {msg.kind === 'audio' && <audio src={msg.file_url} controls className="w-full" />}
+                  {/* SEMPRE mostrar texto, independente do kind */}
+                  {msg.text && (
+                    <p className="whitespace-pre-wrap break-words text-sm" style={{ minHeight: '20px' }}>
+                      {msg.text}
+                    </p>
+                  )}
+                  
+                  {/* Se não tiver texto, mostrar mensagem de debug */}
+                  {!msg.text && (
+                    <p className="text-xs opacity-50 italic">
+                      [Mensagem sem texto - kind: {msg.kind}]
+                    </p>
+                  )}
+                  
+                  {msg.kind === 'image' && msg.file_url && (
+                    <img src={msg.file_url} alt="" className="max-w-full rounded-lg mt-2" />
+                  )}
+                  {msg.kind === 'video' && msg.file_url && (
+                    <video src={msg.file_url} controls className="max-w-full rounded-lg mt-2" />
+                  )}
+                  {msg.kind === 'audio' && msg.file_url && (
+                    <audio src={msg.file_url} controls className="w-full mt-2" />
+                  )}
                   {msg.kind === 'department_selection' && (
                     <div>
                       <p className="font-semibold text-sm mb-3">{msg.text}</p>
