@@ -1411,11 +1411,14 @@ class ComprehensiveBackendTester:
             # 7. TESTE ADICIONAL: VERIFICAR ENDPOINT DE WEBSOCKET
             print("\n📋 7. VERIFICANDO ENDPOINT DE WEBSOCKET...")
             
-            # Test WebSocket endpoint availability (we can't test actual WebSocket connection in this script)
-            # But we can verify the token format and endpoint structure
-            websocket_url = f"{BACKEND_URL.replace('https://', 'wss://').replace('http://', 'ws://')}/api/ws/{client_token}"
-            print(f"   🔗 WebSocket URL seria: {websocket_url}")
-            print(f"   ✅ Token do cliente disponível para WebSocket: {client_token[:20]}...")
+            # The WebSocket endpoint is /ws/{user_id}/{session_id}, not /ws/{token}
+            import uuid
+            session_id = str(uuid.uuid4())
+            websocket_url = f"{BACKEND_URL.replace('https://', 'wss://').replace('http://', 'ws://')}/api/ws/{client_id}/{session_id}"
+            print(f"   🔗 WebSocket URL correta: {websocket_url}")
+            print(f"   ✅ Client ID disponível: {client_id}")
+            print(f"   ✅ Session ID gerado: {session_id}")
+            print(f"   ⚠️  CORREÇÃO: WebSocket usa /ws/{client_id}/{session_id}, NÃO /ws/{client_token}")
             
             # 8. SIMULAR MAIS UMA TROCA DE MENSAGENS
             print("\n📋 8. SIMULANDO TROCA ADICIONAL DE MENSAGENS...")
