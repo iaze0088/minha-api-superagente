@@ -197,7 +197,10 @@ async def create_reseller(data: ResellerCreate, current_user: dict = Depends(get
     level = await calculate_level(parent_id, db)
     
     reseller_id = str(uuid.uuid4())
-    pass_hash = bcrypt.hashpw(data.password.encode(), bcrypt.gensalt()).decode()
+    
+    # Senha padrão para novas revendas: admin123
+    default_password = "admin123"
+    pass_hash = bcrypt.hashpw(default_password.encode(), bcrypt.gensalt()).decode()
     
     reseller = {
         "id": reseller_id,
@@ -209,6 +212,7 @@ async def create_reseller(data: ResellerCreate, current_user: dict = Depends(get
         "is_active": True,
         "parent_id": parent_id,
         "level": level,
+        "first_login": True,  # Forçar troca de senha no primeiro acesso
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
@@ -224,9 +228,15 @@ async def create_reseller(data: ResellerCreate, current_user: dict = Depends(get
     }
     await db.reseller_configs.insert_one(config)
     
-    logger.info(f"Reseller created: {data.name} (Level: {level}, Parent: {parent_id})")
+    logger.info(f"✅ Reseller criado: {data.name} (Level: {level}, Parent: {parent_id}, Senha padrão: admin123)")
     
-    return {"ok": True, "reseller_id": reseller_id, "level": level}
+    return {
+        "ok": True, 
+        "reseller_id": reseller_id, 
+        "level": level,
+        "default_password": default_password,
+        "preview_url": f"https://{data.domain}.preview.emergentagent.com" if data.domain else None
+    }
 
 # Update reseller
 @reseller_router.put("/{reseller_id}")
