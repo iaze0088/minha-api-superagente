@@ -39,6 +39,8 @@ const ClientChat = () => {
   const fileInputRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const queueTimerRef = useRef(null);
+  const notificationAudioRef = useRef(null);
+  const [audioEnabled, setAudioEnabled] = useState(false);
 
   // Função para conectar WebSocket com reconexão automática
   const connectWebSocket = () => {
