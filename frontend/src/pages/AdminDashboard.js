@@ -296,7 +296,7 @@ const AdminDashboard = () => {
               <h3 className="text-lg font-semibold mb-4">Gerenciar Revendas</h3>
               <p className="text-sm text-slate-600 mb-4">Sistema multi-tenant ativo com isolamento de dados</p>
               <div className="grid gap-4">
-                {resellers.map((reseller) => (
+                {(resellers || []).map((reseller) => (
                   <Card key={reseller.id} className="p-4">
                     <h4 className="font-semibold">{reseller.name}</h4>
                     <p className="text-sm text-slate-600">Email: {reseller.email}</p>
