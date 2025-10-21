@@ -1852,11 +1852,10 @@ async def update_reseller_domain(data: dict, request: Request, current_user: dic
 @api_router.get("/reseller/verify-domain")
 async def verify_reseller_domain(request: Request, current_user: dict = Depends(get_current_user)):
     """Verifica se o DNS do domínio personalizado está configurado corretamente"""
-    from tenant_middleware import get_current_tenant
-    tenant_ctx = get_current_tenant()
-    reseller_id = tenant_ctx.reseller_id
+    # Use reseller_id from token instead of tenant middleware
+    reseller_id = current_user.get("reseller_id")
     
-    if not reseller_id:
+    if not reseller_id or current_user.get("user_type") != "reseller":
         raise HTTPException(status_code=400, detail="Apenas revendedores podem verificar")
     
     reseller = await db.resellers.find_one({"id": reseller_id})
