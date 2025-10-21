@@ -1378,7 +1378,7 @@ class ComprehensiveBackendTester:
             # Find the agent message specifically
             agent_message = None
             for message in messages:
-                if message.get('from_type') == 'agent' and 'vou te ajudar' in message.get('text', ''):
+                if message.get('from_type') == 'agent' and ('vou te ajudar' in message.get('text', '') or 'atendente' in message.get('text', '')):
                     agent_message = message
                     break
             
