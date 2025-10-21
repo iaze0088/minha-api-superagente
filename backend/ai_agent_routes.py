@@ -13,7 +13,7 @@ import jwt
 # Configuração do MongoDB
 MONGO_URL = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
 client = AsyncIOMotorClient(MONGO_URL)
-db = client.chatdb
+db = client[os.environ.get("DB_NAME", "support_chat")]
 
 # Configuração do JWT
 JWT_SECRET = os.environ.get('JWT_SECRET', 'fallback-secret-key-change-in-production')
