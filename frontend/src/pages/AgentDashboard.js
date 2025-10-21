@@ -160,6 +160,14 @@ const AgentDashboard = () => {
     setSelectedTicket(ticket);
     loadMessages(ticket.id);
     
+    // Atribuir ticket ao atendente atual automaticamente (para IA funcionar)
+    try {
+      await api.put(`/tickets/${ticket.id}/assign`, {});
+      console.log('Ticket atribuído ao atendente');
+    } catch (error) {
+      console.error('Error assigning ticket:', error);
+    }
+    
     // Verificar se IA está habilitada para este ticket
     const aiDisabledUntil = ticket.ai_disabled_until;
     if (aiDisabledUntil) {
