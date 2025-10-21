@@ -561,12 +561,12 @@ const ClientChat = () => {
                 
                 <div className={`flex ${msg.from_type === 'client' ? 'justify-end' : 'justify-start'}`}>
                   <div
-                    className={`max-w-[80%] p-3 rounded-2xl shadow-sm ${
+                    className={`max-w-[75%] px-3 py-2 rounded-lg shadow-sm ${
                       msg.from_type === 'client'
-                        ? 'bg-blue-600 text-white rounded-br-sm'
+                        ? 'bg-[#DCF8C6] text-gray-900 rounded-br-none'
                         : msg.from_type === 'ai'
-                        ? 'bg-purple-100 text-purple-900 rounded-bl-sm border border-purple-200'
-                        : 'bg-white text-slate-900 rounded-bl-sm'
+                        ? 'bg-[#E1F5FE] text-gray-900 rounded-bl-none border border-blue-200'
+                        : 'bg-white text-gray-900 rounded-bl-none border border-gray-200'
                     }`}
                   >
                   {/* SEMPRE mostrar texto, independente do kind */}
