@@ -658,10 +658,11 @@ const AgentDashboard = () => {
                       </div>
                     </div>
                   </Card>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          </Tabs>
+            </Tabs>
+          )}
         </div>
 
         {/* Área de Conversas - Layout fixo e profissional */}
