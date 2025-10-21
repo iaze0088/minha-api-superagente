@@ -996,9 +996,30 @@ class ComprehensiveBackendTester:
             
             fabio_token = fabio_login_response['token']
             
-            # Atualizar ticket para atribuir ao Fabio (simulando atribuição manual)
-            # Como não temos endpoint específico, vamos usar uma abordagem direta no banco
-            # Por enquanto, vamos assumir que o ticket está atribuído ao Fabio
+            # Atualizar status do ticket para ATENDENDO (simulando atribuição)
+            status_data = {"status": "ATENDENDO"}
+            success, status_response = self.make_request("POST", f"/tickets/{ticket_id}/status", status_data, fabio_token)
+            if not success:
+                print(f"   ⚠️  Não foi possível atualizar status do ticket: {status_response}")
+            else:
+                print(f"   ✅ Status do ticket atualizado para ATENDENDO")
+            
+            # Enviar uma mensagem como agente para simular atribuição
+            agent_message_data = {
+                "from_type": "agent",
+                "from_id": fabio_agent_id,
+                "to_type": "client", 
+                "to_id": client_id,
+                "kind": "text",
+                "text": "Olá! Sou o Fabio e vou te ajudar.",
+                "ticket_id": ticket_id
+            }
+            
+            success, agent_msg_response = self.make_request("POST", "/messages", agent_message_data, fabio_token)
+            if not success:
+                print(f"   ⚠️  Não foi possível enviar mensagem do agente: {agent_msg_response}")
+            else:
+                print(f"   ✅ Mensagem do agente enviada para simular atribuição")
             
             # Aguardar 10 segundos para IA processar
             print("   ⏱️  Aguardando 10 segundos para IA processar...")
