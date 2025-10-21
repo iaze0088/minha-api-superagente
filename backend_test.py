@@ -699,7 +699,21 @@ class ComprehensiveBackendTester:
             self.test_whatsapp_popup_status,
             self.test_whatsapp_confirm,
             self.test_update_pin,
-            self.test_invalid_pin
+            self.test_invalid_pin,
+            
+            # New Functionalities Tests (2025-01-21)
+            self.test_auto_responder_sequences_get,
+            self.test_auto_responder_sequences_post,
+            self.test_auto_responder_sequences_delete,
+            self.test_tutorials_advanced_get,
+            self.test_tutorials_advanced_post,
+            self.test_tutorials_advanced_delete,
+            self.test_reseller_domain_info,
+            self.test_reseller_update_domain,
+            self.test_reseller_verify_domain,
+            self.test_file_upload,
+            self.test_tenant_isolation_auto_responder,
+            self.test_tenant_isolation_tutorials
         ]
         
         passed = 0
