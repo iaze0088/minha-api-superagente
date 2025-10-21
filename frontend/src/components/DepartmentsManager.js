@@ -216,7 +216,7 @@ const DepartmentsManager = () => {
                 className="w-full border rounded-lg p-2"
               >
                 <option value="">Nenhum</option>
-                {agents.map(agent => (
+                {(agents || []).map(agent => (
                   <option key={agent.id} value={agent.id}>{agent.name}</option>
                 ))}
               </select>
