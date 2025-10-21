@@ -136,6 +136,26 @@ const AdminDashboard = () => {
     }
   };
   
+  const handleUpdateReseller = async () => {
+    if (!editingReseller) return;
+    try {
+      // Preparar dados para atualização (remover campos vazios/undefined)
+      const updateData = {};
+      if (editingReseller.name) updateData.name = editingReseller.name;
+      if (editingReseller.email) updateData.email = editingReseller.email;
+      if (editingReseller.password) updateData.password = editingReseller.password;
+      if (editingReseller.custom_domain !== undefined) updateData.custom_domain = editingReseller.custom_domain;
+      if (editingReseller.is_active !== undefined) updateData.is_active = editingReseller.is_active;
+      
+      await api.put(`/resellers/${editingReseller.id}`, updateData);
+      toast.success('Revenda atualizada com sucesso!');
+      setEditingReseller(null);
+      loadData();
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Erro ao atualizar revenda');
+    }
+  };
+  
   const handleDeleteReseller = async (resellerId) => {
     if (!window.confirm('Tem certeza que deseja excluir esta revenda?')) return;
     try {
