@@ -1,11 +1,11 @@
 {
-  "name": "CYBERTV Suporte",
-  "short_name": "Suporte",
-  "description": "Sistema de Suporte e Atendimento CYBERTV",
+  "name": "WA Suporte",
+  "short_name": "WA Suporte",
+  "description": "Sistema de Suporte e Atendimento via WhatsApp",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0ea5e9",
-  "theme_color": "#0ea5e9",
+  "background_color": "#075e54",
+  "theme_color": "#075e54",
   "orientation": "portrait",
   "scope": "/",
   "icons": [
