@@ -127,6 +127,11 @@ const ClientChat = () => {
     loadPixKey();
     checkOnlineStatus();
     
+    // Solicitar permissão para notificações
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+    
     // Conectar WebSocket
     connectWebSocket();
     
