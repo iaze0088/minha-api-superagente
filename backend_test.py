@@ -146,26 +146,49 @@ class ComprehensiveBackendTester:
             self.log_result("Client Login", False, f"Error: {response}")
             return False
             
-    def test_create_root_reseller(self) -> bool:
-        """Test 2: Create Root Reseller (parent_id=null)"""
-        reseller_data = {
-            "name": "Revenda Raiz Teste",
-            "email": "raiz@teste.com",
-            "password": "senha123",
-            "domain": "raiz.teste.com",
-            "parent_id": None
-        }
+    # ============================================
+    # TESTES DE ATENDENTES
+    # ============================================
+    
+    def test_list_agents(self) -> bool:
+        """Test 4: GET /api/agents (listar atendentes)"""
+        if not self.admin_token:
+            self.log_result("List Agents", False, "Admin token required")
+            return False
+            
+        success, response = self.make_request("GET", "/agents", token=self.admin_token)
         
-        success, response = self.make_request("POST", "/resellers", reseller_data, self.admin_token)
-        
-        if success and response.get("ok"):
-            reseller_id = response.get("reseller_id")
-            level = response.get("level", 0)
-            self.created_resellers.append(reseller_id)
-            self.log_result("Create Root Reseller", True, f"ID: {reseller_id}, Level: {level}")
+        if success and isinstance(response, list):
+            count = len(response)
+            self.log_result("List Agents", True, f"Found {count} agents")
             return True
         else:
-            self.log_result("Create Root Reseller", False, f"Error: {response}")
+            self.log_result("List Agents", False, f"Error: {response}")
+            return False
+    
+    def test_create_agent(self) -> bool:
+        """Test 5: POST /api/agents (criar atendente)"""
+        if not self.admin_token:
+            self.log_result("Create Agent", False, "Admin token required")
+            return False
+            
+        agent_data = {
+            "name": "Novo Agente Teste",
+            "login": "novo_agente",
+            "password": "senha123",
+            "avatar": ""
+        }
+        
+        success, response = self.make_request("POST", "/agents", agent_data, self.admin_token)
+        
+        if success and response.get("ok"):
+            agent_id = response.get("id")
+            if agent_id:
+                self.created_agents.append(agent_id)
+            self.log_result("Create Agent", True, f"Agent created with ID: {agent_id}")
+            return True
+        else:
+            self.log_result("Create Agent", False, f"Error: {response}")
             return False
             
     def test_create_sub_reseller(self) -> bool:
