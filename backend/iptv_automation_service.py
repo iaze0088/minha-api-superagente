@@ -605,34 +605,17 @@ class DuplecastAutomation(IPTVAutomationBase):
         await self.page.wait_for_timeout(5000)
         await self.take_screenshot("Página de login carregada")
         
-        # PASSO 1: Preencher Device ID (MAC)
+        # PASSO 1: Preencher Device ID (campo name="mac")
         mac = self.form_data.get('mac', '')
         device_key = self.form_data.get('device_key', '')
         
         if mac:
-            self.result.add_log(f"📝 Preenchendo Device ID: {mac}")
+            self.result.add_log(f"📝 Preenchendo Device ID (MAC): {mac}")
             
             try:
-                # Tentar múltiplos seletores para Device ID
-                device_id_selectors = [
-                    'input[name="device_id"]',
-                    'input#device_id',
-                    'input[placeholder*="Device ID" i]'
-                ]
-                
-                filled = False
-                for selector in device_id_selectors:
-                    try:
-                        await self.page.fill(selector, mac, timeout=5000)
-                        self.result.add_log("✅ Device ID preenchido!")
-                        filled = True
-                        break
-                    except:
-                        continue
-                
-                if not filled:
-                    raise Exception("Não foi possível preencher Device ID")
-                    
+                # Usar seletores corretos: name="mac" e id="mac"
+                await self.page.fill('input[name="mac"]', mac, timeout=10000)
+                self.result.add_log("✅ Device ID preenchido!")
                 await self.page.wait_for_timeout(1000)
                 await self.take_screenshot("Device ID preenchido")
             except Exception as e:
