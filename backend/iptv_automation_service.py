@@ -133,8 +133,26 @@ class IPTVAutomationBase:
             
             context = await self.browser.new_context(
                 viewport={'width': 1920, 'height': 1080},
-                user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'
             )
+            
+            # Adicionar scripts para esconder automação
+            await context.add_init_script("""
+                // Remover propriedades que identificam automação
+                Object.defineProperty(navigator, 'webdriver', {
+                    get: () => undefined
+                });
+                
+                // Adicionar propriedades que navegadores reais têm
+                window.chrome = {
+                    runtime: {}
+                };
+                
+                // Fingir ser um navegador real
+                Object.defineProperty(navigator, 'plugins', {
+                    get: () => [1, 2, 3, 4, 5]
+                });
+            """)
             
             self.page = await context.new_page()
             self.result.add_log("✅ Navegador iniciado com sucesso!")
