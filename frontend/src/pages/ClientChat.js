@@ -607,6 +607,22 @@ const ClientChat = () => {
     }
   };
 
+  const handleUpdateName = async (name) => {
+    if (!name || name.trim() === '') {
+      toast.error('Por favor, digite um nome');
+      return;
+    }
+    
+    try {
+      await api.put('/users/me/name', { name: name.trim() });
+      toast.success('Nome atualizado com sucesso!');
+      // Atualizar userData local
+      setUserData(prev => ({ ...prev, display_name: name.trim() }));
+    } catch (error) {
+      toast.error(error.response?.data?.detail || 'Erro ao atualizar nome');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-cyan-50 to-teal-50 flex items-center justify-center p-4">
       <div className="phone-mockup w-full max-w-md shadow-2xl">
