@@ -400,44 +400,64 @@ class SmartOneAutomation(IPTVAutomationBase):
             raise Exception("Não foi possível preencher a URL da playlist.")
         
         # PASSO 4: Interagir com Cloudflare Turnstile e aguardar validação
-        self.result.add_log("🔒 Procurando checkbox do Cloudflare...")
+        self.result.add_log("🔒 Procurando e aguardando Cloudflare Turnstile...")
         
         try:
-            # Procurar pelo iframe do Cloudflare Turnstile
-            cloudflare_iframe = await self.page.query_selector('iframe[src*="challenges.cloudflare.com"]')
+            # Aguardar o iframe do Cloudflare aparecer (até 10 segundos)
+            try:
+                await self.page.wait_for_selector('iframe[src*="challenges.cloudflare.com"]', timeout=10000)
+                self.result.add_log("✅ Cloudflare Turnstile encontrado!")
+            except:
+                # Tentar seletor alternativo
+                await self.page.wait_for_selector('iframe[title*="Cloudflare"]', timeout=5000)
+                self.result.add_log("✅ Cloudflare encontrado (seletor alternativo)!")
+            
+            # Aguardar carregar completamente
+            await self.page.wait_for_timeout(3000)
+            await self.take_screenshot("Cloudflare apareceu")
+            
+            # Localizar o iframe
+            cloudflare_iframe = await self.page.query_selector('iframe[src*="challenges.cloudflare.com"], iframe[title*="Cloudflare"]')
             
             if cloudflare_iframe:
-                self.result.add_log("✅ Cloudflare Turnstile encontrado!")
+                # Obter o frame do iframe
+                frame = await cloudflare_iframe.content_frame()
                 
-                # Clicar no checkbox do Cloudflare (dentro do iframe)
-                try:
-                    # Aguardar um pouco para o iframe carregar completamente
-                    await self.page.wait_for_timeout(3000)
+                if frame:
+                    self.result.add_log("🔘 Tentando interagir com Cloudflare...")
                     
-                    # Clicar na área do Cloudflare
-                    await cloudflare_iframe.click()
-                    self.result.add_log("🔘 Clicou no Cloudflare Turnstile")
+                    # Tentar clicar no checkbox dentro do iframe
+                    try:
+                        # Aguardar checkbox aparecer dentro do iframe
+                        await frame.wait_for_selector('input[type="checkbox"]', timeout=5000)
+                        await frame.click('input[type="checkbox"]')
+                        self.result.add_log("✅ Clicou no checkbox do Cloudflare!")
+                    except:
+                        # Fallback: clicar em qualquer lugar do iframe
+                        await cloudflare_iframe.click()
+                        self.result.add_log("🔘 Clicou no Cloudflare (fallback)")
                     
-                    # Aguardar validação (procurar por "Sucesso!" ou similar)
-                    self.result.add_log("⏳ Aguardando validação do Cloudflare (até 15s)...")
-                    await self.page.wait_for_timeout(15000)  # 15 segundos para validar
+                    # Aguardar validação (15 segundos)
+                    self.result.add_log("⏳ Aguardando validação do Cloudflare (15s)...")
+                    await self.page.wait_for_timeout(15000)
                     
                     # Verificar se apareceu "Sucesso"
                     page_content = await self.page.content()
-                    if 'Sucesso' in page_content or 'Success' in page_content:
+                    if 'Sucesso' in page_content or 'Success' in page_content or '✓' in page_content:
                         self.result.add_log("✅ Cloudflare validado com sucesso!")
                     else:
                         self.result.add_log("⚠️ Validação do Cloudflare pode não ter completado", "warning")
                     
-                    await self.take_screenshot("Após Cloudflare")
-                    
-                except Exception as e:
-                    self.result.add_log(f"⚠️ Erro ao interagir com Cloudflare: {e}", "warning")
+                    await self.take_screenshot("Após validação Cloudflare")
+                else:
+                    self.result.add_log("⚠️ Não conseguiu acessar conteúdo do iframe", "warning")
             else:
-                self.result.add_log("⚠️ Cloudflare não encontrado - tentando prosseguir...", "warning")
+                self.result.add_log("⚠️ Cloudflare não encontrado após aguardar", "warning")
                 
         except Exception as e:
             self.result.add_log(f"⚠️ Erro ao processar Cloudflare: {e}", "warning")
+            self.result.add_log("⏳ Aguardando 10s mesmo sem detectar Cloudflare...", "warning")
+            await self.page.wait_for_timeout(10000)
             # Continuar mesmo se falhar
         
         # PASSO 5: Rolar e clicar no botão usando JavaScript (força bruta)
