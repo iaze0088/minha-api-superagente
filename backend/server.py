@@ -1415,27 +1415,27 @@ async def send_message(data: MessageCreate, request: Request, current_user: dict
     
     await manager.send_to_user(data.to_id, {
         "type": "message",
-        "message": message
+        "message": message_to_send
     })
     
     # Send to sender as well (for real-time update in their own chat)
     await manager.send_to_user(data.from_id, {
         "type": "message",
-        "message": message
+        "message": message_to_send
     })
     
     # If client sent, notify all agents
     if data.from_type == "client":
         await manager.broadcast_to_agents({
             "type": "message",
-            "message": message
+            "message": message_to_send
         })
     
     # If agent sent, make sure client receives it
     if data.from_type == "agent":
         await manager.send_to_user(data.to_id, {
             "type": "message",
-            "message": message
+            "message": message_to_send
         })
     
     return {"ok": True, "message_id": message_id}
