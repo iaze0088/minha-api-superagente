@@ -700,9 +700,14 @@ const AgentDashboard = () => {
               <div className="bg-white border-b border-slate-200 p-4 flex-shrink-0">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    {selectedTicket.client_avatar && (
-                      <img src={selectedTicket.client_avatar} alt="" className="w-12 h-12 rounded-full object-cover" />
-                    )}
+                    {/* Foto do cliente */}
+                    <div className="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0">
+                      {selectedTicket.client_avatar ? (
+                        <img src={selectedTicket.client_avatar} alt="Cliente" className="w-full h-full object-cover" />
+                      ) : (
+                        <User className="w-7 h-7 text-gray-400" />
+                      )}
+                    </div>
                     <div>
                       <h3 className="font-semibold text-lg text-slate-900">
                         {selectedTicket.client_name || formatWhatsApp(selectedTicket.client_whatsapp)}
