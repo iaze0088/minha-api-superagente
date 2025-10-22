@@ -35,12 +35,14 @@ export default api;
 
 // WebSocket connection
 export const createWebSocket = (userId) => {
-  const wsUrl = API_URL.replace('http', 'ws');
+  // CORREÇÃO CRÍTICA: Usar wss:// para HTTPS e ws:// para HTTP
+  const wsUrl = API_URL.replace(/^https?/, (match) => match === 'https' ? 'wss' : 'ws');
   // Gera session ID único
   let sessionId = localStorage.getItem('session_id');
   if (!sessionId) {
     sessionId = Date.now().toString() + Math.random().toString(36);
     localStorage.setItem('session_id', sessionId);
   }
+  console.log('🔌 Conectando WebSocket:', `${wsUrl}/ws/${userId}/${sessionId}`);
   return new WebSocket(`${wsUrl}/ws/${userId}/${sessionId}`);
 };
