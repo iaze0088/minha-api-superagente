@@ -18,7 +18,7 @@ from typing import Dict, Optional, List
 from datetime import datetime, timezone, timedelta
 
 # Get backend URL from environment
-BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://cybertv-support-2.preview.emergentagent.com')
+BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://reseller-sync.preview.emergentagent.com')
 API_BASE = f"{BACKEND_URL}/api"
 
 # Test credentials

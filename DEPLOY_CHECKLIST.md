@@ -21,7 +21,7 @@
 
 2. **Cole a URL do seu app:**
    ```
-   https://cybertv-support-2.preview.emergentagent.com
+   https://reseller-sync.preview.emergentagent.com
    ```
    ou sua URL de produção quando fizer deploy
 
