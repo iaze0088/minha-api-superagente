@@ -80,13 +80,14 @@ const AdminDashboard = () => {
 
   const loadData = async () => {
     try {
-      const [agentsRes, resellersRes, hierarchyRes, configRes, noticesRes, departmentsRes] = await Promise.all([
+      const [agentsRes, resellersRes, hierarchyRes, configRes, noticesRes, departmentsRes, iptvAppsRes] = await Promise.all([
         api.get('/agents').catch(() => ({ data: [] })),
         api.get('/resellers').catch(() => ({ data: [] })),
         api.get('/resellers/hierarchy').catch(() => ({ data: { hierarchy: [] } })),
         api.get('/config').catch(() => ({ data: { quick_blocks: [], auto_reply: [], apps: [], pix_key: '', allowed_data: {}, api_integration: {}, ai_agent: {} } })),
         api.get('/notices').catch(() => ({ data: [] })),
-        api.get('/ai/departments').catch(() => ({ data: [] }))
+        api.get('/ai/departments').catch(() => ({ data: [] })),
+        api.get('/iptv-apps').catch(() => ({ data: [] }))
       ]);
       setAgents(Array.isArray(agentsRes.data) ? agentsRes.data : []);
       setResellers(Array.isArray(resellersRes.data) ? resellersRes.data : []);
@@ -94,6 +95,7 @@ const AdminDashboard = () => {
       setConfig(configRes.data || { quick_blocks: [], auto_reply: [], apps: [], pix_key: '', allowed_data: {}, api_integration: {}, ai_agent: {} });
       setNotices(Array.isArray(noticesRes.data) ? noticesRes.data : []);
       setDepartments(Array.isArray(departmentsRes.data) ? departmentsRes.data : []);
+      setIptvApps(Array.isArray(iptvAppsRes.data) ? iptvAppsRes.data : []);
     } catch (error) {
       console.error('Error loading data:', error);
       toast.error('Erro ao carregar dados');
