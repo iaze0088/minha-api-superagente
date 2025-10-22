@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import api from '../lib/api';
 import { clearAuth, getAuth } from '../lib/auth';
 import ResellerDomainManager from '../components/ResellerDomainManager';
+import FirstLoginPasswordChange from '../components/FirstLoginPasswordChange';
 
 const ResellerDashboard = () => {
   const navigate = useNavigate();
@@ -19,6 +20,8 @@ const ResellerDashboard = () => {
   const [agents, setAgents] = useState([]);
   const [newAgent, setNewAgent] = useState({ name: '', login: '', password: '', avatar: '' });
   const [loading, setLoading] = useState(true);
+  const [showPasswordChange, setShowPasswordChange] = useState(false);
+  const [resellerInfo, setResellerInfo] = useState(null);
 
   useEffect(() => {
     loadData();
