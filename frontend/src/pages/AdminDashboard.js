@@ -114,6 +114,7 @@ const AdminDashboard = () => {
   };
 
   const handleReplicateConfig = async () => {
+    console.log('handleReplicateConfig called');
     setReplicating(true);
     try {
       const { data } = await api.post('/admin/replicate-config-to-resellers');
@@ -130,6 +131,12 @@ const AdminDashboard = () => {
     } finally {
       setReplicating(false);
     }
+  };
+
+  const handleOpenReplicateModal = () => {
+    console.log('Opening replicate modal, current state:', replicateModal);
+    setReplicateModal(true);
+    console.log('After setState, replicateModal should be true');
   };
 
   const handleCreateAgent = async () => {
