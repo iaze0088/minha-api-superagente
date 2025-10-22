@@ -1661,6 +1661,99 @@ async def upload_support_avatar(file: UploadFile = File(...), request: Request =
     
     return {"ok": True, "avatar_url": url}
 
+
+
+# ====== IPTV Apps Routes ======
+@api_router.get("/iptv-apps")
+async def get_iptv_apps(request: Request = None, current_user: dict = Depends(get_current_user)):
+    """Retorna todos os apps IPTV cadastrados"""
+    tenant = get_request_tenant(request)
+    reseller_id = tenant.reseller_id or current_user.get("reseller_id")
+    
+    query = {}
+    if reseller_id:
+        query["reseller_id"] = reseller_id
+    
+    apps = await db.iptv_apps.find(query, {"_id": 0}).to_list(None)
+    return apps
+
+@api_router.post("/iptv-apps")
+async def create_iptv_app(data: dict, request: Request = None, current_user: dict = Depends(get_current_user)):
+    """Cria um novo app IPTV"""
+    if current_user["user_type"] != "admin":
+        raise HTTPException(status_code=403, detail="Apenas admin")
+    
+    tenant = get_request_tenant(request)
+    reseller_id = tenant.reseller_id or current_user.get("reseller_id")
+    
+    app = {
+        "id": str(uuid.uuid4()),
+        "name": data["name"],
+        "type": data["type"],
+        "config_url": data["config_url"],
+        "url_template": data["url_template"],
+        "fields": data["fields"],
+        "instructions": data.get("instructions", ""),
+        "reseller_id": reseller_id,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.iptv_apps.insert_one(app)
+    return {"ok": True, "app": {k: v for k, v in app.items() if k != '_id'}}
+
+@api_router.put("/iptv-apps/{app_id}")
+async def update_iptv_app(app_id: str, data: dict, request: Request = None, current_user: dict = Depends(get_current_user)):
+    """Atualiza um app IPTV"""
+    if current_user["user_type"] != "admin":
+        raise HTTPException(status_code=403, detail="Apenas admin")
+    
+    tenant = get_request_tenant(request)
+    reseller_id = tenant.reseller_id or current_user.get("reseller_id")
+    
+    query = {"id": app_id}
+    if reseller_id:
+        query["reseller_id"] = reseller_id
+    
+    update_data = {}
+    if "name" in data:
+        update_data["name"] = data["name"]
+    if "config_url" in data:
+        update_data["config_url"] = data["config_url"]
+    if "url_template" in data:
+        update_data["url_template"] = data["url_template"]
+    if "fields" in data:
+        update_data["fields"] = data["fields"]
+    if "instructions" in data:
+        update_data["instructions"] = data["instructions"]
+    
+    result = await db.iptv_apps.update_one(query, {"$set": update_data})
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="App não encontrado")
+    
+    return {"ok": True}
+
+@api_router.delete("/iptv-apps/{app_id}")
+async def delete_iptv_app(app_id: str, request: Request = None, current_user: dict = Depends(get_current_user)):
+    """Deleta um app IPTV"""
+    if current_user["user_type"] != "admin":
+        raise HTTPException(status_code=403, detail="Apenas admin")
+    
+    tenant = get_request_tenant(request)
+    reseller_id = tenant.reseller_id or current_user.get("reseller_id")
+    
+    query = {"id": app_id}
+    if reseller_id:
+        query["reseller_id"] = reseller_id
+    
+    result = await db.iptv_apps.delete_one(query)
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="App não encontrado")
+    
+    return {"ok": True}
+
+
 # Notice routes
 @api_router.get("/notices")
 async def get_notices(request: Request, current_user: dict = Depends(get_current_user)):
