@@ -609,6 +609,24 @@ frontend:
         agent: "testing"
         comment: "✅ TESTADO: Funcionalidade de scroll implementada e funcionando. Dashboard do agente acessível com autenticação manual. Estrutura das 3 abas (Espera, Atendendo, Finalizadas) presente e funcional. Container de scroll encontrado com maxHeight configurado. 6 tickets visíveis na aba Espera. Interação com tickets funcionando (seleção e destaque visual). Layout responsivo testado em diferentes resoluções. Scroll vertical funcionando conforme especificado na modificação."
 
+  - task: "Botão e modal de replicação de configurações no AdminDashboard"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/AdminDashboard.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "Botão 'Aplicar para Revendas' visível no header, mas completamente unresponsivo ao clicar. Modal não aparece. Nenhum erro no console."
+      - working: "NA"
+        agent: "main"
+        comment: "PROBLEMA IDENTIFICADO: Dialog estava dentro do componente NoticeForm em vez do AdminDashboard. Movido para o local correto (antes do closing div do AdminDashboard). Adicionado handleOpenReplicateModal para debug. Estado replicateModal gerenciado corretamente."
+      - working: true
+        agent: "main"
+        comment: "✅ CORRIGIDO: Modal agora abre corretamente ao clicar no botão. Teste automatizado confirmou: botão clicável ✓, modal visível ✓, botão cancelar funciona ✓, modal fecha ✓. Removidos console.logs de debug."
+
 metadata:
   created_by: "main_agent"
   version: "2.0"
