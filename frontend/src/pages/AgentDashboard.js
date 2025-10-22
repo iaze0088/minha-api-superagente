@@ -63,6 +63,7 @@ const AgentDashboard = () => {
     
     ws.onopen = () => {
       console.log('✅ WebSocket conectado - Atendente');
+      reconnectAttempts.current = 0; // Reset contador ao conectar com sucesso
     };
     
     ws.onmessage = (event) => {
