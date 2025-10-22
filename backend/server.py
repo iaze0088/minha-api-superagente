@@ -2230,17 +2230,20 @@ async def update_reseller_domain(data: dict, request: Request, current_user: dic
     if not custom_domain:
         raise HTTPException(status_code=400, detail="Domínio inválido")
     
-    # Atualizar revenda
+    # Atualizar revenda e DESATIVAR domínio de teste
     await db.resellers.update_one(
         {"id": reseller_id},
         {"$set": {
             "custom_domain": custom_domain,
             "custom_domain_verified": False,  # Precisa verificar DNS
+            "test_domain_active": False,  # Desativa domínio de teste
             "custom_domain_updated_at": datetime.now(timezone.utc).isoformat()
         }}
     )
     
-    return {"ok": True, "message": "Domínio salvo. Configure o DNS e aguarde verificação."}
+    logger.info(f"✅ Domínio oficial ativado para revenda {reseller_id}: {custom_domain} (domínio de teste desativado)")
+    
+    return {"ok": True, "message": "Domínio oficial ativado! Domínio de teste desativado. Configure o DNS."}
 
 @api_router.get("/reseller/verify-domain")
 async def verify_reseller_domain(request: Request, current_user: dict = Depends(get_current_user)):
