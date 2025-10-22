@@ -730,13 +730,6 @@ const ClientChat = () => {
                         : 'bg-white text-gray-900 rounded-bl-none border border-gray-200'
                     }`}
                   >
-                  
-                  {/* Foto de perfil do cliente (direita) */}
-                  {msg.from_type === 'client' && userData.custom_avatar && (
-                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0">
-                      <img src={userData.custom_avatar} alt="Você" className="w-full h-full object-cover" />
-                    </div>
-                  )}
                   {/* Mostrar texto se existir */}
                   {msg.text && (
                     <p 
