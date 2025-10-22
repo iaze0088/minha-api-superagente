@@ -580,6 +580,18 @@ backend:
         agent: "testing"
         comment: "✅ TESTADO: PUT /config funcionando perfeitamente para Admin e Reseller. Admin salva na config principal ✓, Reseller salva em reseller_configs ✓. Todos os novos campos salvos corretamente: pix_key ✓, allowed_data (cpfs, emails, phones, random_keys) ✓, api_integration (api_url, api_token, api_enabled) ✓, ai_agent (todos os campos) ✓. Estrutura de dados complexa preservada."
 
+  - task: "Endpoint de replicação de configurações para revendas"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Endpoint POST /api/admin/replicate-config-to-resellers implementado. Replica configurações do admin principal (logo, IA, auto-respostas, tutoriais, apps IPTV) para TODAS as revendas. Não replica dados manuais (agentes, atendentes, departamentos, clientes, domínios). Apenas admin principal pode usar."
+
 
 frontend:
   - task: "Limitar visualização de clientes a 10 por aba com scroll"
