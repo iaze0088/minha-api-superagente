@@ -40,6 +40,8 @@ const ClientChat = () => {
   const mediaRecorderRef = useRef(null);
   const queueTimerRef = useRef(null);
   const notificationAudioRef = useRef(null);
+  const reconnectAttempts = useRef(0);
+  const maxReconnectAttempts = 5;
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [lightboxImage, setLightboxImage] = useState(null);
   const [config, setConfig] = useState({ support_avatar: '' });
@@ -50,6 +52,11 @@ const ClientChat = () => {
   const connectWebSocket = () => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
       return; // Já conectado
+    }
+    
+    if (reconnectAttempts.current >= maxReconnectAttempts) {
+      console.warn('⚠️ Máximo de tentativas de reconexão atingido');
+      return;
     }
     
     if (!userData?.id) {
