@@ -1345,6 +1345,120 @@ const AdminDashboard = () => {
           <TabsContent value="tutorials" className="space-y-6">
             <TutorialsAdvanced />
           </TabsContent>
+
+          {/* IPTV Apps Tab */}
+          <TabsContent value="iptv-apps" className="space-y-6">
+            <Card className="p-6">
+              <h3 className="text-lg font-semibold mb-4">📺 Gerenciar Apps IPTV</h3>
+              
+              {/* Templates Rápidos */}
+              <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+                <p className="text-sm font-medium mb-2">🚀 Templates Pré-configurados:</p>
+                <div className="flex gap-2">
+                  <Button size="sm" onClick={() => loadIPTVTemplate('SSIPTV')} variant="outline">
+                    📺 SS-IPTV
+                  </Button>
+                  <Button size="sm" onClick={() => loadIPTVTemplate('SMARTONE')} variant="outline">
+                    📱 SmartOne IPTV
+                  </Button>
+                </div>
+              </div>
+
+              {/* Formulário */}
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Nome do App</label>
+                  <Input
+                    placeholder="Ex: SS-IPTV"
+                    value={newApp.name}
+                    onChange={(e) => setNewApp({ ...newApp, name: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">Tipo</label>
+                  <Select value={newApp.type} onValueChange={(value) => setNewApp({ ...newApp, type: value })}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="SSIPTV">SS-IPTV</SelectItem>
+                      <SelectItem value="SMARTONE">SmartOne IPTV</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">URL de Configuração</label>
+                  <Input
+                    placeholder="http://ss-iptv.com/en/users/playlist"
+                    value={newApp.config_url}
+                    onChange={(e) => setNewApp({ ...newApp, config_url: e.target.value })}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">Template da URL</label>
+                  <Input
+                    placeholder="http://gestor.my/ssiptv/{username}/{password}/download_m3u"
+                    value={newApp.url_template}
+                    onChange={(e) => setNewApp({ ...newApp, url_template: e.target.value })}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Use {'{'}variavel{'}'} para campos dinâmicos</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">Campos (separados por vírgula)</label>
+                  <Input
+                    placeholder="username, password, codigo"
+                    value={newApp.fields.join(', ')}
+                    onChange={(e) => setNewApp({ ...newApp, fields: e.target.value.split(',').map(f => f.trim()).filter(Boolean) })}
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">Instruções para o Agente</label>
+                  <Textarea
+                    placeholder="1. Acesse o site...&#10;2. Cole o código...&#10;3. Salve"
+                    value={newApp.instructions}
+                    onChange={(e) => setNewApp({ ...newApp, instructions: e.target.value })}
+                    rows={5}
+                  />
+                </div>
+
+                <Button onClick={handleCreateIPTVApp} className="w-full">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Criar App IPTV
+                </Button>
+              </div>
+
+              {/* Lista de Apps */}
+              <div className="border-t pt-4">
+                <h4 className="font-semibold mb-3">Apps Cadastrados ({iptvApps.length})</h4>
+                <div className="space-y-2">
+                  {iptvApps.map((app) => (
+                    <div key={app.id} className="border rounded-lg p-4 flex justify-between items-start">
+                      <div className="flex-1">
+                        <h5 className="font-medium">{app.name}</h5>
+                        <p className="text-xs text-gray-500">{app.type}</p>
+                        <p className="text-xs text-gray-600 mt-1">{app.config_url}</p>
+                        <p className="text-xs bg-gray-100 p-2 rounded mt-2 font-mono">{app.url_template}</p>
+                        <p className="text-xs text-gray-500 mt-1">Campos: {app.fields.join(', ')}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline" onClick={() => handleDeleteIPTVApp(app.id)}>
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                  {iptvApps.length === 0 && (
+                    <p className="text-gray-400 text-center py-4">Nenhum app cadastrado ainda</p>
+                  )}
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
     </div>
