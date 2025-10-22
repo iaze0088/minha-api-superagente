@@ -199,6 +199,7 @@ const ClientChat = () => {
     loadNotices();
     loadUserData();
     loadPixKey();
+    loadConfig();
     checkOnlineStatus();
     
     // Solicitar permissão para notificações
