@@ -1,34 +1,24 @@
 <analysis>
-The AI engineer's trajectory involved a series of feature enhancements and bug fixes for the CYBERTV Suporte application. Initially, the focus was on addressing critical issues like notification sound malfunction, PWA setup for Play Store, and application branding (icon and name WA Suporte). The engineer successfully implemented sound notifications, converted the icon, updated  and , and configured the PWA install prompt. A WebSocket bug related to user ID for connection was also identified and resolved during this phase.
+The AI engineer's trajectory encompassed a comprehensive series of enhancements and bug fixes for the CYBERTV Suporte application. Initial work involved resolving critical issues like notification sound, PWA branding, and a WebSocket connection bug. Following this, major features were introduced: an advanced multi-media auto-responder, a similar multi-media tutorial system, and a reseller domain management module, all requiring backend models, endpoints, and corresponding React components. Backend and frontend tests were conducted.
 
-Following user confirmation, the engineer proceeded with major feature development: an advanced multi-media auto-responder, a similar multi-media tutorial system, and a reseller domain management module. This involved creating new backend models and endpoints, along with corresponding React components integrated into the Admin and Reseller Dashboards. Post-implementation, automated backend and frontend testing was conducted successfully.
-
-The final phase in this trajectory addressed a user-reported bug: the absence of infinite scroll for previous conversations in the Agent Dashboard. The engineer modified  to remove message slicing and implement pagination for , aiming to enable full conversation history. The trajectory ended with the engineer attempting to verify this fix, facing recurring login issues.
+Subsequently, the engineer addressed an infinite scroll bug in the Agent Dashboard by modifying . Login issues surfaced, leading to a fix involving a database password field discrepancy. Further, real-time message delivery and notification sounds were stabilized by fixing a critical WebSocket  JSON serialization error and updating the protocol. Image rendering was improved with a lightbox and client/support profile picture integration, including backend upload endpoints. Most recently, a new Subir Listas (IPTV Apps) feature was developed, allowing admin configuration and agent-guided manual setup. An attempt at Playwright-based automation failed and was temporarily disabled, reverting to the manual method. The trajectory concludes with adjusting forms for newly added IPTV apps.
 </analysis>
 
 <product_requirements>
-The CYBERTV Suporte application is a multi-tenant live chat system designed for Admins, Agents, and Clients. It facilitates real-time communication, file uploads, ticket management, configurable messages, and PWA support with custom branding. A robust multi-tenant reseller system supports custom domains, isolated data, and hierarchical sub-resellers.
+The CYBERTV Suporte is a multi-tenant live chat application for Admins, Agents, and Clients, supporting real-time communication, file uploads, ticket management, configurable messages, and PWA with custom branding. Key features include an Agent Dashboard with message previews and PIX key copying, comprehensive AI integration, department management, and a robust multi-tenant reseller system.
 
-**Implemented features so far:**
-- Agent Dashboard UI: New message counts, limited ticket display, message preview, Copy PIX Key button.
-- Strict content validation and configurable PIX keys.
-- Comprehensive AI integration with multi-LLM support, client credential access, and a multi-agent system.
-- Department management (Suporte, Vendas, Teste Grátis) with intelligent routing and agent permissions.
-- PIX key as an interactive copyable button, granular AI control, per-conversation AI toggle, automatic AI re-activation, configurable AI response delays.
-- **Recent additions during this trajectory:** Admin reseller editing capabilities, Tutorials/Aplicativos for Agents, Agent search functionality, client name input and display in chat, real-time message updates, WhatsApp-style client chat UI redesign.
-- **Specific tasks addressed in this trajectory:** Fixing notification sound (), preparing the app for Play Store (PWA), replacing the application icon with  and renaming it to WA Suporte in the PWA install prompt. Also, an advanced Auto-Responder with multi-media and delays, a multi-media Tutorials/Aplicativos system, and Reseller Domain Management with test domains and custom domain configuration. The final task addressed was implementing infinite scroll for previous conversations in the Agent Dashboard.
+Recent enhancements include fixing notification sounds, preparing the PWA for Play Store deployment with WA Suporte branding, implementing advanced multi-media auto-responders and tutorials, and reseller domain management. The trajectory also addressed infinite scroll for past conversations in the Agent Dashboard, introduced profile pictures for clients and support, ensured persistent client login, and implemented a Subir Listas feature for managing IPTV applications (SSIPTV, SmartOne, Duplex Play, IBO Player, Smart IPTV, Bay TV, Duplecast) with guided configuration for agents.
 </product_requirements>
 
 <key_technical_concepts>
-- **FastAPI**: Python framework for backend APIs and WebSockets.
-- **React**: JavaScript library for interactive user interfaces.
-- **MongoDB**: NoSQL database for data persistence.
-- **WebSockets**: Real-time communication for instant message updates.
-- **PWA (Progressive Web App)**: For app-like experience, offline capabilities, and push notifications.
-- **JWT**: Secure authentication for users.
-- **ImageMagick**: Command-line tool for image processing (conversion, resizing).
-- **Bubblewrap**: Tool for generating Android packages (APK/AAB) from PWAs.
-- **Multi-tenancy**: Data isolation for resellers and custom domains.
+-   **FastAPI**: Python framework for backend APIs and WebSockets.
+-   **React**: JavaScript library for user interfaces.
+-   **MongoDB**: NoSQL database.
+-   **WebSockets**: Real-time communication for chat updates.
+-   **PWA**: Progressive Web App for mobile experience.
+-   **JWT**: Secure authentication.
+-   **Multi-tenancy**: Data isolation for resellers.
+-   **Playwright**: Browser automation (attempted, then disabled).
 </key_technical_concepts>
 
 <code_architecture>
@@ -38,103 +28,67 @@ The application uses a FastAPI backend and a React frontend.
 
 **Key Files and Changes:**
 -   ****:
-    -   Summary: Defines Pydantic models for MongoDB documents.
-    -   Changes: Added  enum, , , ,  for advanced auto-responder and tutorials.
+    -   Summary: Defines MongoDB document schemas.
+    -   Changes: Added  enum and  model for managing IPTV applications.
 -   ****:
-    -   Summary: Main FastAPI application, API routes, and WebSocket communication.
+    -   Summary: Main FastAPI application for API routes and WebSockets.
     -   Changes:
-        -   Modified message broadcasting in WebSocket to ensure real-time updates for both agent and client.
-        -   Added new endpoints for Auto-Responder management (GET, POST, PUT, DELETE for sequences) and Tutorial management (GET, POST, PUT, DELETE for tutorials/steps).
-        -   Added new endpoints for Reseller domain configuration ().
+        -   Fixed  usage to prevent CORS issues with file uploads.
+        -   Added detailed logging to WebSocket connection/disconnection and message sending to debug real-time issues.
+        -   Corrected WebSocket JSON serialization for  () by creating  without it.
+        -   Added new endpoints for client avatar upload (), support logo upload ().
+        -   Implemented CRUD endpoints for IPTV apps (, ).
+        -   Added an automation endpoint for IPTV apps () using Playwright (later effectively disabled on frontend due to issues).
 -   ****:
-    -   Summary: Audio file for message notifications.
-    -   Changes: Existed and was confirmed for use.
+    -   Summary: New notification sound file.
+    -   Changes: Replaced previous .
 -   ****:
-    -   Summary: PWA service worker for offline caching.
-    -   Changes: Ensured  was added to cache.
--   ****:
-    -   Summary: PWA manifest file.
-    -   Changes:  and  updated to WA Suporte. Icons referenced to newly generated ones.
--   ****:
-    -   Summary: Main HTML file.
-    -   Changes: Title and meta tags updated to reflect WA Suporte. Favicon link added.
--   **, , , , **:
-    -   Summary: Application icons, favicon, and Android Trusted Web Activity (TWA) asset link file.
-    -   Changes:  was uploaded by user. , ,  were generated from .  was created.
+    -   Summary: API utility functions.
+    -   Changes: Corrected WebSocket URL construction from  to  and  to  for proper protocol handling.
 -   ****:
     -   Summary: Admin panel.
-    -   Changes:  and  components were replaced with  and .
+    -   Changes:
+        -   Added UI for uploading support logo ().
+        -   Introduced a new Apps IPTV tab with forms for creating/editing and listing IPTV applications.
+        -   Updated  and  functions, including new templates and select options for added IPTV app types.
 -   ****:
-    -   Summary: Agent panel for tickets and communication.
-    -   Changes: Modified  function to support pagination (removed ) and allow infinite scroll for viewing older conversations.
+    -   Summary: Agent panel for tickets.
+    -   Changes:
+        -   Fixed  for infinite scroll (removed ).
+        -   Improved media message rendering and added lightbox functionality for images.
+        -   Implemented client and agent profile picture display next to messages and in the ticket list/header.
+        -   Added WebSocket reconnection logic to enhance stability.
+        -   Integrated Subir Listas button and modal for configuring IPTV apps with a guided manual assistant (automation button temporarily disabled due to Playwright issues).
 -   ****:
     -   Summary: Client-side chat interface.
     -   Changes:
-        -   Implemented robust sound notification logic, including pre-loading audio and enabling it on user interaction.
-        -   Fixed WebSocket connection to use  instead of a token and added  for reconnection on  change.
+        -   Implemented robust sound notification for all new messages and real-time message updates via WebSocket.
+        -   Improved media message rendering and added lightbox functionality for images.
+        -   Implemented client and support profile picture display next to messages and in the chat header.
+        -   Added an option in client settings to upload a profile picture and set a display name.
+        -   Added  to block browser back navigation to ensure persistent login.
+        -   Added WebSocket reconnection logic to enhance stability.
 -   ****:
-    -   Summary: Reseller panel.
-    -   Changes: The Domain tab content was updated to use the new  component.
--   ****:
-    -   Summary: Component for prompting PWA installation.
-    -   Changes: Updated text to WA Suporte and styling to WhatsApp green theme.
--   ****:
-    -   Summary: New component for managing advanced auto-responder sequences.
-    -   Changes: New file created, containing UI logic for multiple responses, media uploads, and delay configurations.
--   ****:
-    -   Summary: New component for managing advanced tutorial steps.
-    -   Changes: New file created, containing UI logic for multiple steps, media uploads, and delay configurations.
--   ****:
-    -   Summary: New component for managing reseller domains.
-    -   Changes: New file created, containing UI logic for test domains, custom domain configuration, and DNS IP display.
--   **, 🚀 Iniciando geração do aplicativo WA Suporte para Android...
-
-[0;32m✅ Node.js instalado[0m
-[0;32m✅ npm instalado[0m
-
-[0;34m📦 Instalando Bubblewrap CLI...[0m
-
-added 288 packages in 24s
-
-40 packages are looking for funding
-  run `npm fund` for details
-[0;32m✅ Bubblewrap instalado com sucesso[0m
-
-[0;34m📁 Criando diretório do projeto...[0m
-
-[0;34m🔧 Configurações do App:[0m
-  Nome: WA Suporte
-  Package: com.cybertv.wasuporte
-  URL: https://cybertv-support-1.preview.emergentagent.com
-  Cor: #075e54
-
-[0;34m🔨 Inicializando projeto TWA...[0m
-,-----.        ,--.  ,--.  ,--.
-|  |) /_,--.,--|  |-.|  |-.|  |,---.,--.   ,--,--.--.,--,--.,---.
-|  .-.  |  ||  | .-. | .-. |  | .-. |  |.'.|  |  .--' ,-.  | .-. |
-|  '--' '  ''  | `-' | `-' |  \   --|   .'.   |  |  \ '-'  | '-' '
-`------' `----' `---' `---'`--'`----'--'   '--`--'   `--`--|  |-'
-                                                           `--'    
-? Do you want Bubblewrap to install the JDK (recommended)?
-  (Enter "No" to use your own JDK 17 installation) (Y/n) [57D[57C[0;31m❌ Erro ao inicializar projeto[0m, , , **:
-    -   Summary: Documentation and scripts for Play Store deployment.
-    -   Changes: New files created to guide the user through the deployment process.
+    -   Summary: Route protection.
+    -   Changes: Verified to correctly redirect if no token exists, but not to auto-logout.
 </code_architecture>
 
 <pending_tasks>
-- Fully verify the implemented infinite scroll for previous conversations in the Agent Dashboard.
+-   Adjust the display forms/templates for the newly added IPTV applications (Duplex Play, IBO Player, Smart IPTV, Bay TV, Duplecast) in the Admin Dashboard based on user's screenshots.
 </pending_tasks>
 
 <current_work>
-Immediately before this summary request, the AI engineer was addressing a user-reported bug concerning the Agent Dashboard. The user explicitly stated that previous conversations are not showing when I scroll up to view, I need the scroll option to view previous conversations to work. This indicated a lack of infinite scroll or lazy loading for message history.
+Immediately before this summary request, the AI engineer was in the process of enhancing the Subir Listas (IPTV Apps) feature. The user requested to add 5 new IPTV applications (Duplex Play, IBO Player, Smart IPTV, Bay TV, Duplecast) to the system.
 
-The AI engineer identified that the  component was limiting messages displayed by using . To fix this, the engineer modified  to:
-1.  Remove the  call, allowing all loaded messages to be rendered.
-2.  Update the  function to incorporate pagination (,  parameters) to fetch messages in chunks. This sets the foundation for implementing true infinite scroll by loading older messages as the user scrolls up.
+The engineer successfully:
+1.  Updated the  enum in  to include the new app types.
+2.  Modified the  function in  to define the templates for these new applications, specifying their respective configuration URLs and input fields.
+3.  Updated the UI in  to display buttons for these new pre-configured templates and included them in the  input for app type selection.
+All services (frontend, backend, Nginx, MongoDB) were restarted to apply these changes.
 
-After making these changes and restarting the frontend, the engineer attempted to verify the fix by navigating to  for a screenshot, but encountered a recurring login issue (). Therefore, the infinite scroll functionality has been implemented in the code, but its full verification was interrupted by the login problem. The previous bug related to  (Chat Message 1) and notification sound (Chat Message 5) were resolved before this.
+The current state is that these 5 new IPTV apps have been added to the system's backend and Admin Dashboard UI. The user has provided screenshots indicating that adjustments are needed for how these apps' configuration forms are displayed and handled. The previous attempt at automated configuration using Playwright failed and was temporarily disabled, so the system currently relies on the guided manual configuration.
 </current_work>
 
 <optional_next_step>
-Address the login issue on  to verify the infinite scroll implementation in .
+Analyze the user-provided screenshots to understand the necessary adjustments for the new IPTV app configuration forms in the Admin Dashboard.
 </optional_next_step>

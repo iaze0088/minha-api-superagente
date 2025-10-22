@@ -52,7 +52,7 @@ cd wa-suporte-android
 # Configuração do projeto
 APP_NAME="WA Suporte"
 PACKAGE_NAME="com.cybertv.wasuporte"
-HOST_URL="https://multi-chat-system.preview.emergentagent.com"
+HOST_URL="https://cybertv-support-2.preview.emergentagent.com"
 THEME_COLOR="#075e54"
 BACKGROUND_COLOR="#075e54"
 

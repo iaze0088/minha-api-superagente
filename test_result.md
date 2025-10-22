@@ -990,7 +990,7 @@ agent_communication:
       🎉 TESTE COMPLETO DO FRONTEND APÓS REMOÇÃO DA ABA LEGACY - 100% SUCESSO!
       
       CONTEXTO: Sistema testado após remoção da aba "IA (Legacy)" deixando apenas "Agentes IA"
-      URL TESTADA: https://multi-chat-system.preview.emergentagent.com
+      URL TESTADA: https://cybertv-support-2.preview.emergentagent.com
       
       ✅ TESTES PRIORITÁRIOS REALIZADOS (6/6 PASSOU):
       
@@ -1049,7 +1049,7 @@ agent_communication:
       🤖 TESTE COMPLETO DO SISTEMA DE IA RECÉM-IMPLEMENTADO - 100% FUNCIONAL!
       
       CONTEXTO: Teste completo conforme review request - todas as funcionalidades de IA
-      URL TESTADA: https://multi-chat-system.preview.emergentagent.com
+      URL TESTADA: https://cybertv-support-2.preview.emergentagent.com
       
       ✅ RESULTADO FINAL: 15/15 TESTES PASSARAM (100% SUCCESS RATE)
       
@@ -1196,7 +1196,7 @@ agent_communication:
       🎉 TESTE COMPLETO DAS NOVAS FUNCIONALIDADES WA SUPORTE - 100% SUCESSO!
       
       CONTEXTO: Teste conforme review request das funcionalidades implementadas em 2025-01-21
-      URL TESTADA: https://multi-chat-system.preview.emergentagent.com
+      URL TESTADA: https://cybertv-support-2.preview.emergentagent.com
       
       ✅ RESULTADO FINAL: TODAS AS FUNCIONALIDADES TESTADAS COM SUCESSO
       

@@ -21,7 +21,7 @@
 
 2. **Cole a URL do seu app:**
    ```
-   https://multi-chat-system.preview.emergentagent.com
+   https://cybertv-support-2.preview.emergentagent.com
    ```
    ou sua URL de produção quando fizer deploy
 

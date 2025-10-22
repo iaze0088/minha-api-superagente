@@ -23,7 +23,7 @@ mkdir wa-suporte-android
 cd wa-suporte-android
 
 # Inicializar projeto
-bubblewrap init --manifest https://multi-chat-system.preview.emergentagent.com/manifest.json
+bubblewrap init --manifest https://cybertv-support-2.preview.emergentagent.com/manifest.json
 ```
 
 **Durante a inicialização, você será perguntado:**
@@ -31,11 +31,11 @@ bubblewrap init --manifest https://multi-chat-system.preview.emergentagent.com/m
 1. **App Name:** WA Suporte
 2. **Short Name:** WA Suporte  
 3. **Package Name:** com.cybertv.wasuporte (ou seu domínio personalizado)
-4. **Host URL:** https://multi-chat-system.preview.emergentagent.com
+4. **Host URL:** https://cybertv-support-2.preview.emergentagent.com
 5. **Theme Color:** #075e54
 6. **Background Color:** #075e54
-7. **Icon URL:** https://multi-chat-system.preview.emergentagent.com/icon-512.png
-8. **Maskable Icon:** https://multi-chat-system.preview.emergentagent.com/icon-512.png
+7. **Icon URL:** https://cybertv-support-2.preview.emergentagent.com/icon-512.png
+8. **Maskable Icon:** https://cybertv-support-2.preview.emergentagent.com/icon-512.png
 
 ### 🔨 Passo 3: Construir o APK
 
@@ -71,14 +71,14 @@ zipalign -v 4 app-release-unsigned.apk wa-suporte-release.apk
 ### 📱 Opção 1: PWA Builder Online (Recomendado para iniciantes)
 
 1. Acesse: https://www.pwabuilder.com/
-2. Cole a URL: `https://multi-chat-system.preview.emergentagent.com`
+2. Cole a URL: `https://cybertv-support-2.preview.emergentagent.com`
 3. Clique em "Start" e aguarde a análise
 4. Clique em "Package for Stores"
 5. Selecione "Android" → "Google Play"
 6. Configure:
    - **App name:** WA Suporte
    - **Package ID:** com.cybertv.wasuporte
-   - **Launch URL:** https://multi-chat-system.preview.emergentagent.com
+   - **Launch URL:** https://cybertv-support-2.preview.emergentagent.com
 7. Clique em "Generate" e baixe o arquivo `.aab` (Android App Bundle)
 
 ### 📝 Opção 2: PWA Builder CLI
@@ -87,7 +87,7 @@ zipalign -v 4 app-release-unsigned.apk wa-suporte-release.apk
 npm install -g @pwabuilder/cli
 
 # Gerar Android App Bundle
-pwa-builder --package https://multi-chat-system.preview.emergentagent.com --android
+pwa-builder --package https://cybertv-support-2.preview.emergentagent.com --android
 ```
 
 ---
@@ -206,7 +206,7 @@ A Google vai pedir várias informações:
 Para verificação de domínio, certifique-se de que este arquivo está acessível:
 
 ```
-https://multi-chat-system.preview.emergentagent.com/.well-known/assetlinks.json
+https://cybertv-support-2.preview.emergentagent.com/.well-known/assetlinks.json
 ```
 
 ✅ Este arquivo já foi criado em: `/app/frontend/public/.well-known/assetlinks.json`
