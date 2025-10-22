@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Headphones, LogOut, Send, Paperclip, Mic, Phone, User, Key, RefreshCw, Bot, BookOpen, Search, X } from 'lucide-react';
+import { Headphones, LogOut, Send, Paperclip, Mic, Phone, User, Key, RefreshCw, Bot, BookOpen, Search, X, Monitor, Copy, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
