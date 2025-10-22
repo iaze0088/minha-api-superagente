@@ -50,6 +50,10 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const logoInputRef = useRef(null);
+  
+  // Replicação de configurações
+  const [replicateModal, setReplicateModal] = useState(false);
+  const [replicating, setReplicating] = useState(false);
 
   // IPTV Apps
   const [iptvApps, setIptvApps] = useState([]);
