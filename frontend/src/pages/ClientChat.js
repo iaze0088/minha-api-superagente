@@ -672,7 +672,7 @@ const ClientChat = () => {
                         : 'bg-white text-gray-900 rounded-bl-none border border-gray-200'
                     }`}
                   >
-                  {/* SEMPRE mostrar texto, independente do kind */}
+                  {/* Mostrar texto se existir */}
                   {msg.text && (
                     <p 
                       className="whitespace-pre-wrap break-words text-sm" 
@@ -686,15 +686,9 @@ const ClientChat = () => {
                     />
                   )}
                   
-                  {/* Se não tiver texto, mostrar mensagem de debug */}
-                  {!msg.text && (
-                    <p className="text-xs opacity-50 italic">
-                      [Mensagem sem texto - kind: {msg.kind}]
-                    </p>
-                  )}
-                  
+                  {/* Renderizar mídia (imagem, vídeo, áudio) */}
                   {msg.kind === 'image' && msg.file_url && (
-                    <img src={msg.file_url} alt="" className="max-w-full rounded-lg mt-2" />
+                    <img src={msg.file_url} alt="Imagem" className="max-w-full rounded-lg mt-2" />
                   )}
                   {msg.kind === 'video' && msg.file_url && (
                     <video src={msg.file_url} controls className="max-w-full rounded-lg mt-2" />
