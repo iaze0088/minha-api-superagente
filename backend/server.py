@@ -1405,6 +1405,11 @@ async def send_message(data: MessageCreate, request: Request, current_user: dict
         ai_logger.info(f"⚪ Mensagem não é de cliente ou não é texto: from_type={data.from_type}, kind={data.kind}")
     
     # Send via WebSocket to recipient
+    print(f"💬 [POST /messages] Enviando mensagem:")
+    print(f"   from_id: {data.from_id}, from_type: {data.from_type}")
+    print(f"   to_id: {data.to_id}, to_type: {data.to_type}")
+    print(f"   ticket_id: {ticket_id}")
+    
     await manager.send_to_user(data.to_id, {
         "type": "message",
         "message": message
