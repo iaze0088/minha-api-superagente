@@ -46,6 +46,13 @@ const AgentDashboard = () => {
   const [hasMoreMessages, setHasMoreMessages] = useState(true);
   const [messageOffset, setMessageOffset] = useState(0);
   const [lightboxImage, setLightboxImage] = useState(null);
+  
+  // IPTV Apps
+  const [iptvApps, setIptvApps] = useState([]);
+  const [showIPTVModal, setShowIPTVModal] = useState(false);
+  const [selectedApp, setSelectedApp] = useState(null);
+  const [appFormData, setAppFormData] = useState({});
+  const [generatedUrl, setGeneratedUrl] = useState('');
 
   useEffect(() => {
     loadTickets();
