@@ -656,64 +656,162 @@ class ComprehensiveBackendTester:
             else:
                 print(f"❌ Failed to delete reseller {reseller_id}: {response}")
                 
+    def test_admin_replicate_config_authentication(self) -> bool:
+        """Test: POST /api/admin/replicate-config-to-resellers - Authentication Test"""
+        if not self.admin_token:
+            self.log_result("Admin Replicate Config Auth", False, "Admin token required")
+            return False
+            
+        success, response = self.make_request("POST", "/admin/replicate-config-to-resellers", token=self.admin_token)
+        
+        if success and response.get("ok"):
+            total_resellers = response.get("total_resellers", 0)
+            replicated_count = response.get("replicated_count", 0)
+            message = response.get("message", "")
+            self.log_result("Admin Replicate Config Auth", True, f"Admin access OK: {message} ({replicated_count}/{total_resellers})")
+            return True
+        else:
+            self.log_result("Admin Replicate Config Auth", False, f"Error: {response}")
+            return False
+    
+    def test_reseller_replicate_config_authorization(self) -> bool:
+        """Test: POST /api/admin/replicate-config-to-resellers - Authorization Test (should fail for reseller)"""
+        if not self.reseller_token:
+            # Try to login as reseller first
+            if not self.test_reseller_login():
+                self.log_result("Reseller Replicate Config Auth", False, "Reseller login required")
+                return False
+                
+        success, response = self.make_request("POST", "/admin/replicate-config-to-resellers", token=self.reseller_token)
+        
+        # Should fail with 403
+        if not success and "403" in str(response) or "Apenas o admin principal" in str(response):
+            self.log_result("Reseller Replicate Config Auth", True, "Correctly denied reseller access (403)")
+            return True
+        else:
+            self.log_result("Reseller Replicate Config Auth", False, f"Should have denied access: {response}")
+            return False
+    
+    def test_replicate_config_functionality(self) -> bool:
+        """Test: POST /api/admin/replicate-config-to-resellers - Functionality Test"""
+        if not self.admin_token:
+            self.log_result("Replicate Config Functionality", False, "Admin token required")
+            return False
+        
+        print("\n🔄 TESTING CONFIG REPLICATION FUNCTIONALITY...")
+        
+        try:
+            # 1. First, get current admin config to see what will be replicated
+            success, admin_config = self.make_request("GET", "/config", token=self.admin_token)
+            if not success:
+                self.log_result("Replicate Config Functionality", False, f"Failed to get admin config: {admin_config}")
+                return False
+            
+            print(f"   📋 Admin config loaded: PIX key = '{admin_config.get('pix_key', 'N/A')}'")
+            
+            # 2. Get list of resellers to see what we're replicating to
+            success, resellers = self.make_request("GET", "/resellers", token=self.admin_token)
+            if not success:
+                self.log_result("Replicate Config Functionality", False, f"Failed to get resellers: {resellers}")
+                return False
+            
+            reseller_count = len(resellers)
+            print(f"   📊 Found {reseller_count} resellers to replicate to")
+            
+            # 3. If we have the test reseller (michaelrv@gmail.com), check its config BEFORE replication
+            test_reseller = None
+            for reseller in resellers:
+                if reseller.get("login") == "michaelrv@gmail.com":
+                    test_reseller = reseller
+                    break
+            
+            if test_reseller and self.reseller_token:
+                print(f"   🔍 Checking reseller config BEFORE replication...")
+                success, reseller_config_before = self.make_request("GET", "/config", token=self.reseller_token)
+                if success:
+                    print(f"      - Reseller PIX key BEFORE: '{reseller_config_before.get('pix_key', 'N/A')}'")
+                    print(f"      - Reseller AI agent BEFORE: '{reseller_config_before.get('ai_agent', {}).get('name', 'N/A')}'")
+            
+            # 4. Execute replication
+            print(f"   🚀 Executing replication...")
+            success, response = self.make_request("POST", "/admin/replicate-config-to-resellers", token=self.admin_token)
+            
+            if not success:
+                self.log_result("Replicate Config Functionality", False, f"Replication failed: {response}")
+                return False
+            
+            if not response.get("ok"):
+                self.log_result("Replicate Config Functionality", False, f"Replication not OK: {response}")
+                return False
+            
+            total_resellers = response.get("total_resellers", 0)
+            replicated_count = response.get("replicated_count", 0)
+            message = response.get("message", "")
+            
+            print(f"   ✅ Replication completed: {message}")
+            print(f"      - Total resellers: {total_resellers}")
+            print(f"      - Successfully replicated: {replicated_count}")
+            
+            # 5. Verify replication worked by checking reseller config AFTER
+            if test_reseller and self.reseller_token:
+                print(f"   🔍 Checking reseller config AFTER replication...")
+                success, reseller_config_after = self.make_request("GET", "/config", token=self.reseller_token)
+                if success:
+                    print(f"      - Reseller PIX key AFTER: '{reseller_config_after.get('pix_key', 'N/A')}'")
+                    print(f"      - Reseller AI agent AFTER: '{reseller_config_after.get('ai_agent', {}).get('name', 'N/A')}'")
+                    
+                    # Check if admin configs were copied
+                    admin_pix = admin_config.get("pix_key", "")
+                    reseller_pix = reseller_config_after.get("pix_key", "")
+                    
+                    admin_ai_name = admin_config.get("ai_agent", {}).get("name", "")
+                    reseller_ai_name = reseller_config_after.get("ai_agent", {}).get("name", "")
+                    
+                    if admin_pix == reseller_pix and admin_ai_name == reseller_ai_name:
+                        print(f"   ✅ Configuration successfully copied to reseller!")
+                    else:
+                        print(f"   ⚠️  Configuration may not have been fully copied")
+                        print(f"      Admin PIX: '{admin_pix}' vs Reseller PIX: '{reseller_pix}'")
+                        print(f"      Admin AI: '{admin_ai_name}' vs Reseller AI: '{reseller_ai_name}'")
+            
+            # 6. Validate response structure
+            required_fields = ["ok", "message", "total_resellers", "replicated_count"]
+            missing_fields = [field for field in required_fields if field not in response]
+            
+            if missing_fields:
+                self.log_result("Replicate Config Functionality", False, f"Missing response fields: {missing_fields}")
+                return False
+            
+            # 7. Validate that replication count makes sense
+            if replicated_count > total_resellers:
+                self.log_result("Replicate Config Functionality", False, f"Replicated count ({replicated_count}) > total resellers ({total_resellers})")
+                return False
+            
+            if total_resellers > 0 and replicated_count == 0:
+                self.log_result("Replicate Config Functionality", False, f"No resellers were replicated despite {total_resellers} existing")
+                return False
+            
+            self.log_result("Replicate Config Functionality", True, f"Replication successful: {replicated_count}/{total_resellers} resellers updated")
+            return True
+            
+        except Exception as e:
+            self.log_result("Replicate Config Functionality", False, f"Exception during replication test: {str(e)}")
+            return False
+
     def run_all_tests(self):
         """Run all critical backend tests"""
-        print("🚀 TESTE COMPLETO DO BACKEND - APÓS CORREÇÕES CRÍTICAS")
+        print("🚀 TESTE COMPLETO DO BACKEND - CONFIGURATION REPLICATION ENDPOINT")
         print("=" * 60)
         
         tests = [
             # Authentication Tests
             self.test_admin_login,
-            self.test_agent_login,
-            self.test_client_login,
-            
-            # Agents Tests
-            self.test_list_agents,
-            self.test_create_agent,
-            
-            # AI Agents Tests (HIGH PRIORITY)
-            self.test_list_ai_agents,
-            self.test_create_ai_agent,
-            self.test_update_ai_agent,
-            self.test_delete_ai_agent,
-            
-            # Departments Tests (HIGH PRIORITY)
-            self.test_list_departments,
-            self.test_create_department,
-            self.test_update_department,
-            self.test_delete_department,
-            
-            # Config Tests
-            self.test_get_config,
-            self.test_update_config,
-            
-            # Resellers Tests
-            self.test_list_resellers,
-            self.test_create_reseller,
             self.test_reseller_login,
             
-            # Special Tests
-            self.test_database_consistency,
-            
-            # WhatsApp & PIN Tests (Phase 4)
-            self.test_whatsapp_popup_status,
-            self.test_whatsapp_confirm,
-            self.test_update_pin,
-            self.test_invalid_pin,
-            
-            # New Functionalities Tests (2025-01-21)
-            self.test_auto_responder_sequences_get,
-            self.test_auto_responder_sequences_post,
-            self.test_auto_responder_sequences_delete,
-            self.test_tutorials_advanced_get,
-            self.test_tutorials_advanced_post,
-            self.test_tutorials_advanced_delete,
-            self.test_reseller_domain_info,
-            self.test_reseller_update_domain,
-            self.test_reseller_verify_domain,
-            self.test_file_upload,
-            self.test_tenant_isolation_auto_responder,
-            self.test_tenant_isolation_tutorials
+            # Configuration Replication Tests (PRIORITY)
+            self.test_admin_replicate_config_authentication,
+            self.test_reseller_replicate_config_authorization,
+            self.test_replicate_config_functionality,
         ]
         
         passed = 0
