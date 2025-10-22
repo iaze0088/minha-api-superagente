@@ -372,6 +372,44 @@ const ClientChat = () => {
     }
   };
 
+  const loadConfig = async () => {
+    try {
+      const { data } = await api.get('/config');
+      setConfig(data);
+    } catch (error) {
+      console.error('Error loading config:', error);
+    }
+  };
+
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Por favor, selecione uma imagem');
+      return;
+    }
+
+    setUploadingAvatar(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const { data } = await api.post('/users/me/avatar', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      // Atualizar userData com nova foto
+      setUserData(prev => ({ ...prev, custom_avatar: data.avatar_url }));
+      toast.success('Foto atualizada com sucesso!');
+    } catch (error) {
+      toast.error('Erro ao fazer upload da foto');
+      console.error('Upload error:', error);
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
   const handleSendMessage = async () => {
     if (!messageText.trim()) return;
     
