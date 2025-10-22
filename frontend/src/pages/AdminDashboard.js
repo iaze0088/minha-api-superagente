@@ -386,7 +386,7 @@ const AdminDashboard = () => {
 
       <div className="max-w-7xl mx-auto px-4 py-8">
         <Tabs defaultValue="agents" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-9 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-10 lg:w-auto lg:inline-grid">
             <TabsTrigger value="resellers" data-testid="tab-resellers">
               <Users className="w-4 h-4 mr-2" />
               Revendas
@@ -426,6 +426,10 @@ const AdminDashboard = () => {
             <TabsTrigger value="tutorials" data-testid="tab-tutorials">
               <BookOpen className="w-4 h-4 mr-2" />
               Tutoriais/Apps
+            </TabsTrigger>
+            <TabsTrigger value="iptv-apps" data-testid="tab-iptv-apps">
+              <Monitor className="w-4 h-4 mr-2" />
+              Apps IPTV
             </TabsTrigger>
           </TabsList>
 
