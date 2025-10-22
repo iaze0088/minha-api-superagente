@@ -2186,6 +2186,29 @@ async def delete_tutorial_advanced(tutorial_id: str, current_user: dict = Depend
     return {"ok": True}
 
 # ====== NOVO: Gestão de Domínios para Revendas ======
+@api_router.get("/reseller/me")
+async def get_reseller_me(current_user: dict = Depends(get_current_user)):
+    """Retorna informações da revenda logada"""
+    reseller_id = current_user.get("reseller_id")
+    
+    if not reseller_id or current_user.get("user_type") != "reseller":
+        raise HTTPException(status_code=400, detail="Apenas revendedores podem acessar")
+    
+    # Buscar informações da revenda
+    reseller = await db.resellers.find_one({"id": reseller_id})
+    if not reseller:
+        raise HTTPException(status_code=404, detail="Revenda não encontrada")
+    
+    return {
+        "id": reseller.get("id"),
+        "name": reseller.get("name"),
+        "email": reseller.get("email"),
+        "first_login": reseller.get("first_login", False),
+        "custom_domain": reseller.get("custom_domain", ""),
+        "test_domain": reseller.get("test_domain", ""),
+        "is_active": reseller.get("is_active", True)
+    }
+
 @api_router.get("/reseller/domain-info")
 async def get_reseller_domain_info(request: Request, current_user: dict = Depends(get_current_user)):
     """Retorna informações de domínio da revenda"""
