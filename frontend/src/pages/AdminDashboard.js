@@ -49,7 +49,6 @@ const AdminDashboard = () => {
   const [notices, setNotices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploadingLogo, setUploadingLogo] = useState(false);
-  const logoInputRef = useState(null);
 
   // Agent form
   const [newAgent, setNewAgent] = useState({ name: '', login: '', password: '', avatar: '', department_ids: [] });
