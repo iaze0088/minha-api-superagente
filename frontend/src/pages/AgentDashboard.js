@@ -1173,72 +1173,118 @@ const AgentDashboard = () => {
               ))}
             </div>
           ) : (
-            /* Formulário de Configuração */
+            /* Assistente Guiado Passo a Passo */
             <div className="space-y-4">
-              <div className="bg-blue-50 p-3 rounded-lg">
-                <p className="font-semibold text-sm mb-1">🔗 Acessar:</p>
-                <a 
-                  href={selectedApp.config_url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-blue-600 text-sm hover:underline flex items-center gap-1"
+              {/* Etapa 1: Preencher dados do cliente */}
+              <div className="border-2 border-blue-500 rounded-lg p-4 bg-blue-50">
+                <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
+                  <span className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm">1</span>
+                  Preencha os dados do cliente
+                </h3>
+                <div className="space-y-3">
+                  {selectedApp.fields.map((field) => (
+                    <div key={field}>
+                      <label className="block text-sm font-medium mb-1 capitalize">
+                        {field.replace('_', ' ')}
+                      </label>
+                      <Input
+                        placeholder={`Digite ${field}...`}
+                        value={appFormData[field] || ''}
+                        onChange={(e) => setAppFormData({ ...appFormData, [field]: e.target.value })}
+                        className="bg-white"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Etapa 2: Abrir site */}
+              <div className="border-2 border-gray-300 rounded-lg p-4">
+                <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
+                  <span className="bg-gray-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm">2</span>
+                  Abra o site de configuração
+                </h3>
+                <Button 
+                  onClick={() => window.open(selectedApp.config_url, '_blank')}
+                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600"
+                  size="lg"
                 >
-                  {selectedApp.config_url}
-                  <ExternalLink className="w-3 h-3" />
-                </a>
+                  <ExternalLink className="w-5 h-5 mr-2" />
+                  Abrir {selectedApp.name}
+                </Button>
               </div>
 
+              {/* Etapa 3: Copiar e Colar */}
+              <div className="border-2 border-green-500 rounded-lg p-4 bg-green-50">
+                <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
+                  <span className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm">3</span>
+                  Copie e cole no site (cada campo)
+                </h3>
+                
+                {Object.keys(appFormData).length > 0 && Object.values(appFormData).every(v => v) ? (
+                  <div className="space-y-3">
+                    {selectedApp.fields.map((field, index) => (
+                      <div key={field} className="bg-white p-3 rounded-lg border border-green-200">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-xs font-semibold text-green-700 uppercase">
+                            #{index + 1} - {field.replace('_', ' ')}
+                          </span>
+                          <Button
+                            size="sm"
+                            onClick={() => copyToClipboard(appFormData[field])}
+                            className="h-7"
+                          >
+                            <Copy className="w-3 h-3 mr-1" />
+                            Copiar
+                          </Button>
+                        </div>
+                        <div className="bg-gray-50 p-2 rounded border font-mono text-sm break-all">
+                          {appFormData[field]}
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {/* URL Final */}
+                    <div className="mt-4 pt-4 border-t border-green-300">
+                      <p className="text-sm font-semibold mb-2">📋 URL Final (Cole na última etapa):</p>
+                      <div className="bg-white p-3 rounded-lg border border-green-200 mb-2">
+                        <div className="bg-gray-50 p-2 rounded border font-mono text-xs break-all">
+                          {selectedApp.url_template.replace(/\{([^}]+)\}/g, (match, field) => appFormData[field] || match)}
+                        </div>
+                      </div>
+                      <Button
+                        size="sm"
+                        onClick={() => copyToClipboard(selectedApp.url_template.replace(/\{([^}]+)\}/g, (match, field) => appFormData[field] || match))}
+                        className="w-full"
+                      >
+                        <Copy className="w-3 h-3 mr-2" />
+                        Copiar URL Completa
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-400">
+                    <p className="text-sm">Preencha todos os campos acima primeiro</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Instruções Detalhadas */}
               {selectedApp.instructions && (
-                <div className="bg-yellow-50 p-3 rounded-lg">
-                  <p className="font-semibold text-sm mb-1">📋 Instruções:</p>
-                  <p className="text-xs whitespace-pre-line">{selectedApp.instructions}</p>
+                <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-4">
+                  <h3 className="font-bold text-sm mb-2 flex items-center gap-2">
+                    💡 Instruções Passo a Passo:
+                  </h3>
+                  <p className="text-xs whitespace-pre-line text-gray-700">{selectedApp.instructions}</p>
                 </div>
               )}
 
-              <div className="border-t pt-4">
-                <p className="font-semibold mb-3">Preencha os dados do cliente:</p>
-                {selectedApp.fields.map((field) => (
-                  <div key={field} className="mb-3">
-                    <label className="block text-sm font-medium mb-1 capitalize">
-                      {field.replace('_', ' ')}
-                    </label>
-                    <Input
-                      placeholder={`Digite ${field}...`}
-                      value={appFormData[field] || ''}
-                      onChange={(e) => setAppFormData({ ...appFormData, [field]: e.target.value })}
-                    />
-                  </div>
-                ))}
-              </div>
-
-              <Button onClick={generateIPTVUrl} className="w-full">
-                ✨ Gerar URL
-              </Button>
-
-              {generatedUrl && (
-                <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <p className="font-semibold text-sm mb-2">✅ URL Gerada:</p>
-                  <div className="bg-white p-3 rounded border font-mono text-xs break-all mb-3">
-                    {generatedUrl}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" onClick={() => copyToClipboard(generatedUrl)} className="flex-1">
-                      <Copy className="w-3 h-3 mr-2" />
-                      Copiar
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={() => window.open(generatedUrl, '_blank')} className="flex-1">
-                      <ExternalLink className="w-3 h-3 mr-2" />
-                      Abrir
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              <div className="flex gap-2 mt-4">
-                <Button variant="outline" onClick={() => { setSelectedApp(null); setGeneratedUrl(''); }} className="flex-1">
+              {/* Botões de Navegação */}
+              <div className="flex gap-2 pt-4 border-t">
+                <Button variant="outline" onClick={() => { setSelectedApp(null); setGeneratedUrl(''); setAppFormData({}); }} className="flex-1">
                   ← Voltar
                 </Button>
-                <Button variant="outline" onClick={() => setShowIPTVModal(false)} className="flex-1">
+                <Button variant="outline" onClick={() => { setShowIPTVModal(false); setSelectedApp(null); setAppFormData({}); }} className="flex-1">
                   Fechar
                 </Button>
               </div>
