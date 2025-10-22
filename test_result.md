@@ -582,15 +582,18 @@ backend:
 
   - task: "Endpoint de replicação de configurações para revendas"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Endpoint POST /api/admin/replicate-config-to-resellers implementado. Replica configurações do admin principal (logo, IA, auto-respostas, tutoriais, apps IPTV) para TODAS as revendas. Não replica dados manuais (agentes, atendentes, departamentos, clientes, domínios). Apenas admin principal pode usar."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTADO COMPLETAMENTE: Endpoint de replicação funcionando 100%! AUTHENTICATION TEST ✓ (Admin login com senha 102030@ab → POST /api/admin/replicate-config-to-resellers → 200 OK), AUTHORIZATION TEST ✓ (Reseller token → POST /api/admin/replicate-config-to-resellers → 403/401 Forbidden corretamente), FUNCTIONALITY TEST ✓ (Configurações replicadas para 3/3 revendas, response structure correta: {ok: true, message: '...', total_resellers: 3, replicated_count: 3}). Endpoint protegido corretamente (apenas admin), replicação funcionando, dados não manuais preservados."
 
 
 frontend:
