@@ -77,6 +77,7 @@ const AdminDashboard = () => {
   const [expandedResellers, setExpandedResellers] = useState(new Set());
   const [transferModal, setTransferModal] = useState({ open: false, reseller: null });
   const [viewMode, setViewMode] = useState('list'); // 'list' or 'tree'
+  const [resellerInfoModal, setResellerInfoModal] = useState({ open: false, data: null });
 
   useEffect(() => {
     loadData();
