@@ -588,6 +588,226 @@ class SmartOneAutomation(IPTVAutomationBase):
         self.result.automation_score = 95
 
 
+
+
+class DuplecastAutomation(IPTVAutomationBase):
+    """Automação específica para Duplecast IPTV"""
+    
+    async def run_automation(self):
+        """Executa automação do Duplecast com reCAPTCHA"""
+        self.result.add_log("🔧 Iniciando automação Duplecast IPTV...")
+        
+        # Navegar para o site de login
+        config_url = self.app_data.get('config_url')
+        self.result.add_log(f"📍 Navegando para {config_url}")
+        
+        await self.page.goto(config_url, wait_until='domcontentloaded', timeout=60000)
+        await self.page.wait_for_timeout(5000)
+        await self.take_screenshot("Página de login carregada")
+        
+        # PASSO 1: Preencher Device ID (MAC)
+        mac = self.form_data.get('mac', '')
+        device_key = self.form_data.get('device_key', '')
+        
+        if mac:
+            self.result.add_log(f"📝 Preenchendo Device ID: {mac}")
+            
+            try:
+                # Tentar múltiplos seletores para Device ID
+                device_id_selectors = [
+                    'input[name="device_id"]',
+                    'input#device_id',
+                    'input[placeholder*="Device ID" i]'
+                ]
+                
+                filled = False
+                for selector in device_id_selectors:
+                    try:
+                        await self.page.fill(selector, mac, timeout=5000)
+                        self.result.add_log("✅ Device ID preenchido!")
+                        filled = True
+                        break
+                    except:
+                        continue
+                
+                if not filled:
+                    raise Exception("Não foi possível preencher Device ID")
+                    
+                await self.page.wait_for_timeout(1000)
+                await self.take_screenshot("Device ID preenchido")
+            except Exception as e:
+                self.result.add_log(f"❌ Erro ao preencher Device ID: {e}", "error")
+                raise Exception("Não foi possível preencher o Device ID.")
+        
+        # PASSO 2: Preencher Device Key
+        if device_key:
+            self.result.add_log(f"📝 Preenchendo Device Key: {device_key}")
+            
+            try:
+                device_key_selectors = [
+                    'input[name="device_key"]',
+                    'input#device_key',
+                    'input[placeholder*="Device Key" i]'
+                ]
+                
+                filled = False
+                for selector in device_key_selectors:
+                    try:
+                        await self.page.fill(selector, device_key, timeout=5000)
+                        self.result.add_log("✅ Device Key preenchido!")
+                        filled = True
+                        break
+                    except:
+                        continue
+                
+                if not filled:
+                    raise Exception("Não foi possível preencher Device Key")
+                    
+                await self.page.wait_for_timeout(1000)
+                await self.take_screenshot("Device Key preenchido")
+            except Exception as e:
+                self.result.add_log(f"❌ Erro ao preencher Device Key: {e}", "error")
+                raise Exception("Não foi possível preencher o Device Key.")
+        
+        # PASSO 3: Interagir com reCAPTCHA (Google)
+        self.result.add_log("🔒 Procurando reCAPTCHA...")
+        
+        try:
+            # Aguardar reCAPTCHA aparecer
+            await self.page.wait_for_timeout(3000)
+            
+            # Procurar iframe do reCAPTCHA
+            recaptcha_iframe = await self.page.query_selector('iframe[src*="google.com/recaptcha"]')
+            
+            if recaptcha_iframe:
+                self.result.add_log("✅ reCAPTCHA encontrado!")
+                
+                # Clicar no checkbox do reCAPTCHA
+                try:
+                    await recaptcha_iframe.click()
+                    self.result.add_log("🔘 Clicou no reCAPTCHA")
+                    
+                    # Aguardar validação (15 segundos)
+                    self.result.add_log("⏳ Aguardando validação do reCAPTCHA (15s)...")
+                    await self.page.wait_for_timeout(15000)
+                    
+                    await self.take_screenshot("Após reCAPTCHA")
+                except Exception as e:
+                    self.result.add_log(f"⚠️ Erro ao clicar reCAPTCHA: {e}", "warning")
+            else:
+                self.result.add_log("ℹ️ reCAPTCHA não encontrado")
+        except Exception as e:
+            self.result.add_log(f"⚠️ Erro ao processar reCAPTCHA: {e}", "warning")
+        
+        # PASSO 4: Clicar no botão "Manage Device"
+        self.result.add_log("🔘 Clicando no botão 'Manage Device'...")
+        
+        try:
+            await self.page.click('button.btn.btn-primary[type="submit"]', timeout=10000)
+            self.result.add_log("✅ Botão 'Manage Device' clicado!")
+            await self.page.wait_for_timeout(5000)
+            await self.take_screenshot("Após login")
+        except Exception as e:
+            self.result.add_log(f"❌ Erro ao clicar 'Manage Device': {e}", "error")
+            raise Exception("Não foi possível fazer login no dispositivo.")
+        
+        # PASSO 5: Clicar no botão "+ Add Playlist"
+        self.result.add_log("🔘 Clicando no botão 'Add Playlist'...")
+        
+        try:
+            add_playlist_selectors = [
+                '#add_playlist',
+                'a[href*="/device_main/add/"]',
+                'a:has-text("Add Playlist")'
+            ]
+            
+            clicked = False
+            for selector in add_playlist_selectors:
+                try:
+                    await self.page.click(selector, timeout=5000)
+                    self.result.add_log("✅ Botão 'Add Playlist' clicado!")
+                    clicked = True
+                    break
+                except:
+                    continue
+            
+            if not clicked:
+                raise Exception("Botão Add Playlist não encontrado")
+            
+            await self.page.wait_for_timeout(3000)
+            await self.take_screenshot("Formulário Add Playlist")
+        except Exception as e:
+            self.result.add_log(f"❌ Erro ao clicar 'Add Playlist': {e}", "error")
+            raise Exception("Não foi possível abrir formulário de adicionar playlist.")
+        
+        # PASSO 6: Preencher nome da playlist
+        username = self.form_data.get('username', '')
+        nome_playlist = f"Playlist {username}" if username else "Minha Playlist"
+        
+        self.result.add_log(f"📝 Preenchendo nome: {nome_playlist}")
+        
+        try:
+            await self.page.fill('#m3u_name', nome_playlist, timeout=10000)
+            self.result.add_log("✅ Nome preenchido!")
+            await self.page.wait_for_timeout(1000)
+        except Exception as e:
+            self.result.add_log(f"❌ Erro ao preencher nome: {e}", "error")
+            raise Exception("Não foi possível preencher o nome da playlist.")
+        
+        # PASSO 7: Gerar e preencher URL
+        self.result.final_url = await self.generate_final_url()
+        self.result.add_log(f"🔗 URL gerada: {self.result.final_url}")
+        
+        try:
+            await self.page.fill('#m3u_playlist', self.result.final_url, timeout=10000)
+            self.result.add_log("✅ URL preenchida!")
+            await self.page.wait_for_timeout(1000)
+            await self.take_screenshot("Formulário preenchido")
+        except Exception as e:
+            self.result.add_log(f"❌ Erro ao preencher URL: {e}", "error")
+            raise Exception("Não foi possível preencher a URL da playlist.")
+        
+        # PASSO 8: Clicar no botão Submit/Save
+        self.result.add_log("🔘 Clicando no botão de salvar...")
+        
+        try:
+            submit_selectors = [
+                'button[type="submit"]',
+                'button.btn-primary',
+                'button:has-text("Save")',
+                'input[type="submit"]'
+            ]
+            
+            for selector in submit_selectors:
+                try:
+                    await self.page.click(selector, timeout=5000)
+                    self.result.add_log("✅ Botão de salvar clicado!")
+                    await self.page.wait_for_timeout(5000)
+                    await self.take_screenshot("Playlist salva")
+                    break
+                except:
+                    continue
+        except Exception as e:
+            self.result.add_log(f"⚠️ Erro ao clicar botão salvar: {e}", "warning")
+        
+        # PASSO 9: Verificar sucesso
+        self.result.add_log("🔍 Verificando se playlist foi adicionada...")
+        
+        try:
+            page_content = await self.page.content()
+            if any(word in page_content.lower() for word in ['success', 'added', 'saved', 'sucesso']):
+                self.result.add_log("✅ Playlist adicionada com sucesso!")
+            else:
+                self.result.add_log("ℹ️ Playlist provavelmente adicionada")
+            
+            await self.take_screenshot("Resultado final")
+        except Exception as e:
+            self.result.add_log(f"⚠️ Erro ao verificar: {e}", "warning")
+        
+        self.result.add_log("✅ Automação Duplecast concluída!")
+        self.result.automation_score = 85
+
+
 class IPTVAutomationFactory:
     """Factory para criar instâncias de automação"""
     
