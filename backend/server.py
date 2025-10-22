@@ -98,12 +98,15 @@ class ConnectionManager:
             del self.active_connections[user_id]
     
     def disconnect(self, websocket: WebSocket, user_id: str):
+        print(f"🔌 [WebSocket DISCONNECT] user_id: {user_id}")
         if user_id in self.active_connections:
             self.active_connections[user_id].discard(websocket)
             if not self.active_connections[user_id]:
                 del self.active_connections[user_id]
                 if user_id in self.user_sessions:
                     del self.user_sessions[user_id]
+                print(f"   ✅ User {user_id} completamente desconectado")
+            print(f"   Total de conexões ativas agora: {len(self.active_connections)}")
     
     async def send_to_user(self, user_id: str, message: dict):
         print(f"📤 [send_to_user] Tentando enviar para user_id: {user_id}")
