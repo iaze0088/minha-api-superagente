@@ -1909,11 +1909,15 @@ async def automate_iptv_config(app_id: str, data: dict, request: Request = None,
             }
             
     except Exception as e:
-        print(f"   ❌ Erro na automação: {e}")
+        import traceback
+        error_detail = traceback.format_exc()
+        print(f"   ❌ ERRO NA AUTOMAÇÃO: {e}")
+        print(f"   📋 Stack trace: {error_detail}")
         return {
             "ok": False,
             "error": str(e),
-            "message": "Falha na automação. Use o modo manual."
+            "error_detail": error_detail,
+            "message": f"Falha na automação: {str(e)}. Use o modo manual."
         }
 
 
