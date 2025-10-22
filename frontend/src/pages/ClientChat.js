@@ -193,6 +193,25 @@ const ClientChat = () => {
   };
 
   useEffect(() => {
+    // Bloquear botão voltar do navegador
+    const blockBackButton = () => {
+      window.history.pushState(null, '', window.location.href);
+    };
+    
+    // Adicionar estado ao histórico
+    blockBackButton();
+    
+    // Listener para bloquear o botão voltar
+    window.addEventListener('popstate', blockBackButton);
+    
+    console.log('🔒 Botão voltar bloqueado - cliente não pode sair acidentalmente');
+    
+    return () => {
+      window.removeEventListener('popstate', blockBackButton);
+    };
+  }, []);
+
+  useEffect(() => {
     // Pre-carregar o áudio de notificação
     try {
       const audio = new Audio('/notification.mp3');
