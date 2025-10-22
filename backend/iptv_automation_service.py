@@ -122,7 +122,13 @@ class IPTVAutomationBase:
             
             self.browser = await p.chromium.launch(
                 headless=True,
-                args=['--no-sandbox', '--disable-setuid-sandbox']
+                args=[
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--disable-blink-features=AutomationControlled',  # Esconder automação
+                    '--disable-dev-shm-usage',
+                    '--disable-web-security'
+                ]
             )
             
             context = await self.browser.new_context(
