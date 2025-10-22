@@ -1261,15 +1261,15 @@ const AgentDashboard = () => {
                 </div>
               </div>
 
-              {/* Botão de Automação */}
-              {Object.keys(appFormData).length > 0 && Object.values(appFormData).every(v => v) && (
+              {/* Botão de Automação - APENAS PARA SS-IPTV */}
+              {Object.keys(appFormData).length > 0 && Object.values(appFormData).every(v => v) && selectedApp?.type === 'SSIPTV' && (
                 <div className="border-2 border-green-500 rounded-lg p-4 bg-gradient-to-br from-green-50 to-emerald-50">
                   <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
                     <span className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm">🤖</span>
-                    Configuração Automática (Recomendado)
+                    Configuração Automática (SS-IPTV)
                   </h3>
                   <p className="text-sm text-gray-600 mb-3">
-                    Deixe a IA configurar automaticamente para você! Se houver algum problema, você pode usar o método manual abaixo.
+                    Sistema automático exclusivo para SS-IPTV! Configuração rápida e inteligente.
                   </p>
                   <Button 
                     onClick={automateIPTVConfig}
