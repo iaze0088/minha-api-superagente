@@ -706,6 +706,39 @@ const AdminDashboard = () => {
               <h3 className="text-lg font-semibold mb-4">🔐 Dados Permitidos para Envio</h3>
               <p className="text-sm text-slate-600 mb-6">Configure quais dados sensíveis podem ser enviados nas conversas</p>
               
+              {/* Logo/Foto do Suporte */}
+              <div className="mb-6 bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-lg p-4">
+                <h4 className="font-semibold mb-3">🖼️ Logo/Foto do Suporte</h4>
+                <p className="text-xs text-slate-600 mb-3">Esta imagem aparecerá como foto do suporte nas conversas com clientes</p>
+                <div className="flex items-center gap-4">
+                  <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center overflow-hidden border-2 border-indigo-200">
+                    {config.support_avatar ? (
+                      <img src={config.support_avatar} alt="Logo do Suporte" className="w-full h-full object-cover" />
+                    ) : (
+                      <Shield className="w-10 h-10 text-indigo-400" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      ref={logoInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoUpload}
+                      className="hidden"
+                    />
+                    <Button
+                      onClick={() => logoInputRef.current?.click()}
+                      disabled={uploadingLogo}
+                      className="bg-indigo-600 hover:bg-indigo-700"
+                      size="sm"
+                    >
+                      {uploadingLogo ? 'Enviando...' : '📤 Fazer Upload da Logo'}
+                    </Button>
+                    <p className="text-xs text-slate-500 mt-1">Formato: JPG, PNG. Recomendado: 512x512px</p>
+                  </div>
+                </div>
+              </div>
+
               {/* Chave PIX */}
               <div className="mb-6">
                 <h4 className="font-semibold mb-3">💰 Chave PIX</h4>
