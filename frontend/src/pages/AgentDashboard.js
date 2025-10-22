@@ -822,10 +822,13 @@ const AgentDashboard = () => {
                                   : 'bg-white text-slate-900 rounded-bl-sm border border-slate-200'
                               }`}
                             >
-                        {msg.kind === 'text' && <p className="whitespace-pre-wrap break-words text-sm">{msg.text}</p>}
-                        {msg.kind === 'image' && <img src={msg.file_url} alt="" className="max-w-full rounded-lg" />}
-                        {msg.kind === 'video' && <video src={msg.file_url} controls className="max-w-full rounded-lg" />}
-                        {msg.kind === 'audio' && <audio src={msg.file_url} controls className="w-full" />}
+                        {/* Mostrar texto se existir */}
+                        {msg.text && msg.kind !== 'pix' && <p className="whitespace-pre-wrap break-words text-sm mb-2">{msg.text}</p>}
+                        
+                        {/* Renderizar mídia */}
+                        {msg.kind === 'image' && msg.file_url && <img src={msg.file_url} alt="Imagem" className="max-w-full rounded-lg" />}
+                        {msg.kind === 'video' && msg.file_url && <video src={msg.file_url} controls className="max-w-full rounded-lg" />}
+                        {msg.kind === 'audio' && msg.file_url && <audio src={msg.file_url} controls className="w-full" />}
                         {msg.kind === 'pix' && (
                           <div>
                             <p className="font-semibold mb-2 text-sm">💰 Chave PIX</p>
