@@ -1754,6 +1754,165 @@ async def delete_iptv_app(app_id: str, request: Request = None, current_user: di
     return {"ok": True}
 
 
+
+@api_router.post("/iptv-apps/{app_id}/automate")
+async def automate_iptv_config(app_id: str, data: dict, request: Request = None, current_user: dict = Depends(get_current_user)):
+    """Automatiza a configuração do app IPTV usando Playwright"""
+    from playwright.async_api import async_playwright
+    
+    tenant = get_request_tenant(request)
+    reseller_id = tenant.reseller_id or current_user.get("reseller_id")
+    
+    # Buscar app
+    query = {"id": app_id}
+    if reseller_id:
+        query["reseller_id"] = reseller_id
+    
+    app = await db.iptv_apps.find_one(query, {"_id": 0})
+    if not app:
+        raise HTTPException(status_code=404, detail="App não encontrado")
+    
+    form_data = data.get("form_data", {})
+    
+    try:
+        async with async_playwright() as p:
+            print(f"🤖 Iniciando automação para {app['name']}...")
+            
+            # Iniciar navegador
+            browser = await p.chromium.launch(headless=True)
+            context = await browser.new_context(
+                viewport={'width': 1920, 'height': 1080},
+                user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            )
+            page = await context.new_page()
+            
+            # Navegar para o site
+            print(f"   📍 Navegando para {app['config_url']}")
+            await page.goto(app['config_url'], wait_until='networkidle', timeout=30000)
+            await page.wait_for_timeout(2000)
+            
+            # Automação específica por tipo
+            if app['type'] == 'SSIPTV':
+                print("   🔧 Automatizando SS-IPTV...")
+                
+                # Preencher código
+                codigo = form_data.get('codigo', '')
+                if codigo:
+                    # Tenta vários seletores possíveis
+                    selectors = ['input[name="code"]', 'input#code', 'input[type="text"]', 'input.code']
+                    for selector in selectors:
+                        try:
+                            await page.fill(selector, codigo, timeout=5000)
+                            print(f"   ✅ Código preenchido: {codigo}")
+                            break
+                        except:
+                            continue
+                
+                await page.wait_for_timeout(1000)
+                
+                # Clicar no botão de submit
+                submit_selectors = ['button[type="submit"]', 'input[type="submit"]', 'button:has-text("Submit")', 'button:has-text("Go")']
+                for selector in submit_selectors:
+                    try:
+                        await page.click(selector, timeout=5000)
+                        print("   ✅ Botão submit clicado")
+                        break
+                    except:
+                        continue
+                
+                await page.wait_for_timeout(3000)
+                
+                # Criar pasta
+                username = form_data.get('username', '')
+                password = form_data.get('password', '')
+                url_template = app.get('url_template', '')
+                
+                # Gerar URL
+                final_url = url_template
+                for field, value in form_data.items():
+                    final_url = final_url.replace(f'{{{field}}}', value)
+                
+                print(f"   📋 URL gerada: {final_url}")
+                
+                # Tentar preencher URL no site
+                url_selectors = ['input[name="url"]', 'input#url', 'textarea', 'input[type="url"]']
+                for selector in url_selectors:
+                    try:
+                        await page.fill(selector, final_url, timeout=5000)
+                        print("   ✅ URL preenchida")
+                        break
+                    except:
+                        continue
+                
+                # Tirar screenshot final
+                screenshot = await page.screenshot(type='png')
+                screenshot_base64 = screenshot.hex()
+                
+                print("   ✅ Automação concluída com sucesso!")
+                
+            elif app['type'] == 'SMARTONE':
+                print("   🔧 Automatizando SmartOne...")
+                
+                mac = form_data.get('mac', '')
+                nome_pasta = form_data.get('nome_pasta', '')
+                
+                if mac:
+                    mac_selectors = ['input[name="mac"]', 'input#mac', 'input[placeholder*="MAC"]']
+                    for selector in mac_selectors:
+                        try:
+                            await page.fill(selector, mac, timeout=5000)
+                            print(f"   ✅ MAC preenchido: {mac}")
+                            break
+                        except:
+                            continue
+                
+                if nome_pasta:
+                    nome_selectors = ['input[name="name"]', 'input#name', 'input[name="folder"]']
+                    for selector in nome_selectors:
+                        try:
+                            await page.fill(selector, nome_pasta, timeout=5000)
+                            print(f"   ✅ Nome da pasta preenchido: {nome_pasta}")
+                            break
+                        except:
+                            continue
+                
+                # Gerar URL
+                final_url = app.get('url_template', '')
+                for field, value in form_data.items():
+                    final_url = final_url.replace(f'{{{field}}}', value)
+                
+                print(f"   📋 URL gerada: {final_url}")
+                
+                # Preencher URL
+                url_selectors = ['input[name="url"]', 'textarea', 'input[type="url"]', 'input.url']
+                for selector in url_selectors:
+                    try:
+                        await page.fill(selector, final_url, timeout=5000)
+                        print("   ✅ URL preenchida")
+                        break
+                    except:
+                        continue
+                
+                print("   ✅ Automação concluída com sucesso!")
+            
+            await browser.close()
+            
+            return {
+                "ok": True,
+                "message": "Configuração automatizada com sucesso!",
+                "final_url": final_url
+            }
+            
+    except Exception as e:
+        print(f"   ❌ Erro na automação: {e}")
+        return {
+            "ok": False,
+            "error": str(e),
+            "message": "Falha na automação. Use o modo manual."
+        }
+
+
+
 # Notice routes
 @api_router.get("/notices")
 async def get_notices(request: Request, current_user: dict = Depends(get_current_user)):
