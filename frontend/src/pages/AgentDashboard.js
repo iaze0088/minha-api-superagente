@@ -262,6 +262,35 @@ const AgentDashboard = () => {
     toast.success('URL copiada para a área de transferência!');
   };
 
+  const automateIPTVConfig = async () => {
+    if (!selectedApp) return;
+    
+    // Validar se todos os campos estão preenchidos
+    const allFilled = selectedApp.fields.every(field => appFormData[field]);
+    if (!allFilled) {
+      toast.error('Preencha todos os campos primeiro!');
+      return;
+    }
+    
+    toast.loading('🤖 Iniciando automação...', { id: 'automation' });
+    
+    try {
+      const { data } = await api.post(`/iptv-apps/${selectedApp.id}/automate`, {
+        form_data: appFormData
+      });
+      
+      if (data.ok) {
+        toast.success('✅ Configuração automatizada com sucesso!', { id: 'automation' });
+        setGeneratedUrl(data.final_url);
+      } else {
+        toast.error(`❌ ${data.message || 'Falha na automação. Use o modo manual.'}`, { id: 'automation' });
+      }
+    } catch (error) {
+      console.error('Automation error:', error);
+      toast.error('❌ Erro na automação. Tente o modo manual.', { id: 'automation' });
+    }
+  };
+
   const sendTutorial = (tutorial) => {
     let tutorialText = `📚 ${tutorial.category} - ${tutorial.appName}\n\n`;
     if (tutorial.code) tutorialText += `🔑 Código/Provedor: ${tutorial.code}\n\n`;
