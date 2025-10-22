@@ -709,7 +709,18 @@ const ClientChat = () => {
                   </div>
                 )}
                 
-                <div className={`flex ${msg.from_type === 'client' ? 'justify-end' : 'justify-start'}`}>
+                <div className={`flex gap-2 items-end ${msg.from_type === 'client' ? 'justify-end' : 'justify-start'}`}>
+                  {/* Foto de perfil do suporte/agente (esquerda) */}
+                  {(msg.from_type === 'agent' || msg.from_type === 'ai' || msg.from_type === 'system') && (
+                    <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center overflow-hidden flex-shrink-0">
+                      {config.support_avatar ? (
+                        <img src={config.support_avatar} alt="Suporte" className="w-full h-full object-cover" />
+                      ) : (
+                        <MessageCircle className="w-4 h-4 text-gray-400" />
+                      )}
+                    </div>
+                  )}
+                  
                   <div
                     className={`max-w-[75%] px-3 py-2 rounded-lg shadow-sm ${
                       msg.from_type === 'client'
@@ -719,6 +730,13 @@ const ClientChat = () => {
                         : 'bg-white text-gray-900 rounded-bl-none border border-gray-200'
                     }`}
                   >
+                  
+                  {/* Foto de perfil do cliente (direita) */}
+                  {msg.from_type === 'client' && userData.custom_avatar && (
+                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0">
+                      <img src={userData.custom_avatar} alt="Você" className="w-full h-full object-cover" />
+                    </div>
+                  )}
                   {/* Mostrar texto se existir */}
                   {msg.text && (
                     <p 
