@@ -1449,6 +1449,11 @@ const AdminDashboard = () => {
                     <SelectContent>
                       <SelectItem value="SSIPTV">SS-IPTV</SelectItem>
                       <SelectItem value="SMARTONE">SmartOne IPTV</SelectItem>
+                      <SelectItem value="DUPLEXPLAY">Duplex Play</SelectItem>
+                      <SelectItem value="IBOPLAYER">IBO Player</SelectItem>
+                      <SelectItem value="SMARTIPTV">Smart IPTV</SelectItem>
+                      <SelectItem value="BAYTV">Bay TV</SelectItem>
+                      <SelectItem value="DUPLECAST">Duplecast</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
