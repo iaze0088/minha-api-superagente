@@ -1465,6 +1465,7 @@ async def get_config(request: Request, current_user: dict = Depends(get_current_
                 "auto_reply": [],
                 "apps": [],
                 "pix_key": "",
+                "support_avatar": f"{os.environ.get('REACT_APP_BACKEND_URL', '')}/icon-512.png",
                 "allowed_data": {"cpfs": [], "emails": [], "phones": [], "random_keys": []},
                 "api_integration": {"api_url": "", "api_token": "", "api_enabled": False},
                 "ai_agent": {
