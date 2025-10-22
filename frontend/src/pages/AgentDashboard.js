@@ -1273,15 +1273,75 @@ const AgentDashboard = () => {
                   </p>
                   <Button 
                     onClick={automateIPTVConfig}
+                    disabled={automationProgress}
                     className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
                     size="lg"
                   >
-                    <span className="text-xl mr-2">⚡</span>
-                    Configurar Automaticamente
+                    {automationProgress ? (
+                      <>
+                        <span className="animate-spin mr-2">⚙️</span>
+                        Configurando automaticamente...
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-xl mr-2">⚡</span>
+                        Configurar Automaticamente
+                      </>
+                    )}
                   </Button>
                   <p className="text-xs text-center text-gray-500 mt-2">
                     ✨ Sistema inteligente com retry automático e validação
                   </p>
+                  
+                  {/* Logs da Automação */}
+                  {automationLogs.length > 0 && (
+                    <div className="mt-4 bg-gray-900 rounded-lg p-3 max-h-48 overflow-y-auto">
+                      <h4 className="text-xs font-bold text-green-400 mb-2">📋 Logs da Automação:</h4>
+                      {automationLogs.map((log, index) => (
+                        <div key={index} className="text-xs font-mono mb-1">
+                          <span className="text-gray-500">[{log.time}]</span>{' '}
+                          <span className={
+                            log.level === 'error' ? 'text-red-400' :
+                            log.level === 'warning' ? 'text-yellow-400' :
+                            'text-green-400'
+                          }>
+                            {log.message}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {/* Resultado da Automação */}
+                  {automationResult && !automationProgress && (
+                    <div className={`mt-4 p-3 rounded-lg border-2 ${
+                      automationResult.success ? 'bg-green-50 border-green-500' : 'bg-red-50 border-red-500'
+                    }`}>
+                      <div className="flex items-start gap-2">
+                        <span className="text-2xl">{automationResult.success ? '✅' : '⚠️'}</span>
+                        <div className="flex-1">
+                          <p className="text-sm font-semibold mb-1">
+                            {automationResult.message}
+                          </p>
+                          {automationResult.final_url && (
+                            <p className="text-xs text-gray-600 break-all">
+                              🔗 URL: {automationResult.final_url}
+                            </p>
+                          )}
+                          {automationResult.automation_score && (
+                            <p className="text-xs text-gray-600 mt-1">
+                              📊 Score de automação: {automationResult.automation_score}%
+                            </p>
+                          )}
+                          {!automationResult.success && (
+                            <p className="text-xs text-red-600 mt-2">
+                              👉 Use o método manual abaixo para configurar
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
