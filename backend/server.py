@@ -2209,6 +2209,39 @@ async def get_reseller_me(current_user: dict = Depends(get_current_user)):
         "is_active": reseller.get("is_active", True)
     }
 
+@api_router.post("/resellers/change-password")
+async def change_reseller_password(data: dict, current_user: dict = Depends(get_current_user)):
+    """Altera a senha da revenda e marca first_login como False"""
+    reseller_id = current_user.get("reseller_id")
+    
+    if not reseller_id or current_user.get("user_type") != "reseller":
+        raise HTTPException(status_code=400, detail="Apenas revendedores podem acessar")
+    
+    new_password = data.get("new_password", "").strip()
+    
+    if not new_password or len(new_password) < 6:
+        raise HTTPException(status_code=400, detail="Senha deve ter no mínimo 6 caracteres")
+    
+    # Hash da nova senha
+    pass_hash = bcrypt.hashpw(new_password.encode(), bcrypt.gensalt()).decode()
+    
+    # Atualizar senha e marcar first_login como False
+    result = await db.resellers.update_one(
+        {"id": reseller_id},
+        {"$set": {
+            "pass_hash": pass_hash,
+            "first_login": False,
+            "password_changed_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Revenda não encontrada")
+    
+    logger.info(f"✅ Senha alterada para revenda {reseller_id} (primeiro login concluído)")
+    
+    return {"ok": True, "message": "Senha alterada com sucesso!"}
+
 @api_router.get("/reseller/domain-info")
 async def get_reseller_domain_info(request: Request, current_user: dict = Depends(get_current_user)):
     """Retorna informações de domínio da revenda"""
