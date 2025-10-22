@@ -334,6 +334,56 @@ const AdminDashboard = () => {
         fields: ['mac', 'nome_pasta', 'username', 'password'],
         instructions: '1. Acesse https://smartone-iptv.com/plugin/smart_one/main_generate\n2. Cole o MAC do cliente\n3. Na frente do MAC, coloque o nome da pasta\n4. Embaixo, cole o link m3u8\n5. Salve'
       });
+    } else if (type === 'DUPLEXPLAY') {
+      setNewApp({
+        ...newApp,
+        type: 'DUPLEXPLAY',
+        name: 'Duplex Play',
+        config_url: 'https://edit.duplexplay.com/',
+        url_template: 'http://gestor.my/duplexplay/{username}/{password}/playlist.m3u',
+        fields: ['mac', 'username', 'password'],
+        instructions: '1. Acesse https://edit.duplexplay.com/\n2. Cole o MAC do dispositivo\n3. Adicione username e password\n4. Cole o link da playlist\n5. Salve a configuração'
+      });
+    } else if (type === 'IBOPLAYER') {
+      setNewApp({
+        ...newApp,
+        type: 'IBOPLAYER',
+        name: 'IBO Player',
+        config_url: 'https://iboplayer.com/device/login',
+        url_template: 'http://gestor.my/iboplayer/{username}/{password}/playlist.m3u',
+        fields: ['codigo_ativacao', 'username', 'password'],
+        instructions: '1. Acesse https://iboplayer.com/device/login\n2. Cole o código de ativação da TV\n3. Faça login com username e password\n4. Adicione a playlist URL\n5. Salve'
+      });
+    } else if (type === 'SMARTIPTV') {
+      setNewApp({
+        ...newApp,
+        type: 'SMARTIPTV',
+        name: 'Smart IPTV',
+        config_url: 'https://siptv.app/mylist/',
+        url_template: 'http://gestor.my/smartiptv/{username}/{password}/playlist.m3u',
+        fields: ['mac', 'username', 'password'],
+        instructions: '1. Acesse https://siptv.app/mylist/\n2. Cole o MAC Address da TV\n3. Adicione a playlist URL\n4. Username e password do servidor\n5. Salve a lista'
+      });
+    } else if (type === 'BAYTV') {
+      setNewApp({
+        ...newApp,
+        type: 'BAYTV',
+        name: 'Bay TV',
+        config_url: 'https://cms.bayip.tv/',
+        url_template: 'http://gestor.my/baytv/{username}/{password}/playlist.m3u',
+        fields: ['device_id', 'username', 'password'],
+        instructions: '1. Acesse https://cms.bayip.tv/\n2. Cole o Device ID\n3. Adicione username e password\n4. Cole a URL da playlist\n5. Salve a configuração'
+      });
+    } else if (type === 'DUPLECAST') {
+      setNewApp({
+        ...newApp,
+        type: 'DUPLECAST',
+        name: 'Duplecast',
+        config_url: 'https://duplecast.com/plugin/duplecast/device_login/',
+        url_template: 'http://gestor.my/duplecast/{username}/{password}/playlist.m3u',
+        fields: ['mac', 'username', 'password'],
+        instructions: '1. Acesse https://duplecast.com/plugin/duplecast/device_login/\n2. Cole o MAC do dispositivo\n3. Faça login com username e password\n4. Adicione URL da playlist\n5. Salve'
+      });
     }
   };
 
