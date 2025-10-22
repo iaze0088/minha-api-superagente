@@ -1338,6 +1338,9 @@ async def send_message(data: MessageCreate, request: Request, current_user: dict
     }
     await db.messages.insert_one(message)
     
+    # Criar cópia da mensagem SEM _id do MongoDB (ObjectId não é serializável)
+    message_to_send = {k: v for k, v in message.items() if k != '_id'}
+    
     # Check auto-reply (exact match only)
     if data.from_type == "client" and data.kind == "text":
         # Buscar config do reseller ou config principal
