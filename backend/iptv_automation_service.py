@@ -390,7 +390,8 @@ class SmartOneAutomation(IPTVAutomationBase):
         self.result.add_log(f"🔗 URL da playlist gerada: {self.result.final_url}")
         
         try:
-            await self.page.fill('#m3u_playlist', self.result.final_url, timeout=10000)
+            # Usar seletor específico para o campo de URL
+            await self.page.fill('input#m3u_playlist.form-control', self.result.final_url, timeout=10000)
             self.result.add_log("✅ URL da playlist preenchida!")
             await self.page.wait_for_timeout(1000)
             await self.take_screenshot("URL preenchida")
