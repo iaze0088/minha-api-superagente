@@ -118,13 +118,18 @@ const AgentDashboard = () => {
     };
     
     ws.onclose = () => {
-      console.log('⚠️ WebSocket desconectado, tentando reconectar...');
-      // Reconectar após 3 segundos
-      setTimeout(() => {
-        if (userData?.id) {
-          console.log('🔄 Reconectando WebSocket...');
-        }
-      }, 3000);
+      if (reconnectAttempts.current < maxReconnectAttempts) {
+        reconnectAttempts.current += 1;
+        console.log(`⚠️ WebSocket desconectado, tentando reconectar... (tentativa ${reconnectAttempts.current}/${maxReconnectAttempts})`);
+        // Reconectar após 3 segundos
+        setTimeout(() => {
+          if (userData?.id) {
+            console.log('🔄 Reconectando WebSocket...');
+          }
+        }, 3000);
+      } else {
+        console.warn('⚠️ Máximo de tentativas de reconexão atingido');
+      }
     };
     
     wsRef.current = ws;
