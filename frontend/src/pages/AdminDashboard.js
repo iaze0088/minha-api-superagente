@@ -1403,13 +1403,28 @@ const AdminDashboard = () => {
               
               {/* Templates Rápidos */}
               <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-                <p className="text-sm font-medium mb-2">🚀 Templates Pré-configurados:</p>
-                <div className="flex gap-2">
-                  <Button size="sm" onClick={() => loadIPTVTemplate('SSIPTV')} variant="outline">
+                <p className="text-sm font-medium mb-3">🚀 Templates Pré-configurados:</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                  <Button size="sm" onClick={() => loadIPTVTemplate('SSIPTV')} variant="outline" className="w-full">
                     📺 SS-IPTV
                   </Button>
-                  <Button size="sm" onClick={() => loadIPTVTemplate('SMARTONE')} variant="outline">
-                    📱 SmartOne IPTV
+                  <Button size="sm" onClick={() => loadIPTVTemplate('SMARTONE')} variant="outline" className="w-full">
+                    📱 SmartOne
+                  </Button>
+                  <Button size="sm" onClick={() => loadIPTVTemplate('DUPLEXPLAY')} variant="outline" className="w-full">
+                    🔴 Duplex Play
+                  </Button>
+                  <Button size="sm" onClick={() => loadIPTVTemplate('IBOPLAYER')} variant="outline" className="w-full">
+                    🔴 IBO Player
+                  </Button>
+                  <Button size="sm" onClick={() => loadIPTVTemplate('SMARTIPTV')} variant="outline" className="w-full">
+                    🔴 Smart IPTV
+                  </Button>
+                  <Button size="sm" onClick={() => loadIPTVTemplate('BAYTV')} variant="outline" className="w-full">
+                    🔴 Bay TV
+                  </Button>
+                  <Button size="sm" onClick={() => loadIPTVTemplate('DUPLECAST')} variant="outline" className="w-full">
+                    🔴 Duplecast
                   </Button>
                 </div>
               </div>
