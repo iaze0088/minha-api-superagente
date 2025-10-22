@@ -217,6 +217,8 @@ class ResellerBase(BaseModel):
     email: str
     domain: Optional[str] = ""
     custom_domain: Optional[str] = ""
+    test_domain: Optional[str] = ""  # Domínio de teste provisório
+    test_domain_active: bool = True  # Se domínio de teste está ativo
     is_active: bool = True
     parent_id: Optional[str] = None  # ID da revenda pai (None se for raiz)
     level: int = 0  # Profundidade na hierarquia (0 = raiz)
