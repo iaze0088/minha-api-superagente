@@ -449,7 +449,7 @@ const AdminDashboard = () => {
           </div>
           <div className="flex items-center gap-3">
             <Button 
-              onClick={() => setReplicateModal(true)} 
+              onClick={handleOpenReplicateModal} 
               className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
               size="sm"
             >
