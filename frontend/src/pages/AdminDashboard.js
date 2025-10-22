@@ -272,6 +272,71 @@ const AdminDashboard = () => {
     }
   };
 
+  // IPTV Apps functions
+  const handleCreateIPTVApp = async () => {
+    try {
+      await api.post('/iptv-apps', newApp);
+      toast.success('App IPTV criado com sucesso!');
+      setNewApp({
+        name: '',
+        type: 'SSIPTV',
+        config_url: '',
+        url_template: '',
+        fields: [],
+        instructions: ''
+      });
+      loadData();
+    } catch (error) {
+      toast.error('Erro ao criar app IPTV');
+    }
+  };
+
+  const handleUpdateIPTVApp = async (appId, data) => {
+    try {
+      await api.put(`/iptv-apps/${appId}`, data);
+      toast.success('App atualizado!');
+      setEditingApp(null);
+      loadData();
+    } catch (error) {
+      toast.error('Erro ao atualizar app');
+    }
+  };
+
+  const handleDeleteIPTVApp = async (appId) => {
+    if (!window.confirm('Tem certeza que deseja deletar este app?')) return;
+    try {
+      await api.delete(`/iptv-apps/${appId}`);
+      toast.success('App deletado!');
+      loadData();
+    } catch (error) {
+      toast.error('Erro ao deletar app');
+    }
+  };
+
+  const loadIPTVTemplate = (type) => {
+    if (type === 'SSIPTV') {
+      setNewApp({
+        ...newApp,
+        type: 'SSIPTV',
+        name: 'SS-IPTV',
+        config_url: 'http://ss-iptv.com/en/users/playlist',
+        url_template: 'http://gestor.my/ssiptv/{username}/{password}/download_m3u',
+        fields: ['codigo', 'username', 'password'],
+        instructions: '1. Acesse http://ss-iptv.com/en/users/playlist\n2. Cole o código do cliente\n3. Crie uma pasta\n4. Cole o link m3u gerado\n5. Salve'
+      });
+    } else if (type === 'SMARTONE') {
+      setNewApp({
+        ...newApp,
+        type: 'SMARTONE',
+        name: 'SmartOne IPTV',
+        config_url: 'https://smartone-iptv.com/plugin/smart_one/main_generate',
+        url_template: 'http://vem4.lol/get.php?username={username}&password={password}&type=m3u_plus&output=mpegts',
+        fields: ['mac', 'nome_pasta', 'username', 'password'],
+        instructions: '1. Acesse https://smartone-iptv.com/plugin/smart_one/main_generate\n2. Cole o MAC do cliente\n3. Na frente do MAC, coloque o nome da pasta\n4. Embaixo, cole o link m3u8\n5. Salve'
+      });
+    }
+  };
+
   const handleCreateNotice = async (kind, text, file) => {
     try {
       let fileUrl = '';
