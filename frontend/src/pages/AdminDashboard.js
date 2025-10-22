@@ -137,6 +137,54 @@ const AdminDashboard = () => {
     setReplicateModal(true);
   };
 
+  const handleCopyResellerInfo = () => {
+    const info = resellerInfoModal.data;
+    const text = `
+🎉 *REVENDA CRIADA COM SUCESSO!*
+
+📋 *Informações de Acesso:*
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+👤 *Nome:* ${info.name}
+📧 *Email:* ${info.email}
+🔑 *Senha:* ${info.password}
+
+🌐 *Domínio Provisório (Teste):*
+${info.test_domain}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🔗 *Links de Acesso:*
+
+🔹 *Painel Admin:*
+${info.urls.admin}
+
+🔹 *Painel Atendente:*
+${info.urls.atendente}
+
+🔹 *Painel Cliente:*
+${info.urls.cliente}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ *IMPORTANTE:*
+• Use o domínio provisório para acessar o painel
+• Após o primeiro login, você poderá configurar seu domínio oficial
+• No menu "Domínio" você encontra instruções para apontar seu domínio próprio
+• Quando ativar o domínio oficial, o domínio de teste será desativado
+
+🚀 *Próximos Passos:*
+1. Acesse o Painel Admin pelo link acima
+2. Faça login com email e senha fornecidos
+3. Você será solicitado a trocar a senha no primeiro acesso
+4. Configure seu domínio oficial quando estiver pronto
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+`.trim();
+
+    navigator.clipboard.writeText(text);
+    toast.success('✅ Informações copiadas! Pronto para enviar ao cliente.');
+  };
+
   const handleCreateAgent = async () => {
     try {
       await api.post('/agents', newAgent);
