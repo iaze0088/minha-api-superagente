@@ -1593,6 +1593,51 @@ async def update_config(data: ConfigData, request: Request, current_user: dict =
         )
     return {"ok": True}
 
+@api_router.post("/config/support-avatar")
+async def upload_support_avatar(file: UploadFile = File(...), request: Request = None, current_user: dict = Depends(get_current_user)):
+    """Upload de logo/foto do suporte (Admin/Reseller)"""
+    tenant = get_request_tenant(request)
+    reseller_id = tenant.reseller_id or current_user.get("reseller_id")
+    
+    # Admin ou Reseller podem fazer upload
+    if current_user["user_type"] not in ["admin", "reseller"]:
+        raise HTTPException(status_code=403, detail="Não autorizado")
+    
+    if not file:
+        raise HTTPException(status_code=400, detail="Nenhum arquivo enviado")
+    
+    # Validar tipo de arquivo
+    if not file.content_type or not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Apenas imagens são permitidas")
+    
+    # Generate unique filename
+    ext = Path(file.filename).suffix or ".jpg"
+    filename = f"support_avatar_{reseller_id or 'admin'}{ext}"
+    filepath = UPLOADS_DIR / filename
+    
+    # Save file
+    async with aiofiles.open(filepath, 'wb') as f:
+        content = await file.read()
+        await f.write(content)
+    
+    url = f"{os.environ.get('REACT_APP_BACKEND_URL', '')}/api/uploads/{filename}"
+    
+    # Atualizar support_avatar na configuração
+    if reseller_id:
+        await db.reseller_configs.update_one(
+            {"reseller_id": reseller_id},
+            {"$set": {"support_avatar": url}},
+            upsert=True
+        )
+    else:
+        await db.configs.update_one(
+            {"id": "config"},
+            {"$set": {"support_avatar": url}},
+            upsert=True
+        )
+    
+    return {"ok": True, "avatar_url": url}
+
 # Notice routes
 @api_router.get("/notices")
 async def get_notices(request: Request, current_user: dict = Depends(get_current_user)):
