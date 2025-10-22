@@ -74,15 +74,18 @@ class ConnectionManager:
     
     async def connect(self, websocket: WebSocket, user_id: str, session_id: str):
         await websocket.accept()
+        print(f"🔌 [WebSocket CONNECT] user_id: {user_id}, session_id: {session_id}")
         
         # Se já existe outra sessão, desconectar a antiga
         if user_id in self.user_sessions and self.user_sessions[user_id] != session_id:
+            print(f"   ⚠️ Nova sessão detectada para {user_id}, desconectando sessão antiga")
             await self.disconnect_user(user_id)
         
         if user_id not in self.active_connections:
             self.active_connections[user_id] = set()
         self.active_connections[user_id].add(websocket)
         self.user_sessions[user_id] = session_id
+        print(f"   ✅ Total de conexões ativas agora: {len(self.active_connections)}")
     
     async def disconnect_user(self, user_id: str):
         if user_id in self.active_connections:
