@@ -262,6 +262,10 @@ const AgentDashboard = () => {
     toast.success('URL copiada para a área de transferência!');
   };
 
+  const [automationLogs, setAutomationLogs] = useState([]);
+  const [automationProgress, setAutomationProgress] = useState(false);
+  const [automationResult, setAutomationResult] = useState(null);
+
   const automateIPTVConfig = async () => {
     if (!selectedApp) return;
     
@@ -272,22 +276,52 @@ const AgentDashboard = () => {
       return;
     }
     
-    toast.loading('🤖 Iniciando automação...', { id: 'automation' });
+    // Limpar logs anteriores e iniciar
+    setAutomationLogs([]);
+    setAutomationProgress(true);
+    setAutomationResult(null);
+    
+    toast.loading('🤖 Iniciando automação inteligente...', { id: 'automation' });
     
     try {
       const { data } = await api.post(`/iptv-apps/${selectedApp.id}/automate`, {
         form_data: appFormData
       });
       
-      if (data.ok) {
-        toast.success('✅ Configuração automatizada com sucesso!', { id: 'automation' });
+      // Armazenar logs
+      if (data.logs && data.logs.length > 0) {
+        setAutomationLogs(data.logs);
+      }
+      
+      // Armazenar resultado
+      setAutomationResult(data);
+      
+      if (data.success || data.ok) {
+        toast.success(`✅ Configuração automatizada com sucesso! Score: ${data.automation_score || 0}%`, { id: 'automation' });
         setGeneratedUrl(data.final_url);
+        
+        // Mostrar detalhes em um toast separado
+        if (data.logs && data.logs.length > 0) {
+          console.log('📋 Logs da automação:', data.logs);
+        }
       } else {
-        toast.error(`❌ ${data.message || 'Falha na automação. Use o modo manual.'}`, { id: 'automation' });
+        toast.error(`⚠️ ${data.message || 'Automação falhou. Use o modo manual abaixo.'}`, { id: 'automation' });
+        
+        // Se tem logs, mostrar no console
+        if (data.logs && data.logs.length > 0) {
+          console.error('❌ Logs de erro:', data.logs);
+        }
       }
     } catch (error) {
       console.error('Automation error:', error);
-      toast.error('❌ Erro na automação. Tente o modo manual.', { id: 'automation' });
+      toast.error('❌ Erro na automação. Use o método manual abaixo.', { id: 'automation' });
+      setAutomationResult({
+        success: false,
+        message: 'Erro de comunicação com o servidor',
+        error: error.message
+      });
+    } finally {
+      setAutomationProgress(false);
     }
   };
 
