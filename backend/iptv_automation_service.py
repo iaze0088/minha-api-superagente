@@ -430,15 +430,40 @@ class SmartOneAutomation(IPTVAutomationBase):
             self.result.add_log(f"⚠️ Erro ao marcar checkbox: {e}", "warning")
             # Continuar mesmo se falhar
         
-        # PASSO 5: Clicar no botão "Add Playlist"
-        self.result.add_log("🔘 Clicando no botão 'Add Playlist'...")
+        # PASSO 5: Rolar página para baixo e clicar no botão "Add Playlist"
+        self.result.add_log("📜 Rolando página para baixo...")
         
         try:
-            # Usar seletor específico do botão verde
-            await self.page.click('button.btn.btn-success', timeout=10000)
-            self.result.add_log("✅ Botão 'Add Playlist' clicado!")
-            await self.page.wait_for_timeout(5000)
-            await self.take_screenshot("Após clicar Add Playlist")
+            # Rolar a página para baixo para garantir que o botão esteja visível
+            await self.page.evaluate('window.scrollTo(0, document.body.scrollHeight)')
+            await self.page.wait_for_timeout(2000)
+            await self.take_screenshot("Após rolar página")
+            
+            self.result.add_log("🔘 Clicando no botão 'Add Playlist'...")
+            
+            # Tentar encontrar o botão visível com texto "Add Playlist"
+            button_selectors = [
+                'button:has-text("Add Playlist")',
+                'button.btn-success:has-text("Add Playlist")',
+                'button[type="submit"]:has-text("Add")',
+                'form button.btn-success'
+            ]
+            
+            button_clicked = False
+            for selector in button_selectors:
+                try:
+                    await self.page.click(selector, timeout=5000)
+                    self.result.add_log("✅ Botão 'Add Playlist' clicado!")
+                    button_clicked = True
+                    await self.page.wait_for_timeout(5000)
+                    await self.take_screenshot("Após clicar Add Playlist")
+                    break
+                except:
+                    continue
+            
+            if not button_clicked:
+                raise Exception("Nenhum botão Add Playlist visível encontrado")
+                
         except Exception as e:
             self.result.add_log(f"❌ Erro ao clicar botão: {e}", "error")
             raise Exception("Não foi possível clicar no botão Add Playlist.")
