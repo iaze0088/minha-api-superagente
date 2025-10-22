@@ -900,6 +900,37 @@ const ClientChat = () => {
           </DialogHeader>
           <div className="space-y-4">
             <div>
+              <label className="text-sm font-medium text-slate-700 block mb-2">Foto de Perfil</label>
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
+                  {userData.custom_avatar ? (
+                    <img src={userData.custom_avatar} alt="Perfil" className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="w-8 h-8 text-gray-400" />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <input
+                    ref={avatarInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    className="hidden"
+                  />
+                  <Button
+                    onClick={() => avatarInputRef.current?.click()}
+                    disabled={uploadingAvatar}
+                    variant="outline"
+                    size="sm"
+                  >
+                    {uploadingAvatar ? 'Enviando...' : 'Alterar Foto'}
+                  </Button>
+                  <p className="text-xs text-slate-500 mt-1">Clique para enviar uma foto</p>
+                </div>
+              </div>
+            </div>
+            
+            <div>
               <label className="text-sm font-medium text-slate-700 block mb-2">Alterar PIN (2 dígitos)</label>
               <div className="flex gap-2">
                 <Input
