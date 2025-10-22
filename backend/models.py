@@ -390,6 +390,11 @@ class DepartmentUpdate(BaseModel):
 class IPTVAppType(str, Enum):
     SSIPTV = "SSIPTV"
     SMARTONE = "SMARTONE"
+    DUPLEXPLAY = "DUPLEXPLAY"
+    IBOPLAYER = "IBOPLAYER"
+    SMARTIPTV = "SMARTIPTV"
+    BAYTV = "BAYTV"
+    DUPLECAST = "DUPLECAST"
 
 class IPTVApp(BaseModel):
     id: str
