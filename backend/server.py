@@ -1620,7 +1620,9 @@ async def upload_support_avatar(file: UploadFile = File(...), request: Request =
         content = await file.read()
         await f.write(content)
     
-    url = f"{os.environ.get('REACT_APP_BACKEND_URL', '')}/api/uploads/{filename}"
+    # Adicionar timestamp para forçar atualização do cache
+    timestamp = int(datetime.now(timezone.utc).timestamp())
+    url = f"{os.environ.get('REACT_APP_BACKEND_URL', '')}/api/uploads/{filename}?t={timestamp}"
     
     # Atualizar support_avatar na configuração
     if reseller_id:
