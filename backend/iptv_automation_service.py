@@ -352,8 +352,41 @@ class SmartOneAutomation(IPTVAutomationBase):
         self.result.add_log(f"📍 Navegando para {config_url}")
         
         await self.page.goto(config_url, wait_until='domcontentloaded', timeout=60000)
-        await self.page.wait_for_timeout(5000)
+        await self.page.wait_for_timeout(3000)
         await self.take_screenshot("Página inicial carregada")
+        
+        # PASSO EXTRA: Aceitar cookies se aparecer
+        self.result.add_log("🍪 Procurando banner de cookies...")
+        try:
+            # Tentar encontrar e clicar no botão de aceitar cookies
+            cookie_buttons = [
+                'button:has-text("Accept Cookies")',
+                'button:has-text("Accept")',
+                'button:has-text("Aceitar")',
+                'a:has-text("Accept Cookies")',
+                '.cookie-accept',
+                '#cookie-accept'
+            ]
+            
+            cookies_accepted = False
+            for selector in cookie_buttons:
+                try:
+                    await self.page.click(selector, timeout=3000)
+                    self.result.add_log("✅ Cookies aceitos!")
+                    cookies_accepted = True
+                    await self.page.wait_for_timeout(2000)
+                    await self.take_screenshot("Cookies aceitos")
+                    break
+                except:
+                    continue
+            
+            if not cookies_accepted:
+                self.result.add_log("ℹ️ Banner de cookies não encontrado ou já aceito")
+        except Exception as e:
+            self.result.add_log(f"ℹ️ Erro ao aceitar cookies: {e}")
+        
+        # Aguardar um pouco mais para a página estabilizar
+        await self.page.wait_for_timeout(2000)
         
         # PASSO 1: Preencher MAC address (usar classe específica para campo visível)
         mac = self.form_data.get('mac', '')
