@@ -627,25 +627,9 @@ class DuplecastAutomation(IPTVAutomationBase):
             self.result.add_log(f"📝 Preenchendo Device Key: {device_key}")
             
             try:
-                device_key_selectors = [
-                    'input[name="device_key"]',
-                    'input#device_key',
-                    'input[placeholder*="Device Key" i]'
-                ]
-                
-                filled = False
-                for selector in device_key_selectors:
-                    try:
-                        await self.page.fill(selector, device_key, timeout=5000)
-                        self.result.add_log("✅ Device Key preenchido!")
-                        filled = True
-                        break
-                    except:
-                        continue
-                
-                if not filled:
-                    raise Exception("Não foi possível preencher Device Key")
-                    
+                # Usar seletor correto: name="device_key"
+                await self.page.fill('input[name="device_key"]', device_key, timeout=10000)
+                self.result.add_log("✅ Device Key preenchido!")
                 await self.page.wait_for_timeout(1000)
                 await self.take_screenshot("Device Key preenchido")
             except Exception as e:
