@@ -823,7 +823,18 @@ const AgentDashboard = () => {
                             </div>
                           )}
                           
-                          <div className={`flex ${msg.from_type === 'agent' ? 'justify-end' : 'justify-start'} animate-fadeIn`}>
+                          <div className={`flex gap-2 items-end ${msg.from_type === 'agent' ? 'justify-end' : 'justify-start'} animate-fadeIn`}>
+                            {/* Foto do cliente (esquerda) */}
+                            {msg.from_type === 'client' && (
+                              <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                {selectedTicket?.client_avatar ? (
+                                  <img src={selectedTicket.client_avatar} alt="Cliente" className="w-full h-full object-cover" />
+                                ) : (
+                                  <User className="w-4 h-4 text-gray-400" />
+                                )}
+                              </div>
+                            )}
+                            
                             <div
                               className={`max-w-[70%] p-3 rounded-2xl shadow-sm ${
                                 msg.from_type === 'agent'
