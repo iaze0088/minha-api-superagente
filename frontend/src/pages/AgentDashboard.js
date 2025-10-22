@@ -1227,52 +1227,21 @@ const AgentDashboard = () => {
                 </div>
               </div>
 
-              {/* Etapa 2: Escolher Modo */}
-              <div className="border-2 border-purple-500 rounded-lg p-4 bg-gradient-to-br from-purple-50 to-pink-50">
+              {/* Etapa 2: Abrir Site */}
+              <div className="border-2 border-blue-500 rounded-lg p-4 bg-gradient-to-br from-blue-50 to-indigo-50">
                 <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-                  <span className="bg-purple-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm">2</span>
-                  Escolha o modo de configuração
+                  <span className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm">2</span>
+                  Abra o site de configuração
                 </h3>
-                
-                <div className="grid grid-cols-2 gap-3">
-                  {/* Modo Automático */}
-                  <div className="border-2 border-green-400 rounded-lg p-4 bg-white">
-                    <div className="text-center mb-3">
-                      <div className="text-3xl mb-2">🤖</div>
-                      <h4 className="font-bold text-sm">Modo Automático</h4>
-                      <p className="text-xs text-gray-500 mt-1">IA configura tudo sozinha</p>
-                    </div>
-                    <Button 
-                      onClick={automateIPTVConfig}
-                      disabled={!Object.values(appFormData).every(v => v)}
-                      className="w-full bg-gradient-to-r from-green-500 to-emerald-600"
-                      size="lg"
-                    >
-                      <Bot className="w-5 h-5 mr-2" />
-                      Automatizar
-                    </Button>
-                    <p className="text-xs text-center text-gray-500 mt-2">⚡ Mais rápido</p>
-                  </div>
-                  
-                  {/* Modo Manual */}
-                  <div className="border-2 border-blue-400 rounded-lg p-4 bg-white">
-                    <div className="text-center mb-3">
-                      <div className="text-3xl mb-2">👨‍💻</div>
-                      <h4 className="font-bold text-sm">Modo Manual</h4>
-                      <p className="text-xs text-gray-500 mt-1">Você configura com ajuda</p>
-                    </div>
-                    <Button 
-                      onClick={() => window.open(selectedApp.config_url, '_blank')}
-                      variant="outline"
-                      className="w-full border-blue-500 text-blue-600 hover:bg-blue-50"
-                      size="lg"
-                    >
-                      <ExternalLink className="w-5 h-5 mr-2" />
-                      Abrir Site
-                    </Button>
-                    <p className="text-xs text-center text-gray-500 mt-2">✅ Mais confiável</p>
-                  </div>
-                </div>
+                <Button 
+                  onClick={() => window.open(selectedApp.config_url, '_blank')}
+                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+                  size="lg"
+                >
+                  <ExternalLink className="w-5 h-5 mr-2" />
+                  Abrir {selectedApp.name} 🚀
+                </Button>
+                <p className="text-xs text-center text-gray-600 mt-2">O site abrirá em uma nova aba</p>
               </div>
 
               {/* Etapa 3: Copiar e Colar */}
