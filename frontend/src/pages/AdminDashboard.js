@@ -1604,9 +1604,6 @@ const NoticeForm = ({ onSubmit }) => {
         <Bell className="w-4 h-4 mr-2" />
         Publicar Aviso
       </Button>
-    </div>
-  );
-};
 
       {/* Modal de Confirmação de Replicação */}
       <Dialog open={replicateModal} onOpenChange={setReplicateModal}>
