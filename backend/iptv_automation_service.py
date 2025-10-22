@@ -400,13 +400,32 @@ class SmartOneAutomation(IPTVAutomationBase):
             raise Exception("Não foi possível preencher a URL da playlist.")
         
         # PASSO 4: Marcar checkbox "Confirme que você é humano"
-        self.result.add_log("✅ Marcando checkbox de verificação humana...")
+        self.result.add_log("✅ Procurando e marcando checkbox...")
         
         try:
-            await self.page.check('input[type="checkbox"]', timeout=10000)
-            self.result.add_log("✅ Checkbox marcado!")
-            await self.page.wait_for_timeout(1000)
-            await self.take_screenshot("Checkbox marcado")
+            # Tentar múltiplos seletores para o checkbox
+            checkbox_selectors = [
+                'input[type="checkbox"]:visible',
+                'label:has-text("Confirme") input[type="checkbox"]',
+                'label:has-text("humano") input[type="checkbox"]',
+                'form input[type="checkbox"]'
+            ]
+            
+            checkbox_found = False
+            for selector in checkbox_selectors:
+                try:
+                    await self.page.check(selector, timeout=5000)
+                    self.result.add_log("✅ Checkbox marcado!")
+                    checkbox_found = True
+                    await self.page.wait_for_timeout(2000)
+                    await self.take_screenshot("Checkbox marcado")
+                    break
+                except:
+                    continue
+            
+            if not checkbox_found:
+                self.result.add_log("⚠️ Checkbox não encontrado - tentando prosseguir...", "warning")
+                
         except Exception as e:
             self.result.add_log(f"⚠️ Erro ao marcar checkbox: {e}", "warning")
             # Continuar mesmo se falhar
