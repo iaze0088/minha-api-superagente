@@ -103,12 +103,19 @@ class ConnectionManager:
                     del self.user_sessions[user_id]
     
     async def send_to_user(self, user_id: str, message: dict):
+        print(f"📤 [send_to_user] Tentando enviar para user_id: {user_id}")
+        print(f"   Active connections: {list(self.active_connections.keys())}")
+        
         if user_id in self.active_connections:
+            print(f"   ✅ User encontrado! Conexões ativas: {len(self.active_connections[user_id])}")
             for connection in self.active_connections[user_id]:
                 try:
                     await connection.send_json(message)
-                except:
-                    pass
+                    print(f"   ✅ Mensagem enviada com sucesso via WebSocket para {user_id}")
+                except Exception as e:
+                    print(f"   ❌ ERRO ao enviar via WebSocket para {user_id}: {e}")
+        else:
+            print(f"   ⚠️ User {user_id} NÃO está em active_connections!")
     
     async def broadcast_to_agents(self, message: dict):
         agents = await db.agents.find({}, {"id": 1}).to_list(None)
