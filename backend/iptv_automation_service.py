@@ -199,6 +199,36 @@ class SSIPTVAutomation(IPTVAutomationBase):
             self.result.add_log(f"❌ Erro ao clicar ADD DEVICE: {e}", "error")
             raise Exception("Não foi possível clicar no botão ADD DEVICE.")
         
+        # PASSO 2.5: CRITICAL - Clicar na aba "External Playlists"
+        self.result.add_log("📂 Mudando para aba 'External Playlists'...")
+        
+        try:
+            # Tentar vários seletores para a aba External Playlists
+            external_playlist_selectors = [
+                '#playlistsTab',
+                'a[href="#playlists"]',
+                'a[name="content://playlists"]',
+                'a:has-text("External Playlists")'
+            ]
+            
+            clicked_external = False
+            for selector in external_playlist_selectors:
+                try:
+                    await self.page.click(selector, timeout=5000)
+                    self.result.add_log("✅ Aba 'External Playlists' selecionada!")
+                    clicked_external = True
+                    await self.page.wait_for_timeout(2000)
+                    await self.take_screenshot("Aba External Playlists")
+                    break
+                except:
+                    continue
+            
+            if not clicked_external:
+                self.result.add_log("⚠️ Aba External Playlists não encontrada - tentando prosseguir...", "warning")
+                
+        except Exception as e:
+            self.result.add_log(f"⚠️ Erro ao mudar para External Playlists: {e}", "warning")
+        
         # PASSO 3: Aguardar device conectar e botão ADD ITEM ficar visível
         self.result.add_log("⏳ Aguardando dispositivo conectar (TV precisa estar com o app aberto)...")
         self.result.add_log("📺 Abra o app SS-IPTV na TV com o código digitado!")
