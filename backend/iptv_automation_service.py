@@ -434,7 +434,8 @@ class SmartOneAutomation(IPTVAutomationBase):
         self.result.add_log("🔘 Clicando no botão 'Add Playlist'...")
         
         try:
-            await self.page.click('button[type="submit"]', timeout=10000)
+            # Usar seletor específico do botão verde
+            await self.page.click('button.btn.btn-success', timeout=10000)
             self.result.add_log("✅ Botão 'Add Playlist' clicado!")
             await self.page.wait_for_timeout(5000)
             await self.take_screenshot("Após clicar Add Playlist")
