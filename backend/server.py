@@ -2200,15 +2200,16 @@ async def get_reseller_domain_info(request: Request, current_user: dict = Depend
     if not reseller:
         raise HTTPException(status_code=404, detail="Revenda não encontrada")
     
-    # IP do servidor (você deve configurar este valor)
-    # Em produção, isso viria de uma configuração
-    server_ip = os.environ.get('SERVER_IP', '198.51.100.1')  # IP de exemplo
+    # IP do servidor
+    server_ip = '34.57.15.54'
     
-    # Domínio de teste (gerado automaticamente)
-    test_domain = reseller.get('domain', f"{reseller_id}.preview.emergentagent.com")
+    # Domínio de teste
+    test_domain = reseller.get('test_domain', f"reseller-{reseller_id[:8]}.preview.emergentagent.com")
+    test_domain_active = reseller.get('test_domain_active', True)
     
     return {
         "test_domain": test_domain,
+        "test_domain_active": test_domain_active,
         "custom_domain": reseller.get('custom_domain', ''),
         "custom_domain_verified": reseller.get('custom_domain_verified', False),
         "server_ip": server_ip,
