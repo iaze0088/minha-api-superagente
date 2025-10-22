@@ -69,6 +69,7 @@ const ClientChat = () => {
 
     ws.onopen = () => {
       console.log('✅ WebSocket conectado - Mensagens em tempo real ativas');
+      reconnectAttempts.current = 0; // Reset contador ao conectar com sucesso
     };
 
     ws.onmessage = (event) => {
