@@ -173,10 +173,26 @@ const AdminDashboard = () => {
   // Reseller functions
   const handleCreateReseller = async () => {
     try {
-      await api.post('/resellers', newReseller);
-      toast.success('Revenda criada com sucesso!');
-      setNewReseller({ name: '', email: '', password: '', domain: '', parent_id: null });
-      loadData();
+      const { data } = await api.post('/resellers', newReseller);
+      
+      if (data.ok) {
+        toast.success('Revenda criada com sucesso!');
+        
+        // Abrir modal com informações da revenda criada
+        setResellerInfoModal({
+          open: true,
+          data: {
+            name: data.name,
+            email: data.email,
+            password: data.password,
+            test_domain: data.test_domain,
+            urls: data.urls
+          }
+        });
+        
+        setNewReseller({ name: '', email: '', password: '', domain: '', parent_id: null });
+        loadData();
+      }
     } catch (error) {
       toast.error(error.response?.data?.detail || 'Erro ao criar revenda');
     }
