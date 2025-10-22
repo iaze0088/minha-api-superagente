@@ -610,6 +610,47 @@ test_plan:
   test_priority: "high_first"
 
 agent_communication:
+  - agent: "main"
+    message: |
+      🚀 SISTEMA ROBUSTO DE AUTOMAÇÃO IPTV IMPLEMENTADO!
+      
+      OBJETIVO: Criar sistema de automação inteligente com retry, validação e fallback
+      
+      ✅ IMPLEMENTAÇÕES REALIZADAS:
+      1. Novo serviço backend: /app/backend/iptv_automation_service.py
+         - Classe base IPTVAutomationBase com métodos comuns
+         - SSIPTVAutomation implementada
+         - SmartOneAutomation implementada
+         - Sistema de retry inteligente
+         - Captura de screenshots de progresso
+         - Logging detalhado em tempo real
+         - Validação de cada etapa
+         - Fallback automático para modo manual
+      
+      2. Endpoint melhorado: POST /api/iptv-apps/{app_id}/automate
+         - Usa novo serviço robusto
+         - Retorna logs detalhados
+         - Retorna screenshots (limitados)
+         - Retorna automation_score (0-100%)
+         - Mensagens de erro detalhadas
+      
+      3. Frontend aprimorado (AgentDashboard.js):
+         - Botão "Configuração Automática" adicionado
+         - Modal de progresso com logs em tempo real
+         - Exibição de resultado da automação
+         - Score de automatizabilidade
+         - Fallback visual para modo manual
+         - Divisor "OU CONFIGURE MANUALMENTE"
+      
+      🎯 PRÓXIMOS PASSOS:
+      - Testar com credenciais reais do usuário (SSIPTV código PLDG)
+      - Validar funcionamento completo
+      - Adicionar automação para outros apps conforme necessário
+      
+      📋 APPS SUPORTADOS ATUALMENTE:
+      - ✅ SSIPTV (automação implementada)
+      - ✅ SmartOne (automação implementada)
+      - ⏳ Duplex Play, IBO Player, Smart IPTV, Bay TV, Duplecast (fallback manual)
   - agent: "testing"
     message: |
       🤖 TESTE COMPLETO DE IA - CENÁRIO REAL DO USUÁRIO - PROBLEMA IDENTIFICADO E DIAGNOSTICADO!
