@@ -450,10 +450,20 @@ const AdminDashboard = () => {
               <p className="text-sm text-slate-600">Gerenciamento completo</p>
             </div>
           </div>
-          <Button data-testid="logout-btn" onClick={handleLogout} variant="outline" size="sm">
-            <LogOut className="w-4 h-4 mr-2" />
-            Sair
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button 
+              onClick={() => setReplicateModal(true)} 
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+              size="sm"
+            >
+              <Share2 className="w-4 h-4 mr-2" />
+              Aplicar para Revendas
+            </Button>
+            <Button data-testid="logout-btn" onClick={handleLogout} variant="outline" size="sm">
+              <LogOut className="w-4 h-4 mr-2" />
+              Sair
+            </Button>
+          </div>
         </div>
       </header>
 
