@@ -41,6 +41,7 @@ const ClientChat = () => {
   const queueTimerRef = useRef(null);
   const notificationAudioRef = useRef(null);
   const [audioEnabled, setAudioEnabled] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState(null);
 
   // Função para conectar WebSocket com reconexão automática
   const connectWebSocket = () => {
