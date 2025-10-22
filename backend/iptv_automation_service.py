@@ -666,14 +666,34 @@ class DuplecastAutomation(IPTVAutomationBase):
         except Exception as e:
             self.result.add_log(f"⚠️ Erro ao processar reCAPTCHA: {e}", "warning")
         
-        # PASSO 4: Clicar no botão "Manage Device"
+        # PASSO 4: Clicar no botão "Manage Device" (forçar se necessário)
         self.result.add_log("🔘 Clicando no botão 'Manage Device'...")
         
         try:
-            await self.page.click('button.btn.btn-primary[type="submit"]', timeout=10000)
-            self.result.add_log("✅ Botão 'Manage Device' clicado!")
+            # Tentar clicar normalmente primeiro
+            try:
+                await self.page.click('button.btn.btn-primary[type="submit"]', timeout=10000)
+                self.result.add_log("✅ Botão 'Manage Device' clicado!")
+            except:
+                # Se falhar (reCAPTCHA bloqueando), forçar via JavaScript
+                self.result.add_log("⚠️ reCAPTCHA pode estar bloqueando, tentando JavaScript...")
+                
+                clicked = await self.page.evaluate('''() => {
+                    const btn = document.querySelector('button.btn.btn-primary[type="submit"]');
+                    if (btn) {
+                        btn.click();
+                        return true;
+                    }
+                    return false;
+                }''')
+                
+                if clicked:
+                    self.result.add_log("✅ Botão clicado via JavaScript!")
+                else:
+                    raise Exception("Botão não encontrado via JavaScript")
+            
             await self.page.wait_for_timeout(5000)
-            await self.take_screenshot("Após login")
+            await self.take_screenshot("Após clicar Manage Device")
         except Exception as e:
             self.result.add_log(f"❌ Erro ao clicar 'Manage Device': {e}", "error")
             raise Exception("Não foi possível fazer login no dispositivo.")
