@@ -1663,6 +1663,150 @@ async def upload_support_avatar(file: UploadFile = File(...), request: Request =
 
 
 
+@api_router.post("/admin/replicate-config-to-resellers")
+async def replicate_config_to_resellers(current_user: dict = Depends(get_current_user)):
+    """
+    Replica todas as configurações do admin principal para TODAS as revendas
+    Apenas admin principal pode usar esta função
+    """
+    # Verificar se é admin principal
+    if current_user["user_type"] != "admin":
+        raise HTTPException(status_code=403, detail="Apenas o admin principal pode replicar configurações")
+    
+    try:
+        print("🔄 [REPLICAÇÃO] Iniciando replicação de configurações...")
+        
+        # 1. Buscar configuração do admin principal
+        admin_config = await db.config.find_one({"id": "config"}, {"_id": 0})
+        if not admin_config:
+            raise HTTPException(status_code=404, detail="Configuração do admin não encontrada")
+        
+        print(f"✅ [REPLICAÇÃO] Config admin principal encontrada")
+        
+        # 2. Buscar todas as revendas
+        resellers = await db.resellers.find({}, {"_id": 0, "id": 1, "login": 1}).to_list(None)
+        total_resellers = len(resellers)
+        
+        if total_resellers == 0:
+            return {"ok": True, "message": "Nenhuma revenda encontrada", "count": 0}
+        
+        print(f"📋 [REPLICAÇÃO] Encontradas {total_resellers} revendas")
+        
+        # 3. Configurações a serem replicadas (EXCLUINDO dados manuais)
+        config_to_replicate = {
+            "support_avatar": admin_config.get("support_avatar"),
+            "pix_key": admin_config.get("pix_key", ""),
+            "allowed_data": admin_config.get("allowed_data", {"cpfs": [], "emails": [], "phones": [], "random_keys": []}),
+            "api_integration": admin_config.get("api_integration", {"api_url": "", "api_token": "", "api_enabled": False}),
+            "ai_agent": admin_config.get("ai_agent", {
+                "name": "Assistente IA",
+                "personality": "",
+                "instructions": "",
+                "llm_provider": "openai",
+                "llm_model": "gpt-4",
+                "api_key": "",
+                "temperature": 0.7,
+                "max_tokens": 500,
+                "mode": "standby",
+                "active_hours": "24/7",
+                "enabled": False,
+                "can_access_credentials": True,
+                "knowledge_base": ""
+            })
+        }
+        
+        # 4. Buscar auto-respostas e tutoriais do admin
+        admin_auto_responses = await db.messages.find(
+            {"type": "auto_response", "reseller_id": None},
+            {"_id": 0}
+        ).to_list(None)
+        
+        admin_tutorials = await db.tutorials.find(
+            {"reseller_id": None},
+            {"_id": 0}
+        ).to_list(None)
+        
+        admin_iptv_apps = await db.iptv_apps.find(
+            {"reseller_id": None},
+            {"_id": 0}
+        ).to_list(None)
+        
+        print(f"📦 [REPLICAÇÃO] Auto-respostas: {len(admin_auto_responses)}, Tutoriais: {len(admin_tutorials)}, Apps IPTV: {len(admin_iptv_apps)}")
+        
+        # 5. Replicar para cada revenda
+        replicated_count = 0
+        
+        for reseller in resellers:
+            reseller_id = reseller["id"]
+            reseller_login = reseller.get("login", "N/A")
+            
+            try:
+                # 5.1 Atualizar configurações gerais da revenda
+                await db.reseller_configs.update_one(
+                    {"reseller_id": reseller_id},
+                    {"$set": config_to_replicate},
+                    upsert=True
+                )
+                
+                # 5.2 Remover auto-respostas antigas da revenda
+                await db.messages.delete_many({
+                    "type": "auto_response",
+                    "reseller_id": reseller_id
+                })
+                
+                # 5.3 Inserir novas auto-respostas (clonar do admin)
+                if admin_auto_responses:
+                    for msg in admin_auto_responses:
+                        new_msg = msg.copy()
+                        new_msg["id"] = str(uuid.uuid4())
+                        new_msg["reseller_id"] = reseller_id
+                        await db.messages.insert_one(new_msg)
+                
+                # 5.4 Remover tutoriais antigos da revenda
+                await db.tutorials.delete_many({"reseller_id": reseller_id})
+                
+                # 5.5 Inserir novos tutoriais (clonar do admin)
+                if admin_tutorials:
+                    for tutorial in admin_tutorials:
+                        new_tutorial = tutorial.copy()
+                        new_tutorial["id"] = str(uuid.uuid4())
+                        new_tutorial["reseller_id"] = reseller_id
+                        await db.tutorials.insert_one(new_tutorial)
+                
+                # 5.6 Remover apps IPTV antigos da revenda
+                await db.iptv_apps.delete_many({"reseller_id": reseller_id})
+                
+                # 5.7 Inserir novos apps IPTV (clonar do admin)
+                if admin_iptv_apps:
+                    for app in admin_iptv_apps:
+                        new_app = app.copy()
+                        new_app["id"] = str(uuid.uuid4())
+                        new_app["reseller_id"] = reseller_id
+                        await db.iptv_apps.insert_one(new_app)
+                
+                replicated_count += 1
+                print(f"✅ [REPLICAÇÃO] Configurações replicadas para revenda: {reseller_login} ({replicated_count}/{total_resellers})")
+                
+            except Exception as e:
+                print(f"❌ [REPLICAÇÃO] Erro ao replicar para revenda {reseller_login}: {e}")
+                continue
+        
+        print(f"🎉 [REPLICAÇÃO] Concluído! {replicated_count}/{total_resellers} revendas atualizadas")
+        
+        return {
+            "ok": True,
+            "message": f"Configurações replicadas com sucesso para {replicated_count} revendas",
+            "total_resellers": total_resellers,
+            "replicated_count": replicated_count
+        }
+        
+    except Exception as e:
+        print(f"❌ [REPLICAÇÃO] Erro crítico: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao replicar configurações: {str(e)}")
+
+
+
+
 # ====== IPTV Apps Routes ======
 @api_router.get("/iptv-apps")
 async def get_iptv_apps(request: Request = None, current_user: dict = Depends(get_current_user)):
