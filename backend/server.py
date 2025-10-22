@@ -1773,10 +1773,14 @@ async def automate_iptv_config(app_id: str, data: dict, request: Request = None,
         raise HTTPException(status_code=404, detail="App não encontrado")
     
     form_data = data.get("form_data", {})
+    final_url = ""
+    
+    print(f"🤖 [AUTOMAÇÃO] Iniciando para {app['name']}...")
+    print(f"   📋 Form data recebido: {form_data}")
     
     try:
         async with async_playwright() as p:
-            print(f"🤖 Iniciando automação para {app['name']}...")
+            print(f"   🚀 Lançando navegador...")
             
             # Iniciar navegador
             browser = await p.chromium.launch(headless=True)
@@ -1788,8 +1792,9 @@ async def automate_iptv_config(app_id: str, data: dict, request: Request = None,
             
             # Navegar para o site
             print(f"   📍 Navegando para {app['config_url']}")
-            await page.goto(app['config_url'], wait_until='networkidle', timeout=30000)
-            await page.wait_for_timeout(2000)
+            await page.goto(app['config_url'], wait_until='domcontentloaded', timeout=60000)
+            await page.wait_for_timeout(3000)
+            print(f"   ✅ Página carregada!")
             
             # Automação específica por tipo
             if app['type'] == 'SSIPTV':
