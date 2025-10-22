@@ -385,8 +385,9 @@ class SmartOneAutomation(IPTVAutomationBase):
         except Exception as e:
             self.result.add_log(f"ℹ️ Erro ao aceitar cookies: {e}")
         
-        # Aguardar um pouco mais para a página estabilizar
-        await self.page.wait_for_timeout(2000)
+        # Aguardar MAIS tempo para Cloudflare carregar após cookies
+        self.result.add_log("⏳ Aguardando Cloudflare carregar (10s)...")
+        await self.page.wait_for_timeout(10000)
         
         # PASSO 1: Preencher MAC address (usar classe específica para campo visível)
         mac = self.form_data.get('mac', '')
