@@ -1034,6 +1034,29 @@ const AgentDashboard = () => {
           </div>
         </DialogContent>
       </Dialog>
+      
+      {/* Lightbox para visualizar imagens em tamanho completo */}
+      {lightboxImage && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4"
+          onClick={() => setLightboxImage(null)}
+        >
+          <div className="relative max-w-5xl max-h-full">
+            <img 
+              src={lightboxImage} 
+              alt="Imagem ampliada" 
+              className="max-w-full max-h-[90vh] object-contain rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+            />
+            <button
+              onClick={() => setLightboxImage(null)}
+              className="absolute top-4 right-4 bg-white text-black rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-200 transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
