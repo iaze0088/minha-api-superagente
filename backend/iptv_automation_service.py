@@ -817,6 +817,7 @@ class IPTVAutomationFactory:
         automations = {
             "SSIPTV": SSIPTVAutomation,
             "SMARTONE": SmartOneAutomation,
+            "DUPLECAST": DuplecastAutomation,
             # Adicionar outros apps conforme implementados
         }
         
