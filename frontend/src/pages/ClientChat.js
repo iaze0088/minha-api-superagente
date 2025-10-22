@@ -218,10 +218,28 @@ const ClientChat = () => {
       audio.preload = 'auto';
       audio.volume = 1.0;
       notificationAudioRef.current = audio;
-      console.log('✅ Áudio de notificação pré-carregado');
+      console.log('✅ Áudio de notificação pré-carregado (Assobio WhatsApp)');
     } catch (e) {
       console.error('❌ Erro ao pré-carregar áudio:', e);
     }
+    
+    // Habilitar áudio ao primeiro toque/clique (necessário para navegadores móveis)
+    const enableAudio = () => {
+      if (notificationAudioRef.current && !audioEnabled) {
+        try {
+          notificationAudioRef.current.play().then(() => {
+            notificationAudioRef.current.pause();
+            notificationAudioRef.current.currentTime = 0;
+            setAudioEnabled(true);
+            console.log('🔊 Áudio habilitado após interação do usuário');
+          }).catch(() => {});
+        } catch (e) {}
+      }
+    };
+    
+    // Adicionar listeners para habilitar áudio
+    document.addEventListener('click', enableAudio, { once: true });
+    document.addEventListener('touchstart', enableAudio, { once: true });
     
     loadMessages();
     loadNotices();
