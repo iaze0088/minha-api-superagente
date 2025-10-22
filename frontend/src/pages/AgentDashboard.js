@@ -876,6 +876,17 @@ const AgentDashboard = () => {
                               </p>
                             </div>
                           </div>
+                          
+                          {/* Foto do agente (direita) */}
+                          {msg.from_type === 'agent' && (
+                            <div className="w-8 h-8 rounded-full bg-indigo-200 flex items-center justify-center overflow-hidden flex-shrink-0">
+                              {config.support_avatar ? (
+                                <img src={config.support_avatar} alt="Agente" className="w-full h-full object-cover" />
+                              ) : (
+                                <Headphones className="w-4 h-4 text-indigo-600" />
+                              )}
+                            </div>
+                          )}
                         </div>
                         </div>
                       );
