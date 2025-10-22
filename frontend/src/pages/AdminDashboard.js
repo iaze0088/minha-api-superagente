@@ -51,6 +51,18 @@ const AdminDashboard = () => {
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const logoInputRef = useRef(null);
 
+  // IPTV Apps
+  const [iptvApps, setIptvApps] = useState([]);
+  const [newApp, setNewApp] = useState({
+    name: '',
+    type: 'SSIPTV',
+    config_url: '',
+    url_template: '',
+    fields: [],
+    instructions: ''
+  });
+  const [editingApp, setEditingApp] = useState(null);
+
   // Agent form
   const [newAgent, setNewAgent] = useState({ name: '', login: '', password: '', avatar: '', department_ids: [] });
   const [editingAgent, setEditingAgent] = useState(null);
