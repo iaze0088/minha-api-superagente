@@ -384,3 +384,36 @@ class DepartmentUpdate(BaseModel):
     ai_agent_id: Optional[str] = None
     is_default: Optional[bool] = None
     timeout_seconds: Optional[int] = None
+
+
+# IPTV App Models
+class IPTVAppType(str, Enum):
+    SSIPTV = "SSIPTV"
+    SMARTONE = "SMARTONE"
+
+class IPTVApp(BaseModel):
+    id: str
+    name: str
+    type: IPTVAppType
+    config_url: str  # URL para acessar configuração (ex: http://ss-iptv.com/en/users/playlist)
+    url_template: str  # Template da URL (ex: http://gestor.my/ssiptv/{username}/{password}/download_m3u)
+    fields: List[str]  # Campos necessários (ex: ["codigo", "username", "password"] ou ["mac", "nome_pasta"])
+    instructions: str  # Instruções para o agente
+    reseller_id: Optional[str] = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class IPTVAppCreate(BaseModel):
+    name: str
+    type: IPTVAppType
+    config_url: str
+    url_template: str
+    fields: List[str]
+    instructions: str
+
+class IPTVAppUpdate(BaseModel):
+    name: Optional[str] = None
+    config_url: Optional[str] = None
+    url_template: Optional[str] = None
+    fields: Optional[List[str]] = None
+    instructions: Optional[str] = None
+
