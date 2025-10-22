@@ -23,7 +23,7 @@ const AgentDashboard = () => {
   const [messages, setMessages] = useState([]);
   const [messageText, setMessageText] = useState('');
   const [counts, setCounts] = useState({ EM_ESPERA: 0, ATENDENDO: 0, FINALIZADAS: 0 });
-  const [config, setConfig] = useState({ quick_blocks: [] });
+  const [config, setConfig] = useState({ quick_blocks: [], support_avatar: '' });
   const [tutorials, setTutorials] = useState([]); // Tutoriais/Aplicativos
   const [showTutorials, setShowTutorials] = useState(false); // Modal de tutoriais
   const [pinnedUser, setPinnedUser] = useState('');
