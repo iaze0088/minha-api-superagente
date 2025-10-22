@@ -344,81 +344,105 @@ class SmartOneAutomation(IPTVAutomationBase):
     """Automação específica para SmartOne IPTV"""
     
     async def run_automation(self):
-        """Executa automação do SmartOne"""
-        self.result.add_log("🔧 Iniciando automação SmartOne...")
+        """Executa automação do SmartOne com seletores corretos"""
+        self.result.add_log("🔧 Iniciando automação SmartOne IPTV...")
         
         # Navegar para o site
         config_url = self.app_data.get('config_url')
         self.result.add_log(f"📍 Navegando para {config_url}")
         
         await self.page.goto(config_url, wait_until='domcontentloaded', timeout=60000)
-        await self.page.wait_for_timeout(3000)
+        await self.page.wait_for_timeout(5000)
         await self.take_screenshot("Página inicial carregada")
         
-        # Preencher MAC
+        # PASSO 1: Preencher MAC address
         mac = self.form_data.get('mac', '')
         if mac:
-            self.result.add_log(f"📝 Preenchendo MAC: {mac}")
+            self.result.add_log(f"📝 Preenchendo MAC address: {mac}")
             
-            mac_selectors = [
-                'input[name="mac"]',
-                'input#mac',
-                'input[placeholder*="MAC" i]',
-                'input[type="text"]'
-            ]
-            
-            success = await self.try_multiple_selectors(mac_selectors, "fill", mac)
-            if not success:
-                raise Exception("Não foi possível preencher o MAC. Seletores não encontrados.")
-            
+            try:
+                await self.page.fill('#mac', mac, timeout=10000)
+                self.result.add_log("✅ MAC preenchido com sucesso!")
+                await self.page.wait_for_timeout(1000)
+                await self.take_screenshot("MAC preenchido")
+            except Exception as e:
+                self.result.add_log(f"❌ Erro ao preencher MAC: {e}", "error")
+                raise Exception("Não foi possível preencher o MAC address.")
+        
+        # PASSO 2: Preencher nome da playlist
+        username = self.form_data.get('username', '')
+        nome_pasta = f"Playlist {username}" if username else "Minha Playlist"
+        
+        self.result.add_log(f"📝 Preenchendo nome da playlist: {nome_pasta}")
+        
+        try:
+            await self.page.fill('#m3u_name', nome_pasta, timeout=10000)
+            self.result.add_log("✅ Nome da playlist preenchido!")
             await self.page.wait_for_timeout(1000)
-            await self.take_screenshot("MAC preenchido")
-        
-        # Preencher nome da pasta
-        nome_pasta = self.form_data.get('nome_pasta', '')
-        if nome_pasta:
-            self.result.add_log(f"📝 Preenchendo nome da pasta: {nome_pasta}")
-            
-            nome_selectors = [
-                'input[name="name"]',
-                'input#name',
-                'input[name="folder"]',
-                'input[placeholder*="name" i]'
-            ]
-            
-            await self.try_multiple_selectors(nome_selectors, "fill", nome_pasta)
             await self.take_screenshot("Nome preenchido")
+        except Exception as e:
+            self.result.add_log(f"❌ Erro ao preencher nome: {e}", "error")
+            raise Exception("Não foi possível preencher o nome da playlist.")
         
-        # Gerar e preencher URL
+        # PASSO 3: Gerar e preencher URL da playlist
         self.result.final_url = await self.generate_final_url()
+        self.result.add_log(f"🔗 URL da playlist gerada: {self.result.final_url}")
         
-        self.result.add_log("📋 Tentando preencher URL no site...")
+        try:
+            await self.page.fill('#m3u_playlist', self.result.final_url, timeout=10000)
+            self.result.add_log("✅ URL da playlist preenchida!")
+            await self.page.wait_for_timeout(1000)
+            await self.take_screenshot("URL preenchida")
+        except Exception as e:
+            self.result.add_log(f"❌ Erro ao preencher URL: {e}", "error")
+            raise Exception("Não foi possível preencher a URL da playlist.")
         
-        url_selectors = [
-            'input[name="url"]',
-            'textarea',
-            'input[type="url"]',
-            'input.url',
-            'input[placeholder*="url" i]'
-        ]
+        # PASSO 4: Marcar checkbox "Confirme que você é humano"
+        self.result.add_log("✅ Marcando checkbox de verificação humana...")
         
-        await self.try_multiple_selectors(url_selectors, "fill", self.result.final_url)
-        await self.take_screenshot("URL preenchida")
+        try:
+            await self.page.check('input[type="checkbox"]', timeout=10000)
+            self.result.add_log("✅ Checkbox marcado!")
+            await self.page.wait_for_timeout(1000)
+            await self.take_screenshot("Checkbox marcado")
+        except Exception as e:
+            self.result.add_log(f"⚠️ Erro ao marcar checkbox: {e}", "warning")
+            # Continuar mesmo se falhar
         
-        # Verificar botão de salvar
-        save_selectors = [
-            'button:has-text("Save")',
-            'button:has-text("Add")',
-            'button:has-text("Submit")',
-            'button[type="submit"]'
-        ]
+        # PASSO 5: Clicar no botão "Add Playlist"
+        self.result.add_log("🔘 Clicando no botão 'Add Playlist'...")
         
-        if await self.try_multiple_selectors(save_selectors, "click"):
-            await self.page.wait_for_timeout(2000)
-            await self.take_screenshot("Configuração finalizada")
+        try:
+            await self.page.click('button[type="submit"]', timeout=10000)
+            self.result.add_log("✅ Botão 'Add Playlist' clicado!")
+            await self.page.wait_for_timeout(5000)
+            await self.take_screenshot("Após clicar Add Playlist")
+        except Exception as e:
+            self.result.add_log(f"❌ Erro ao clicar botão: {e}", "error")
+            raise Exception("Não foi possível clicar no botão Add Playlist.")
         
-        self.result.add_log("✅ Automação SmartOne concluída!")
-        self.result.automation_score = 80
+        # PASSO 6: Verificar se há mensagem de sucesso
+        self.result.add_log("🔍 Verificando mensagem de sucesso...")
+        
+        try:
+            # Aguardar um pouco para a página processar
+            await self.page.wait_for_timeout(3000)
+            
+            # Procurar por mensagens de sucesso
+            page_content = await self.page.content()
+            
+            if 'success' in page_content.lower() or 'successfully' in page_content.lower():
+                self.result.add_log("✅ Mensagem de sucesso detectada!")
+            else:
+                self.result.add_log("⚠️ Nenhuma mensagem de sucesso clara encontrada", "warning")
+            
+            await self.take_screenshot("Página final")
+            
+        except Exception as e:
+            self.result.add_log(f"⚠️ Não foi possível verificar sucesso: {e}", "warning")
+        
+        self.result.add_log("✅ Automação SmartOne IPTV concluída!")
+        self.result.automation_score = 95
 
 
 class IPTVAutomationFactory:
