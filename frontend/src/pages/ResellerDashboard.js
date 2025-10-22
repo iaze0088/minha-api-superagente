@@ -24,8 +24,28 @@ const ResellerDashboard = () => {
   const [resellerInfo, setResellerInfo] = useState(null);
 
   useEffect(() => {
+    checkFirstLogin();
     loadData();
   }, []);
+
+  const checkFirstLogin = async () => {
+    try {
+      const { data } = await api.get('/reseller/me');
+      setResellerInfo(data);
+      
+      if (data.first_login) {
+        setShowPasswordChange(true);
+      }
+    } catch (error) {
+      console.error('Erro ao verificar primeiro login:', error);
+    }
+  };
+
+  const handlePasswordChangeSuccess = () => {
+    setShowPasswordChange(false);
+    toast.success('✅ Senha alterada com sucesso!');
+    checkFirstLogin(); // Recarregar info
+  };
 
   const loadData = async () => {
     try {
