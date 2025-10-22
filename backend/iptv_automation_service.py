@@ -199,17 +199,28 @@ class SSIPTVAutomation(IPTVAutomationBase):
             self.result.add_log(f"❌ Erro ao clicar ADD DEVICE: {e}", "error")
             raise Exception("Não foi possível clicar no botão ADD DEVICE.")
         
-        # PASSO 3: Clicar no botão ADD ITEM
-        self.result.add_log("🔘 Clicando no botão ADD ITEM...")
+        # PASSO 3: Aguardar device conectar e botão ADD ITEM ficar visível
+        self.result.add_log("⏳ Aguardando dispositivo conectar (TV precisa estar com o app aberto)...")
+        self.result.add_log("📺 Abra o app SS-IPTV na TV com o código digitado!")
         
         try:
-            await self.page.click('#btnAddPlaylistItem', timeout=10000)
+            # Aguardar até 30 segundos para o botão ficar visível
+            await self.page.wait_for_selector('#btnAddPlaylistItem', state='visible', timeout=30000)
+            self.result.add_log("✅ Dispositivo conectado! Botão ADD ITEM está visível!")
+            
+            # Aguardar mais um pouco para garantir
+            await self.page.wait_for_timeout(2000)
+            
+            # Clicar no botão ADD ITEM
+            await self.page.click('#btnAddPlaylistItem')
             self.result.add_log("✅ Botão ADD ITEM clicado!")
             await self.page.wait_for_timeout(2000)
             await self.take_screenshot("Modal ADD ITEM aberto")
+            
         except Exception as e:
-            self.result.add_log(f"❌ Erro ao clicar ADD ITEM: {e}", "error")
-            raise Exception("Não foi possível clicar no botão ADD ITEM.")
+            self.result.add_log(f"❌ Timeout: Dispositivo não conectou em 30 segundos", "error")
+            self.result.add_log(f"💡 Certifique-se que o app SS-IPTV está aberto na TV!", "warning")
+            raise Exception("Dispositivo não conectou. Abra o app SS-IPTV na TV e tente novamente.")
         
         # PASSO 4: Gerar URL final
         username = self.form_data.get('username', '')
