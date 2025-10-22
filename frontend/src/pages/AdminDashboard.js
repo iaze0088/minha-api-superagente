@@ -214,6 +214,36 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Por favor, selecione uma imagem');
+      return;
+    }
+
+    setUploadingLogo(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const { data } = await api.post('/config/support-avatar', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      // Atualizar config com nova logo
+      setConfig(prev => ({ ...prev, support_avatar: data.avatar_url }));
+      toast.success('Logo atualizada com sucesso!');
+      loadData(); // Recarregar dados
+    } catch (error) {
+      toast.error('Erro ao fazer upload da logo');
+      console.error('Upload error:', error);
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
   const handleUpload = async (file) => {
     const formData = new FormData();
     formData.append('file', file);
