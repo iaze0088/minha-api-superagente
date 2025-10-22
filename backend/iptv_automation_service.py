@@ -430,39 +430,44 @@ class SmartOneAutomation(IPTVAutomationBase):
             self.result.add_log(f"⚠️ Erro ao marcar checkbox: {e}", "warning")
             # Continuar mesmo se falhar
         
-        # PASSO 5: Rolar página para baixo e clicar no botão "Add Playlist"
-        self.result.add_log("📜 Rolando página para baixo...")
+        # PASSO 5: Rolar e clicar no botão usando JavaScript (força bruta)
+        self.result.add_log("📜 Rolando página e procurando botão...")
         
         try:
-            # Rolar a página para baixo para garantir que o botão esteja visível
+            # Rolar a página
             await self.page.evaluate('window.scrollTo(0, document.body.scrollHeight)')
             await self.page.wait_for_timeout(2000)
-            await self.take_screenshot("Após rolar página")
+            await self.take_screenshot("Após rolar")
             
-            self.result.add_log("🔘 Clicando no botão 'Add Playlist'...")
+            self.result.add_log("🔘 Tentando clicar no botão 'Add Playlist' com JavaScript...")
             
-            # Tentar encontrar o botão visível com texto "Add Playlist"
-            button_selectors = [
-                'button:has-text("Add Playlist")',
-                'button.btn-success:has-text("Add Playlist")',
-                'button[type="submit"]:has-text("Add")',
-                'form button.btn-success'
-            ]
+            # Usar JavaScript para encontrar e clicar no botão
+            clicked = await self.page.evaluate('''() => {
+                // Procurar botão com texto "Add Playlist"
+                const buttons = Array.from(document.querySelectorAll('button'));
+                const addButton = buttons.find(btn => 
+                    btn.textContent.includes('Add Playlist') && 
+                    btn.offsetParent !== null  // Verificar se está visível
+                );
+                
+                if (addButton) {
+                    addButton.click();
+                    return true;
+                }
+                return false;
+            }''')
             
-            button_clicked = False
-            for selector in button_selectors:
-                try:
-                    await self.page.click(selector, timeout=5000)
-                    self.result.add_log("✅ Botão 'Add Playlist' clicado!")
-                    button_clicked = True
-                    await self.page.wait_for_timeout(5000)
-                    await self.take_screenshot("Após clicar Add Playlist")
-                    break
-                except:
-                    continue
-            
-            if not button_clicked:
-                raise Exception("Nenhum botão Add Playlist visível encontrado")
+            if clicked:
+                self.result.add_log("✅ Botão 'Add Playlist' clicado via JavaScript!")
+                await self.page.wait_for_timeout(5000)
+                await self.take_screenshot("Após clicar Add Playlist")
+            else:
+                # Fallback: tentar com Playwright
+                self.result.add_log("⚠️ Tentando método alternativo...")
+                await self.page.click('button:has-text("Add Playlist")', timeout=10000, force=True)
+                self.result.add_log("✅ Botão clicado (método alternativo)!")
+                await self.page.wait_for_timeout(5000)
+                await self.take_screenshot("Após clicar (alternativo)")
                 
         except Exception as e:
             self.result.add_log(f"❌ Erro ao clicar botão: {e}", "error")
