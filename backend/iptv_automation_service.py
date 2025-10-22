@@ -252,40 +252,23 @@ class SSIPTVAutomation(IPTVAutomationBase):
                 raise Exception("Não foi possível clicar no botão OK.")
             
             # PASSO 8: CRITICAL - Clicar no botão SAVE para salvar no servidor
-            self.result.add_log("💾 Clicando no botão SAVE para salvar no servidor...")
+            self.result.add_log("💾 Clicando no botão SAVE para salvar permanentemente...")
             
             try:
-                # Aguardar um pouco para o modal fechar
+                # Aguardar um pouco para o modal fechar completamente
                 await self.page.wait_for_timeout(2000)
                 
-                # Procurar botão SAVE - pode ter vários seletores
-                save_selectors = [
-                    'button:has-text("SAVE")',
-                    'button:has-text("Save")',
-                    'div:has-text("SAVE")',
-                    'button.btn-primary:has-text("SAVE")',
-                    '#btnSave',
-                    'button[onclick*="save"]'
-                ]
+                # Clicar no botão SAVE usando o seletor correto
+                await self.page.click('#btnSave', timeout=10000)
+                self.result.add_log("✅ Botão SAVE clicado com sucesso!")
                 
-                save_clicked = False
-                for selector in save_selectors:
-                    try:
-                        await self.page.click(selector, timeout=5000)
-                        self.result.add_log("✅ Botão SAVE clicado!")
-                        save_clicked = True
-                        await self.page.wait_for_timeout(3000)
-                        break
-                    except:
-                        continue
-                
-                if not save_clicked:
-                    self.result.add_log("⚠️ Botão SAVE não encontrado - playlist pode não ter sido salva!", "warning")
-                
+                # Aguardar o salvamento no servidor
+                await self.page.wait_for_timeout(3000)
                 await self.take_screenshot("Após clicar SAVE")
                 
             except Exception as e:
-                self.result.add_log(f"⚠️ Erro ao clicar SAVE: {e}", "warning")
+                self.result.add_log(f"❌ Erro ao clicar SAVE: {e}", "error")
+                raise Exception("Não foi possível clicar no botão SAVE.")
             
             # PASSO 9: Verificar se playlist apareceu na lista
             self.result.add_log("🔍 Verificando se playlist foi adicionada...")
