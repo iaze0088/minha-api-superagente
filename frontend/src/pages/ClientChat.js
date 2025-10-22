@@ -926,6 +926,28 @@ const ClientChat = () => {
             <DialogTitle>Configurações</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
+            {/* Nome do Cliente */}
+            <div>
+              <label className="text-sm font-medium text-slate-700 block mb-2">Seu Nome</label>
+              <div className="flex gap-2">
+                <Input
+                  data-testid="client-name-input"
+                  placeholder="Digite seu nome"
+                  value={userData.display_name || ''}
+                  onChange={(e) => setUserData({ ...userData, display_name: e.target.value })}
+                  className="flex-1"
+                />
+                <Button 
+                  data-testid="update-name-btn" 
+                  onClick={() => handleUpdateName(userData.display_name)}
+                  disabled={!userData.display_name || userData.display_name.trim() === ''}
+                >
+                  Salvar
+                </Button>
+              </div>
+              <p className="text-xs text-slate-500 mt-1">Seu nome aparecerá nas conversas com o suporte</p>
+            </div>
+
             <div>
               <label className="text-sm font-medium text-slate-700 block mb-2">Foto de Perfil</label>
               <div className="flex items-center gap-4">
