@@ -355,13 +355,14 @@ class SmartOneAutomation(IPTVAutomationBase):
         await self.page.wait_for_timeout(5000)
         await self.take_screenshot("Página inicial carregada")
         
-        # PASSO 1: Preencher MAC address
+        # PASSO 1: Preencher MAC address (usar classe específica para campo visível)
         mac = self.form_data.get('mac', '')
         if mac:
             self.result.add_log(f"📝 Preenchendo MAC address: {mac}")
             
             try:
-                await self.page.fill('#mac', mac, timeout=10000)
+                # Usar seletor específico para o campo MAC visível (mac-3)
+                await self.page.fill('input.mac-3', mac, timeout=10000)
                 self.result.add_log("✅ MAC preenchido com sucesso!")
                 await self.page.wait_for_timeout(1000)
                 await self.take_screenshot("MAC preenchido")
