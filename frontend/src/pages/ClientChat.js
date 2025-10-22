@@ -86,8 +86,8 @@ const ClientChat = () => {
           }
           console.log('✅ Nova mensagem adicionada:', data.message.text?.substring(0, 50));
           
-          // Som de notificação para mensagens do agente ou IA
-          if (data.message.from_type === 'agent' || data.message.from_type === 'ai') {
+          // REGRA RIGOROSA: Som de notificação para TODAS as mensagens novas (exceto as próprias)
+          if (data.message.from_type !== 'client') {
             // Tocar som de notificação do WhatsApp
             try {
               if (notificationAudioRef.current) {
