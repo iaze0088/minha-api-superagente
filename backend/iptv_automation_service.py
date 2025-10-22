@@ -450,11 +450,12 @@ class SmartOneAutomation(IPTVAutomationBase):
             
             for selector in selectors_to_try:
                 try:
-                    await self.page.wait_for_selector(selector, state='visible', timeout=8000)
+                    await self.page.wait_for_selector(selector, state='visible', timeout=15000)
                     cloudflare_iframe = await self.page.query_selector(selector)
                     self.result.add_log(f"✅ Cloudflare encontrado com seletor: {selector}")
                     break
                 except:
+                    self.result.add_log(f"⏳ Seletor '{selector}' não encontrou Cloudflare, tentando próximo...")
                     continue
             
             if not cloudflare_iframe:
