@@ -221,6 +221,46 @@ const AgentDashboard = () => {
     }
   };
 
+  const loadIPTVApps = async () => {
+    try {
+      const { data } = await api.get('/iptv-apps');
+      setIptvApps(data || []);
+    } catch (error) {
+      console.error('Error loading IPTV apps:', error);
+    }
+  };
+
+  const selectIPTVApp = (app) => {
+    setSelectedApp(app);
+    // Inicializar form data com campos vazios
+    const initialData = {};
+    app.fields.forEach(field => {
+      initialData[field] = '';
+    });
+    setAppFormData(initialData);
+    setGeneratedUrl('');
+  };
+
+  const generateIPTVUrl = () => {
+    if (!selectedApp) return;
+    
+    let url = selectedApp.url_template;
+    
+    // Substituir cada variável {campo} pelo valor do formulário
+    selectedApp.fields.forEach(field => {
+      const value = appFormData[field] || '';
+      url = url.replace(`{${field}}`, value);
+    });
+    
+    setGeneratedUrl(url);
+    toast.success('URL gerada com sucesso!');
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    toast.success('URL copiada para a área de transferência!');
+  };
+
   const sendTutorial = (tutorial) => {
     let tutorialText = `📚 ${tutorial.category} - ${tutorial.appName}\n\n`;
     if (tutorial.code) tutorialText += `🔑 Código/Provedor: ${tutorial.code}\n\n`;
