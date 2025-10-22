@@ -560,6 +560,19 @@ const AgentDashboard = () => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
             </div>
             
+            {/* Botão Subir Listas */}
+            {iptvApps.length > 0 && (
+              <Button 
+                onClick={() => setShowIPTVModal(true)} 
+                variant="outline" 
+                size="sm"
+                className="bg-blue-50 hover:bg-blue-100 border-blue-300"
+              >
+                <Monitor className="w-4 h-4 mr-2" />
+                Subir Listas
+              </Button>
+            )}
+            
             {tutorials.length > 0 && (
               <Button 
                 onClick={() => setShowTutorials(true)} 
