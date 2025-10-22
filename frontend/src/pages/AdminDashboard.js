@@ -113,6 +113,25 @@ const AdminDashboard = () => {
     navigate('/');
   };
 
+  const handleReplicateConfig = async () => {
+    setReplicating(true);
+    try {
+      const { data } = await api.post('/admin/replicate-config-to-resellers');
+      
+      if (data.ok) {
+        toast.success(`✅ ${data.message}`, { duration: 5000 });
+        setReplicateModal(false);
+      } else {
+        toast.error('Erro ao replicar configurações');
+      }
+    } catch (error) {
+      console.error('Erro ao replicar:', error);
+      toast.error(error.response?.data?.detail || 'Erro ao replicar configurações para revendas');
+    } finally {
+      setReplicating(false);
+    }
+  };
+
   const handleCreateAgent = async () => {
     try {
       await api.post('/agents', newAgent);
