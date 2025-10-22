@@ -235,9 +235,12 @@ async def create_reseller(data: ResellerCreate, current_user: dict = Depends(get
     
     reseller_id = str(uuid.uuid4())
     
-    # Senha padrão para novas revendas: admin123
-    default_password = "admin123"
-    pass_hash = bcrypt.hashpw(default_password.encode(), bcrypt.gensalt()).decode()
+    # Gerar domínio de teste provisório
+    test_domain = f"reseller-{reseller_id[:8]}.preview.emergentagent.com"
+    
+    # Usar senha fornecida ou senha padrão
+    password = data.password if hasattr(data, 'password') and data.password else "admin123"
+    pass_hash = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
     
     reseller = {
         "id": reseller_id,
@@ -246,6 +249,8 @@ async def create_reseller(data: ResellerCreate, current_user: dict = Depends(get
         "pass_hash": pass_hash,
         "domain": data.domain or "",
         "custom_domain": "",
+        "test_domain": test_domain,
+        "test_domain_active": True,
         "is_active": True,
         "parent_id": parent_id,
         "level": level,
@@ -265,14 +270,25 @@ async def create_reseller(data: ResellerCreate, current_user: dict = Depends(get
     }
     await db.reseller_configs.insert_one(config)
     
-    logger.info(f"✅ Reseller criado: {data.name} (Level: {level}, Parent: {parent_id}, Senha padrão: admin123)")
+    # URLs completas
+    backend_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://reseller-sync.preview.emergentagent.com')
+    base_url = test_domain
+    
+    logger.info(f"✅ Reseller criado: {data.name} (Level: {level}, Parent: {parent_id}, Domínio teste: {test_domain})")
     
     return {
         "ok": True, 
-        "reseller_id": reseller_id, 
+        "reseller_id": reseller_id,
+        "name": data.name,
+        "email": data.email,
+        "password": password,
         "level": level,
-        "default_password": default_password,
-        "preview_url": f"https://{data.domain}.preview.emergentagent.com" if data.domain else None
+        "test_domain": test_domain,
+        "urls": {
+            "admin": f"https://{base_url}/admin",
+            "atendente": f"https://{base_url}/atendente",
+            "cliente": f"https://{base_url}/"
+        }
     }
 
 # Update reseller
