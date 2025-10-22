@@ -251,7 +251,43 @@ class SSIPTVAutomation(IPTVAutomationBase):
                 self.result.add_log(f"❌ Erro ao clicar OK: {e}", "error")
                 raise Exception("Não foi possível clicar no botão OK.")
             
-            # PASSO 8: Verificar se playlist apareceu na lista
+            # PASSO 8: CRITICAL - Clicar no botão SAVE para salvar no servidor
+            self.result.add_log("💾 Clicando no botão SAVE para salvar no servidor...")
+            
+            try:
+                # Aguardar um pouco para o modal fechar
+                await self.page.wait_for_timeout(2000)
+                
+                # Procurar botão SAVE - pode ter vários seletores
+                save_selectors = [
+                    'button:has-text("SAVE")',
+                    'button:has-text("Save")',
+                    'div:has-text("SAVE")',
+                    'button.btn-primary:has-text("SAVE")',
+                    '#btnSave',
+                    'button[onclick*="save"]'
+                ]
+                
+                save_clicked = False
+                for selector in save_selectors:
+                    try:
+                        await self.page.click(selector, timeout=5000)
+                        self.result.add_log("✅ Botão SAVE clicado!")
+                        save_clicked = True
+                        await self.page.wait_for_timeout(3000)
+                        break
+                    except:
+                        continue
+                
+                if not save_clicked:
+                    self.result.add_log("⚠️ Botão SAVE não encontrado - playlist pode não ter sido salva!", "warning")
+                
+                await self.take_screenshot("Após clicar SAVE")
+                
+            except Exception as e:
+                self.result.add_log(f"⚠️ Erro ao clicar SAVE: {e}", "warning")
+            
+            # PASSO 9: Verificar se playlist apareceu na lista
             self.result.add_log("🔍 Verificando se playlist foi adicionada...")
             
             try:
@@ -261,7 +297,14 @@ class SSIPTVAutomation(IPTVAutomationBase):
                 # Verificar se há algum item na tabela
                 items = await self.page.query_selector_all('table tbody tr')
                 if len(items) > 0:
-                    self.result.add_log(f"✅ Playlist adicionada! Total de itens na lista: {len(items)}")
+                    self.result.add_log(f"✅ Total de itens na lista: {len(items)}")
+                    
+                    # Verificar se nossa URL está na lista
+                    page_content = await self.page.content()
+                    if '3334567oro' in page_content or self.result.final_url in page_content:
+                        self.result.add_log("✅ Playlist confirmada na lista!")
+                    else:
+                        self.result.add_log("⚠️ URL não encontrada na lista - pode não ter sido salva", "warning")
                 else:
                     self.result.add_log("⚠️ Nenhum item encontrado na lista", "warning")
                 
@@ -269,7 +312,7 @@ class SSIPTVAutomation(IPTVAutomationBase):
             except Exception as e:
                 self.result.add_log(f"⚠️ Não foi possível verificar lista: {e}", "warning")
         
-        self.result.add_log("✅ Automação SS-IPTV concluída com sucesso!")
+        self.result.add_log("✅ Automação SS-IPTV concluída!")
         self.result.automation_score = 95
 
 
