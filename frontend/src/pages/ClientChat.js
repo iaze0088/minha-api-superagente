@@ -181,7 +181,8 @@ const ClientChat = () => {
     };
 
     ws.onclose = () => {
-      console.log('⚠️ WebSocket desconectado, reconectando em 3s...');
+      reconnectAttempts.current += 1;
+      console.log(`⚠️ WebSocket desconectado, reconectando em 3s... (tentativa ${reconnectAttempts.current}/${maxReconnectAttempts})`);
       // Reconectar automaticamente após 3 segundos
       setTimeout(() => {
         if (auth.token) {
