@@ -784,6 +784,36 @@ async def update_user_name(data: dict, current_user: dict = Depends(get_current_
     )
     return {"ok": True, "name": name}
 
+@api_router.post("/users/me/avatar")
+async def upload_user_avatar(file: UploadFile = File(...), current_user: dict = Depends(get_current_user)):
+    """Upload de foto de perfil do cliente"""
+    if not file:
+        raise HTTPException(status_code=400, detail="Nenhum arquivo enviado")
+    
+    # Validar tipo de arquivo
+    if not file.content_type or not file.content_type.startswith("image/"):
+        raise HTTPException(status_code=400, detail="Apenas imagens são permitidas")
+    
+    # Generate unique filename
+    ext = Path(file.filename).suffix or ".jpg"
+    filename = f"avatar_{current_user['user_id']}{ext}"
+    filepath = UPLOADS_DIR / filename
+    
+    # Save file
+    async with aiofiles.open(filepath, 'wb') as f:
+        content = await file.read()
+        await f.write(content)
+    
+    url = f"{os.environ.get('REACT_APP_BACKEND_URL', '')}/api/uploads/{filename}"
+    
+    # Atualizar custom_avatar do usuário
+    await db.users.update_one(
+        {"id": current_user["user_id"]},
+        {"$set": {"custom_avatar": url}}
+    )
+    
+    return {"ok": True, "avatar_url": url}
+
 # Agent routes (admin/reseller)
 @api_router.get("/agents")
 async def list_agents(request: Request, current_user: dict = Depends(get_current_user)):
