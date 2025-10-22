@@ -82,10 +82,6 @@ const AdminDashboard = () => {
     loadData();
   }, []);
 
-  useEffect(() => {
-    console.log('replicateModal state changed:', replicateModal);
-  }, [replicateModal]);
-
   const loadData = async () => {
     try {
       const [agentsRes, resellersRes, hierarchyRes, configRes, noticesRes, departmentsRes, iptvAppsRes] = await Promise.all([
