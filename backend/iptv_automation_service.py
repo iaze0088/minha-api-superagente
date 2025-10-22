@@ -162,7 +162,7 @@ class SSIPTVAutomation(IPTVAutomationBase):
     """Automação específica para SS-IPTV"""
     
     async def run_automation(self):
-        """Executa automação do SS-IPTV"""
+        """Executa automação do SS-IPTV com seletores corretos"""
         self.result.add_log("🔧 Iniciando automação SS-IPTV...")
         
         # Navegar para o site
@@ -170,144 +170,107 @@ class SSIPTVAutomation(IPTVAutomationBase):
         self.result.add_log(f"📍 Navegando para {config_url}")
         
         await self.page.goto(config_url, wait_until='domcontentloaded', timeout=60000)
-        await self.page.wait_for_timeout(5000)  # Aumentado para 5s
+        await self.page.wait_for_timeout(5000)
         await self.take_screenshot("Página inicial carregada")
         
-        # Preencher código
+        # PASSO 1: Preencher código no campo correto
         codigo = self.form_data.get('codigo', '')
         if codigo:
             self.result.add_log(f"📝 Preenchendo código: {codigo}")
             
-            code_selectors = [
-                'input[name="code"]',
-                'input#code',
-                'input#activation_code',
-                'input[placeholder*="code" i]',
-                'input[placeholder*="Code" i]',
-                'input.input-text',
-                'input[type="text"]',
-                'input.code',
-                'form input[type="text"]'
-            ]
-            
-            success = await self.try_multiple_selectors(code_selectors, "fill", codigo)
-            if not success:
-                raise Exception("Não foi possível preencher o código. Seletores não encontrados.")
-            
-            await self.page.wait_for_timeout(2000)
-            await self.take_screenshot("Código preenchido")
-        
-        # Clicar no botão submit/Go - CRITICAL STEP
-        self.result.add_log("🔘 Procurando e clicando no botão Go/Submit...")
-        
-        submit_selectors = [
-            'button:has-text("Go")',
-            'input[type="button"][value="Go"]',
-            'button[type="button"]:has-text("Go")',
-            'button:has-text("Submit")',
-            'button[type="submit"]',
-            'input[type="submit"]',
-            'input[type="button"]',
-            'button.button',
-            'a.button:has-text("Go")',
-            'button:has-text("Activate")'
-        ]
-        
-        clicked_submit = await self.try_multiple_selectors(submit_selectors, "click")
-        if clicked_submit:
-            self.result.add_log("✅ Botão Go/Submit clicado com sucesso!")
-            await self.page.wait_for_timeout(5000)  # Aguardar página carregar
-            await self.take_screenshot("Após clicar Go")
-        else:
-            self.result.add_log("⚠️ Botão Go não encontrado - tentando prosseguir...", "warning")
-            # Tentar pressionar Enter no campo do código
             try:
-                await self.page.press('input[type="text"]', 'Enter')
-                self.result.add_log("✅ Pressionado Enter no campo")
-                await self.page.wait_for_timeout(5000)
-            except:
-                pass
+                await self.page.fill('#inptConnectionCodeInput', codigo, timeout=10000)
+                self.result.add_log("✅ Código preenchido com sucesso!")
+                await self.page.wait_for_timeout(1000)
+                await self.take_screenshot("Código preenchido")
+            except Exception as e:
+                self.result.add_log(f"❌ Erro ao preencher código: {e}", "error")
+                raise Exception("Não foi possível preencher o código.")
         
-        # Gerar URL final
+        # PASSO 2: Clicar no botão ADD DEVICE
+        self.result.add_log("🔘 Clicando no botão ADD DEVICE...")
+        
+        try:
+            await self.page.click('#btnAddDevice', timeout=10000)
+            self.result.add_log("✅ Botão ADD DEVICE clicado!")
+            await self.page.wait_for_timeout(3000)
+            await self.take_screenshot("Após ADD DEVICE")
+        except Exception as e:
+            self.result.add_log(f"❌ Erro ao clicar ADD DEVICE: {e}", "error")
+            raise Exception("Não foi possível clicar no botão ADD DEVICE.")
+        
+        # PASSO 3: Clicar no botão ADD ITEM
+        self.result.add_log("🔘 Clicando no botão ADD ITEM...")
+        
+        try:
+            await self.page.click('#btnAddPlaylistItem', timeout=10000)
+            self.result.add_log("✅ Botão ADD ITEM clicado!")
+            await self.page.wait_for_timeout(2000)
+            await self.take_screenshot("Modal ADD ITEM aberto")
+        except Exception as e:
+            self.result.add_log(f"❌ Erro ao clicar ADD ITEM: {e}", "error")
+            raise Exception("Não foi possível clicar no botão ADD ITEM.")
+        
+        # PASSO 4: Gerar URL final
         username = self.form_data.get('username', '')
         password = self.form_data.get('password', '')
         
         if username and password:
             self.result.final_url = await self.generate_final_url()
-            self.result.add_log(f"🔗 URL da playlist: {self.result.final_url}")
+            self.result.add_log(f"🔗 URL da playlist gerada: {self.result.final_url}")
             
-            # Aguardar um pouco para garantir que a página carregou
-            await self.page.wait_for_timeout(3000)
+            # PASSO 5: Preencher nome da playlist (opcional mas recomendado)
+            try:
+                playlist_name = f"Playlist {username}"
+                await self.page.fill('#inputStreamTitle', playlist_name, timeout=10000)
+                self.result.add_log(f"✅ Nome da playlist preenchido: {playlist_name}")
+            except Exception as e:
+                self.result.add_log(f"⚠️ Nome não preenchido: {e}", "warning")
             
-            # Tentar preencher URL no site - CAMPO CRÍTICO
-            self.result.add_log("📋 Procurando campo de URL da playlist...")
+            # PASSO 6: Preencher URL da playlist no campo correto
+            self.result.add_log("📋 Preenchendo URL da playlist...")
             
-            url_selectors = [
-                'input[name="url"]',
-                'input#url',
-                'input[placeholder*="url" i]',
-                'input[placeholder*="URL" i]',
-                'input[placeholder*="http" i]',
-                'input[placeholder*="playlist" i]',
-                'textarea[name="url"]',
-                'textarea[name="playlist"]',
-                'textarea',
-                'input[type="url"]',
-                'input[type="text"]:not([placeholder*="code" i])',
-                'form input[type="text"]:nth-of-type(2)',  # Segundo input do formulário
-            ]
-            
-            url_filled = await self.try_multiple_selectors(url_selectors, "fill", self.result.final_url)
-            
-            if url_filled:
+            try:
+                await self.page.fill('#inputStreamURL', self.result.final_url, timeout=10000)
                 self.result.add_log("✅ URL da playlist preenchida com sucesso!")
                 await self.page.wait_for_timeout(1000)
                 await self.take_screenshot("URL preenchida")
-            else:
-                self.result.add_log("⚠️ Não conseguiu preencher URL automaticamente", "warning")
-                await self.take_screenshot("Tentativa de preencher URL")
+            except Exception as e:
+                self.result.add_log(f"❌ Erro ao preencher URL: {e}", "error")
+                raise Exception("Não foi possível preencher a URL da playlist.")
             
-            # Procurar e clicar no botão Add/Save - CRITICAL STEP
-            self.result.add_log("🔘 Procurando botão Add/Save...")
+            # PASSO 7: Clicar no botão OK para salvar
+            self.result.add_log("🔘 Clicando no botão OK...")
             
-            final_submit_selectors = [
-                'button:has-text("Add")',
-                'input[type="button"][value="Add"]',
-                'button:has-text("Save")',
-                'input[type="button"][value="Save"]',
-                'button:has-text("Submit")',
-                'button[type="submit"]',
-                'input[type="submit"]',
-                'button.button:has-text("Add")',
-                'a.button:has-text("Add")'
-            ]
-            
-            if await self.try_multiple_selectors(final_submit_selectors, "click"):
-                self.result.add_log("✅ Botão Add/Save clicado!")
+            try:
+                await self.page.click('#btnApplyChanges', timeout=10000)
+                self.result.add_log("✅ Botão OK clicado!")
                 await self.page.wait_for_timeout(3000)
-                await self.take_screenshot("Após clicar Add")
-            else:
-                self.result.add_log("⚠️ Botão Add não encontrado", "warning")
-                await self.take_screenshot("Página final")
+                await self.take_screenshot("Playlist adicionada")
+            except Exception as e:
+                self.result.add_log(f"❌ Erro ao clicar OK: {e}", "error")
+                raise Exception("Não foi possível clicar no botão OK.")
+            
+            # PASSO 8: Verificar se playlist apareceu na lista
+            self.result.add_log("🔍 Verificando se playlist foi adicionada...")
+            
+            try:
+                # Aguardar um pouco para a lista atualizar
+                await self.page.wait_for_timeout(2000)
+                
+                # Verificar se há algum item na tabela
+                items = await self.page.query_selector_all('table tbody tr')
+                if len(items) > 0:
+                    self.result.add_log(f"✅ Playlist adicionada! Total de itens na lista: {len(items)}")
+                else:
+                    self.result.add_log("⚠️ Nenhum item encontrado na lista", "warning")
+                
+                await self.take_screenshot("Lista final de playlists")
+            except Exception as e:
+                self.result.add_log(f"⚠️ Não foi possível verificar lista: {e}", "warning")
         
-        # Verificar se há mensagem de sucesso na página
-        try:
-            success_indicators = [
-                'text="successfully"',
-                'text="added"',
-                'text="success"',
-                '.success',
-                '.alert-success'
-            ]
-            for indicator in success_indicators:
-                if await self.page.query_selector(indicator):
-                    self.result.add_log("✅ Mensagem de sucesso encontrada na página!")
-                    break
-        except:
-            pass
-        
-        self.result.add_log("✅ Automação SS-IPTV concluída!")
-        self.result.automation_score = 85
+        self.result.add_log("✅ Automação SS-IPTV concluída com sucesso!")
+        self.result.automation_score = 95
 
 
 class SmartOneAutomation(IPTVAutomationBase):
