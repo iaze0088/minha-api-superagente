@@ -1700,6 +1700,129 @@ ${info.urls.cliente}
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Modal de Informações da Revenda Criada */}
+      <Dialog open={resellerInfoModal.open} onOpenChange={(open) => setResellerInfoModal({ open, data: null })}>
+        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <CheckCircle className="w-6 h-6 text-green-600" />
+              Revenda Criada com Sucesso!
+            </DialogTitle>
+          </DialogHeader>
+          
+          {resellerInfoModal.data && (
+            <div className="space-y-6 py-4">
+              {/* Informações de Acesso */}
+              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                <h3 className="font-bold text-blue-900 mb-3 flex items-center gap-2">
+                  <Users className="w-5 h-5" />
+                  Informações de Acesso
+                </h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-blue-700 font-semibold">Nome:</span>
+                    <span className="text-blue-900">{resellerInfoModal.data.name}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-blue-700 font-semibold">Email:</span>
+                    <span className="text-blue-900">{resellerInfoModal.data.email}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-blue-700 font-semibold">Senha:</span>
+                    <span className="text-blue-900 font-mono bg-blue-100 px-2 py-1 rounded">{resellerInfoModal.data.password}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Domínio Provisório */}
+              <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
+                <h3 className="font-bold text-amber-900 mb-3 flex items-center gap-2">
+                  <Globe className="w-5 h-5" />
+                  Domínio Provisório (Teste)
+                </h3>
+                <div className="bg-white rounded p-3 border border-amber-300">
+                  <code className="text-sm text-amber-900 break-all">{resellerInfoModal.data.test_domain}</code>
+                </div>
+                <p className="text-xs text-amber-700 mt-2">
+                  ⚠️ Use este domínio temporário para acessar. Após configurar domínio oficial, este será desativado.
+                </p>
+              </div>
+
+              {/* Links de Acesso */}
+              <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
+                <h3 className="font-bold text-green-900 mb-3 flex items-center gap-2">
+                  <ExternalLink className="w-5 h-5" />
+                  Links de Acesso
+                </h3>
+                <div className="space-y-3">
+                  <div>
+                    <div className="text-sm font-semibold text-green-700 mb-1">🔹 Painel Admin:</div>
+                    <a 
+                      href={resellerInfoModal.data.urls.admin} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-xs text-blue-600 hover:text-blue-800 underline break-all block"
+                    >
+                      {resellerInfoModal.data.urls.admin}
+                    </a>
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold text-green-700 mb-1">🔹 Painel Atendente:</div>
+                    <a 
+                      href={resellerInfoModal.data.urls.atendente} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-xs text-blue-600 hover:text-blue-800 underline break-all block"
+                    >
+                      {resellerInfoModal.data.urls.atendente}
+                    </a>
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold text-green-700 mb-1">🔹 Painel Cliente:</div>
+                    <a 
+                      href={resellerInfoModal.data.urls.cliente} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-xs text-blue-600 hover:text-blue-800 underline break-all block"
+                    >
+                      {resellerInfoModal.data.urls.cliente}
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              {/* Próximos Passos */}
+              <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
+                <h3 className="font-bold text-purple-900 mb-2">🚀 Próximos Passos:</h3>
+                <ol className="text-sm text-purple-800 space-y-1 list-decimal ml-5">
+                  <li>Acesse o Painel Admin pelo link acima</li>
+                  <li>Faça login com email e senha fornecidos</li>
+                  <li>No primeiro acesso, será solicitado a trocar a senha</li>
+                  <li>No menu "Domínio", configure seu domínio oficial quando estiver pronto</li>
+                </ol>
+              </div>
+
+              {/* Botões de Ação */}
+              <div className="flex gap-3 justify-end pt-4 border-t">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setResellerInfoModal({ open: false, data: null })}
+                >
+                  Fechar
+                </Button>
+                <Button 
+                  onClick={handleCopyResellerInfo}
+                  className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
+                >
+                  <Copy className="w-4 h-4 mr-2" />
+                  Copiar Tudo
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
