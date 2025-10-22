@@ -1135,6 +1135,117 @@ const AgentDashboard = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Modal Subir Listas IPTV */}
+      <Dialog open={showIPTVModal} onOpenChange={setShowIPTVModal}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>📺 Subir Listas - Apps IPTV</DialogTitle>
+          </DialogHeader>
+          
+          {!selectedApp ? (
+            /* Lista de Apps */
+            <div className="space-y-3">
+              <p className="text-sm text-gray-600">Selecione um app para configurar:</p>
+              {iptvApps.map((app) => (
+                <div
+                  key={app.id}
+                  className="border rounded-lg p-4 hover:bg-gray-50 cursor-pointer transition"
+                  onClick={() => selectIPTVApp(app)}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-lg">{app.name}</h4>
+                      <p className="text-xs text-gray-500 mb-2">{app.type}</p>
+                      <p className="text-xs text-blue-600 mb-2">🔗 {app.config_url}</p>
+                      {app.instructions && (
+                        <div className="mt-2 p-2 bg-yellow-50 rounded text-xs">
+                          <p className="font-medium mb-1">📋 Instruções:</p>
+                          <p className="whitespace-pre-line">{app.instructions}</p>
+                        </div>
+                      )}
+                    </div>
+                    <Button size="sm" variant="outline">
+                      Configurar →
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            /* Formulário de Configuração */
+            <div className="space-y-4">
+              <div className="bg-blue-50 p-3 rounded-lg">
+                <p className="font-semibold text-sm mb-1">🔗 Acessar:</p>
+                <a 
+                  href={selectedApp.config_url} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-600 text-sm hover:underline flex items-center gap-1"
+                >
+                  {selectedApp.config_url}
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+
+              {selectedApp.instructions && (
+                <div className="bg-yellow-50 p-3 rounded-lg">
+                  <p className="font-semibold text-sm mb-1">📋 Instruções:</p>
+                  <p className="text-xs whitespace-pre-line">{selectedApp.instructions}</p>
+                </div>
+              )}
+
+              <div className="border-t pt-4">
+                <p className="font-semibold mb-3">Preencha os dados do cliente:</p>
+                {selectedApp.fields.map((field) => (
+                  <div key={field} className="mb-3">
+                    <label className="block text-sm font-medium mb-1 capitalize">
+                      {field.replace('_', ' ')}
+                    </label>
+                    <Input
+                      placeholder={`Digite ${field}...`}
+                      value={appFormData[field] || ''}
+                      onChange={(e) => setAppFormData({ ...appFormData, [field]: e.target.value })}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <Button onClick={generateIPTVUrl} className="w-full">
+                ✨ Gerar URL
+              </Button>
+
+              {generatedUrl && (
+                <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <p className="font-semibold text-sm mb-2">✅ URL Gerada:</p>
+                  <div className="bg-white p-3 rounded border font-mono text-xs break-all mb-3">
+                    {generatedUrl}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" onClick={() => copyToClipboard(generatedUrl)} className="flex-1">
+                      <Copy className="w-3 h-3 mr-2" />
+                      Copiar
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => window.open(generatedUrl, '_blank')} className="flex-1">
+                      <ExternalLink className="w-3 h-3 mr-2" />
+                      Abrir
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-2 mt-4">
+                <Button variant="outline" onClick={() => { setSelectedApp(null); setGeneratedUrl(''); }} className="flex-1">
+                  ← Voltar
+                </Button>
+                <Button variant="outline" onClick={() => setShowIPTVModal(false)} className="flex-1">
+                  Fechar
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
       
       {/* Lightbox para visualizar imagens em tamanho completo */}
       {lightboxImage && (
