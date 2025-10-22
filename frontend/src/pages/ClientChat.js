@@ -42,6 +42,9 @@ const ClientChat = () => {
   const notificationAudioRef = useRef(null);
   const [audioEnabled, setAudioEnabled] = useState(false);
   const [lightboxImage, setLightboxImage] = useState(null);
+  const [config, setConfig] = useState({ support_avatar: '' });
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const avatarInputRef = useRef(null);
 
   // Função para conectar WebSocket com reconexão automática
   const connectWebSocket = () => {
