@@ -827,7 +827,14 @@ const AgentDashboard = () => {
                         {msg.text && msg.kind !== 'pix' && <p className="whitespace-pre-wrap break-words text-sm mb-2">{msg.text}</p>}
                         
                         {/* Renderizar mídia */}
-                        {msg.kind === 'image' && msg.file_url && <img src={msg.file_url} alt="Imagem" className="max-w-full rounded-lg" />}
+                        {msg.kind === 'image' && msg.file_url && (
+                          <img 
+                            src={msg.file_url} 
+                            alt="Imagem" 
+                            className="max-w-[200px] h-auto rounded-lg cursor-pointer hover:opacity-80 transition-opacity" 
+                            onClick={() => setLightboxImage(msg.file_url)}
+                          />
+                        )}
                         {msg.kind === 'video' && msg.file_url && <video src={msg.file_url} controls className="max-w-full rounded-lg" />}
                         {msg.kind === 'audio' && msg.file_url && <audio src={msg.file_url} controls className="w-full" />}
                         {msg.kind === 'pix' && (
