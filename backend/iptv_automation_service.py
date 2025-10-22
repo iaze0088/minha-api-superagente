@@ -170,7 +170,7 @@ class SSIPTVAutomation(IPTVAutomationBase):
         self.result.add_log(f"📍 Navegando para {config_url}")
         
         await self.page.goto(config_url, wait_until='domcontentloaded', timeout=60000)
-        await self.page.wait_for_timeout(3000)
+        await self.page.wait_for_timeout(5000)  # Aumentado para 5s
         await self.take_screenshot("Página inicial carregada")
         
         # Preencher código
@@ -183,34 +183,50 @@ class SSIPTVAutomation(IPTVAutomationBase):
                 'input#code',
                 'input#activation_code',
                 'input[placeholder*="code" i]',
+                'input[placeholder*="Code" i]',
+                'input.input-text',
                 'input[type="text"]',
-                'input.code'
+                'input.code',
+                'form input[type="text"]'
             ]
             
             success = await self.try_multiple_selectors(code_selectors, "fill", codigo)
             if not success:
                 raise Exception("Não foi possível preencher o código. Seletores não encontrados.")
             
-            await self.page.wait_for_timeout(1000)
+            await self.page.wait_for_timeout(2000)
             await self.take_screenshot("Código preenchido")
         
-        # Clicar no botão submit
-        self.result.add_log("🔘 Procurando botão de submit...")
+        # Clicar no botão submit/Go - CRITICAL STEP
+        self.result.add_log("🔘 Procurando e clicando no botão Go/Submit...")
         
         submit_selectors = [
+            'button:has-text("Go")',
+            'input[type="button"][value="Go"]',
+            'button[type="button"]:has-text("Go")',
+            'button:has-text("Submit")',
             'button[type="submit"]',
             'input[type="submit"]',
-            'button:has-text("Submit")',
-            'button:has-text("Go")',
-            'button:has-text("Activate")',
-            'button.submit',
-            'button#submit'
+            'input[type="button"]',
+            'button.button',
+            'a.button:has-text("Go")',
+            'button:has-text("Activate")'
         ]
         
-        success = await self.try_multiple_selectors(submit_selectors, "click")
-        if success:
-            await self.page.wait_for_timeout(3000)
-            await self.take_screenshot("Após submit")
+        clicked_submit = await self.try_multiple_selectors(submit_selectors, "click")
+        if clicked_submit:
+            self.result.add_log("✅ Botão Go/Submit clicado com sucesso!")
+            await self.page.wait_for_timeout(5000)  # Aguardar página carregar
+            await self.take_screenshot("Após clicar Go")
+        else:
+            self.result.add_log("⚠️ Botão Go não encontrado - tentando prosseguir...", "warning")
+            # Tentar pressionar Enter no campo do código
+            try:
+                await self.page.press('input[type="text"]', 'Enter')
+                self.result.add_log("✅ Pressionado Enter no campo")
+                await self.page.wait_for_timeout(5000)
+            except:
+                pass
         
         # Gerar URL final
         username = self.form_data.get('username', '')
@@ -218,33 +234,77 @@ class SSIPTVAutomation(IPTVAutomationBase):
         
         if username and password:
             self.result.final_url = await self.generate_final_url()
+            self.result.add_log(f"🔗 URL da playlist: {self.result.final_url}")
             
-            # Tentar preencher URL no site
-            self.result.add_log("📋 Tentando preencher URL no site...")
+            # Aguardar um pouco para garantir que a página carregou
+            await self.page.wait_for_timeout(3000)
+            
+            # Tentar preencher URL no site - CAMPO CRÍTICO
+            self.result.add_log("📋 Procurando campo de URL da playlist...")
             
             url_selectors = [
                 'input[name="url"]',
                 'input#url',
+                'input[placeholder*="url" i]',
+                'input[placeholder*="URL" i]',
+                'input[placeholder*="http" i]',
+                'input[placeholder*="playlist" i]',
+                'textarea[name="url"]',
                 'textarea[name="playlist"]',
                 'textarea',
                 'input[type="url"]',
-                'input[placeholder*="url" i]'
+                'input[type="text"]:not([placeholder*="code" i])',
+                'form input[type="text"]:nth-of-type(2)',  # Segundo input do formulário
             ]
             
-            await self.try_multiple_selectors(url_selectors, "fill", self.result.final_url)
-            await self.take_screenshot("URL preenchida")
+            url_filled = await self.try_multiple_selectors(url_selectors, "fill", self.result.final_url)
             
-            # Verificar se precisa clicar em algum botão final
+            if url_filled:
+                self.result.add_log("✅ URL da playlist preenchida com sucesso!")
+                await self.page.wait_for_timeout(1000)
+                await self.take_screenshot("URL preenchida")
+            else:
+                self.result.add_log("⚠️ Não conseguiu preencher URL automaticamente", "warning")
+                await self.take_screenshot("Tentativa de preencher URL")
+            
+            # Procurar e clicar no botão Add/Save - CRITICAL STEP
+            self.result.add_log("🔘 Procurando botão Add/Save...")
+            
             final_submit_selectors = [
-                'button:has-text("Save")',
                 'button:has-text("Add")',
+                'input[type="button"][value="Add"]',
+                'button:has-text("Save")',
+                'input[type="button"][value="Save"]',
                 'button:has-text("Submit")',
-                'button[type="submit"]'
+                'button[type="submit"]',
+                'input[type="submit"]',
+                'button.button:has-text("Add")',
+                'a.button:has-text("Add")'
             ]
             
             if await self.try_multiple_selectors(final_submit_selectors, "click"):
-                await self.page.wait_for_timeout(2000)
-                await self.take_screenshot("Configuração finalizada")
+                self.result.add_log("✅ Botão Add/Save clicado!")
+                await self.page.wait_for_timeout(3000)
+                await self.take_screenshot("Após clicar Add")
+            else:
+                self.result.add_log("⚠️ Botão Add não encontrado", "warning")
+                await self.take_screenshot("Página final")
+        
+        # Verificar se há mensagem de sucesso na página
+        try:
+            success_indicators = [
+                'text="successfully"',
+                'text="added"',
+                'text="success"',
+                '.success',
+                '.alert-success'
+            ]
+            for indicator in success_indicators:
+                if await self.page.query_selector(indicator):
+                    self.result.add_log("✅ Mensagem de sucesso encontrada na página!")
+                    break
+        except:
+            pass
         
         self.result.add_log("✅ Automação SS-IPTV concluída!")
         self.result.automation_score = 85
