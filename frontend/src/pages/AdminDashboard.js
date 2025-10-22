@@ -231,16 +231,6 @@ const AdminDashboard = () => {
     }
     setExpandedResellers(newExpanded);
   };
-  
-  const handleReplicateConfig = async () => {
-    if (!window.confirm('Isso vai sobrescrever as configurações de TODAS as revendas. Continuar?')) return;
-    try {
-      const { data } = await api.post('/resellers/replicate-config');
-      toast.success(`Configurações replicadas para ${data.updated} revenda(s)!`);
-    } catch (error) {
-      toast.error('Erro ao replicar configurações');
-    }
-  };
 
   const handleSaveConfig = async () => {
     try {
