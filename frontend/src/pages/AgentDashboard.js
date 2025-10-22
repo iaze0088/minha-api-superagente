@@ -60,6 +60,7 @@ const AgentDashboard = () => {
     loadConfig();
     loadMyDepartments();
     loadTutorials();
+    loadIPTVApps();
     const interval = setInterval(loadCounts, 5000);
     return () => clearInterval(interval);
   }, [status]);
