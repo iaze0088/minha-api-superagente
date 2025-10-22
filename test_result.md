@@ -1323,3 +1323,38 @@ agent_communication:
       🎉 TODAS AS FUNCIONALIDADES SOLICITADAS NO REVIEW REQUEST ESTÃO IMPLEMENTADAS E FUNCIONANDO!
       Sistema WA Suporte com funcionalidades avançadas 100% operacional.
 
+  - agent: "main"
+    message: |
+      🔧 BOTÃO "APLICAR PARA REVENDAS" - PROBLEMA RESOLVIDO!
+      
+      PROBLEMA REPORTADO:
+      - Botão visível no header do Admin Dashboard
+      - Botão completamente unresponsivo ao clicar
+      - Modal não aparecia
+      - Nenhum erro no console
+      
+      INVESTIGAÇÃO:
+      1. ✅ Estado `replicateModal` sendo atualizado corretamente (false → true)
+      2. ✅ onClick handler funcionando
+      3. ❌ Modal [role="dialog"] não encontrado no DOM
+      
+      CAUSA RAIZ IDENTIFICADA:
+      - Dialog component estava dentro do componente `NoticeForm` (linha 1620)
+      - NoticeForm é um componente separado renderizado fora do AdminDashboard
+      - Dialog precisa estar dentro do return do AdminDashboard para acessar o estado
+
+      SOLUÇÃO APLICADA:
+      1. Movido Dialog de NoticeForm para AdminDashboard (antes da closing </div>)
+      2. Dialog agora está no local correto: AdminDashboard → return → Dialog
+      3. Removidos console.logs de debug após confirmação do fix
+      
+      TESTES REALIZADOS:
+      ✅ Botão encontrado e clicável
+      ✅ Modal aparece ao clicar  
+      ✅ Modal mostra conteúdo correto (aviso, lista de itens replicados, confirmação)
+      ✅ Botão "Cancelar" funciona e fecha modal
+      ✅ Estado gerenciado corretamente
+      
+      PRÓXIMO PASSO:
+      - Testar backend endpoint /api/admin/replicate-config-to-resellers
+      - Verificar replicação completa de configurações para revendas
