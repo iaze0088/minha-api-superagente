@@ -2,8 +2,27 @@
 Funções auxiliares para isolamento multi-tenant
 """
 from fastapi import Request
-from tenant_middleware import get_request_tenant
 from typing import Optional
+
+
+# Tenant helper
+class Tenant:
+    """Classe simples para representar informações de tenant"""
+    def __init__(self, reseller_id: Optional[str] = None, is_master: bool = False):
+        self.reseller_id = reseller_id
+        self.is_master = is_master
+
+
+def get_request_tenant(request: Request = None) -> Tenant:
+    """Extrai informações de tenant do request"""
+    if not request:
+        return Tenant(reseller_id=None, is_master=True)
+    
+    tenant_info = getattr(request.state, "tenant", None)
+    if tenant_info:
+        return tenant_info
+    
+    return Tenant(reseller_id=None, is_master=True)
 
 
 def get_tenant_filter(request: Request = None, current_user: dict = None) -> dict:
