@@ -835,7 +835,7 @@ async def list_agents(request: Request, current_user: dict = Depends(get_current
     # Filtro baseado no tenant
     query = {}
     
-    # Admin master vê todos, reseller vê apenas seus agentes
+    # Admin master vê todos, reseller vê apenas seus agentes, agent vê da sua revenda
     if current_user["user_type"] == "admin" and not tenant.is_master:
         # Admin master acessando domínio de revenda específica
         if tenant.reseller_id:
@@ -843,6 +843,11 @@ async def list_agents(request: Request, current_user: dict = Depends(get_current
     elif current_user["user_type"] == "reseller":
         # Reseller vê apenas seus agentes
         query["reseller_id"] = current_user.get("reseller_id")
+    elif current_user["user_type"] == "agent":
+        # CORREÇÃO: Atendente vê apenas agentes da sua revenda
+        reseller_id = current_user.get("reseller_id")
+        if reseller_id:
+            query["reseller_id"] = reseller_id
     elif current_user["user_type"] == "client":
         # Client vê lista geral (sem filtro sensível)
         if tenant.reseller_id:
