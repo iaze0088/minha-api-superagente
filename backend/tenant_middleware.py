@@ -68,6 +68,7 @@ async def detect_tenant(request: Request, db: AsyncIOMotorDatabase) -> TenantCon
     # Domínios master (admin principal)
     master_domains = [
         "suporte.help",
+        "reseller-sync.preview.emergentagent.com",
         "localhost",
         "127.0.0.1"
     ]
