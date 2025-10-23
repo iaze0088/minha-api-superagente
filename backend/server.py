@@ -1069,28 +1069,11 @@ async def should_ask_whatsapp(user_id: str):
 # Ticket routes
 @api_router.get("/tickets")
 async def list_tickets(status: Optional[str] = None, request: Request = None, current_user: dict = Depends(get_current_user)):
-    tenant = get_request_tenant(request)
+    # ISOLAMENTO MULTI-TENANT: Usar função centralizada
+    query = get_tenant_filter(request, current_user)
     
-    query = {}
     if status:
         query["status"] = status
-    
-    # Aplicar filtro de tenant - CRÍTICO: Cada revenda vê apenas seus dados!
-    if tenant.reseller_id:
-        # Request vindo de domínio de revenda
-        query["reseller_id"] = tenant.reseller_id
-    elif current_user["user_type"] == "reseller":
-        # Reseller logado vê apenas seus tickets
-        query["reseller_id"] = current_user.get("reseller_id")
-    elif current_user["user_type"] == "agent":
-        # CORREÇÃO CRÍTICA: Atendente vê apenas tickets da sua revenda!
-        reseller_id = current_user.get("reseller_id")
-        if reseller_id:
-            query["reseller_id"] = reseller_id
-        # Se não tem reseller_id, é atendente do admin (vê todos)
-    elif current_user["user_type"] == "admin":
-        # Admin master vê todos os tickets (sem filtro)
-        pass
     
     tickets = await db.tickets.find(query, {"_id": 0}).to_list(None)
     
