@@ -19,7 +19,7 @@ const AgentLogin = () => {
     setLoading(true);
 
     try {
-      const { data } = await api.post('/auth/agent/login', { login, password });
+      const { data } = await api.post('/api/auth/agent/login', { login, password });
       setAuth(data.token, data.user_type, data.user_data);
       toast.success(`Bem-vindo, ${data.user_data.name}!`);
       navigate('/atendente');
