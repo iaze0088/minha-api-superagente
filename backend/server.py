@@ -474,24 +474,6 @@ async def reactivate_ai_after_timeout():
 
 
 
-# Tenant helper
-class Tenant:
-    """Classe simples para representar informações de tenant"""
-    def __init__(self, reseller_id: Optional[str] = None, is_master: bool = False):
-        self.reseller_id = reseller_id
-        self.is_master = is_master
-
-def get_request_tenant(request: Request = None) -> Tenant:
-    """Extrai informações de tenant do request"""
-    if not request:
-        return Tenant(reseller_id=None, is_master=True)
-    
-    tenant_info = getattr(request.state, "tenant", None)
-    if tenant_info:
-        return tenant_info
-    
-    return Tenant(reseller_id=None, is_master=True)
-
 # Auth helpers
 def create_token(user_id: str, user_type: str, reseller_id: Optional[str] = None) -> str:
     payload = {
