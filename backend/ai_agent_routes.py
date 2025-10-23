@@ -154,19 +154,18 @@ async def update_ai_agent(
 @ai_router.delete("/agents/{agent_id}")
 async def delete_ai_agent(
     agent_id: str,
+    request: Request,
     current_user: dict = Depends(get_current_user)
 ):
     """Deleta um agente IA"""
     if current_user["user_type"] not in ["admin", "reseller"]:
         raise HTTPException(status_code=403, detail="Não autorizado")
     
-    reseller_id = current_user.get("reseller_id")
+    # ISOLAMENTO MULTI-TENANT: Usar função centralizada
+    tenant_filter = get_tenant_filter(request, current_user)
     
     query = {"id": agent_id}
-    if reseller_id:
-        query["reseller_id"] = reseller_id
-    elif current_user["user_type"] != "admin":
-        raise HTTPException(status_code=403, detail="Não autorizado")
+    query.update(tenant_filter)
     
     result = await db.ai_agents.delete_one(query)
     if result.deleted_count == 0:
