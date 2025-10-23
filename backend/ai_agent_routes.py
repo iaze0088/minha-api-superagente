@@ -183,13 +183,8 @@ async def list_departments(
     current_user: dict = Depends(get_current_user)
 ):
     """Lista todos os departamentos da revenda"""
-    reseller_id = current_user.get("reseller_id")
-    
-    query = {}
-    if reseller_id:
-        query["reseller_id"] = reseller_id
-    elif current_user["user_type"] != "admin":
-        raise HTTPException(status_code=403, detail="Não autorizado")
+    # ISOLAMENTO MULTI-TENANT: Usar função centralizada
+    query = get_tenant_filter(request, current_user)
     
     departments = await db.departments.find(query).to_list(length=None)
     return [Department(**dept) for dept in departments]
