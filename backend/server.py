@@ -1863,11 +1863,19 @@ async def get_iptv_apps(request: Request = None, current_user: dict = Depends(ge
 @api_router.post("/iptv-apps")
 async def create_iptv_app(data: dict, request: Request = None, current_user: dict = Depends(get_current_user)):
     """Cria um novo app IPTV"""
-    if current_user["user_type"] != "admin":
-        raise HTTPException(status_code=403, detail="Apenas admin")
+    if current_user["user_type"] not in ["admin", "reseller"]:
+        raise HTTPException(status_code=403, detail="Não autorizado")
     
+    # ISOLAMENTO MULTI-TENANT: Determinar reseller_id baseado no contexto
     tenant = get_request_tenant(request)
-    reseller_id = tenant.reseller_id or current_user.get("reseller_id")
+    user_type = current_user.get("user_type")
+    
+    # Admin master: usa tenant do request (None se for master domain)
+    if user_type == "admin" and tenant.is_master:
+        reseller_id = tenant.reseller_id
+    else:
+        # Reseller: usa reseller_id do token
+        reseller_id = current_user.get("reseller_id")
     
     app = {
         "id": str(uuid.uuid4()),
