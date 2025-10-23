@@ -579,43 +579,23 @@ async def admin_login(data: AdminLogin):
     token = create_token("admin", "admin")
     return TokenResponse(token=token, user_type="admin", user_data={"id": "admin"})
 
-@api_router.post("/auth/agent/test-debug")
-async def test_debug_login(data: dict):
-    """Endpoint de debug temporário"""
-    return {"received": data, "login_type": type(data.get("login")).__name__, "password_type": type(data.get("password")).__name__}
-
 @api_router.post("/auth/agent/login")
 async def agent_login(data: AgentLogin, request: Request):
-    try:
-        # Buscar agente - primeiro tenta sem filtro de tenant
-        agent = await db.agents.find_one({"login": data.login})
-        
-        if not agent:
-            raise HTTPException(status_code=401, detail="Agent não encontrado")
-        
-        # Verificar senha
-        try:
-            password_match = bcrypt.checkpw(data.password.encode(), agent["pass_hash"].encode())
-        except Exception as e:
-            raise HTTPException(status_code=401, detail=f"Erro ao verificar senha: {str(e)}")
-        
-        if not password_match:
-            raise HTTPException(status_code=401, detail="Senha incorreta")
-        
-        if not agent.get("is_active", True):
-            raise HTTPException(status_code=403, detail="Conta desativada")
-        
-        token = create_token(agent["id"], "agent", agent.get("reseller_id"))
-        
-        return TokenResponse(token=token, user_type="agent", user_data={
-            "id": agent["id"],
-            "name": agent["name"],
-            "avatar": agent.get("custom_avatar") or agent.get("avatar", "")
-        }, reseller_id=agent.get("reseller_id"))
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro interno: {str(e)}")
+    # Buscar agente
+    agent = await db.agents.find_one({"login": data.login})
+    
+    if not agent or not bcrypt.checkpw(data.password.encode(), agent["pass_hash"].encode()):
+        raise HTTPException(status_code=401, detail="Login ou senha inválidos")
+    
+    if not agent.get("is_active", True):
+        raise HTTPException(status_code=403, detail="Conta desativada")
+    
+    token = create_token(agent["id"], "agent", agent.get("reseller_id"))
+    return TokenResponse(token=token, user_type="agent", user_data={
+        "id": agent["id"],
+        "name": agent["name"],
+        "avatar": agent.get("custom_avatar") or agent.get("avatar", "")
+    }, reseller_id=agent.get("reseller_id"))
 
 @api_router.post("/auth/client/login")
 async def client_login(data: UserLogin, request: Request):
