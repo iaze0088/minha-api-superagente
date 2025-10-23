@@ -20,10 +20,10 @@ tenant_context = TenantContext()
 
 async def get_tenant_from_domain(domain: str, db: AsyncIOMotorDatabase) -> Optional[dict]:
     """
-    Busca a revenda (tenant) pelo domínio customizado.
+    Busca a revenda (tenant) pelo domínio customizado OU domínio de teste.
     
     Args:
-        domain: Domínio da requisição (ex: ajuda.vip, outro.com)
+        domain: Domínio da requisição (ex: ajuda.vip, reseller-xxx.preview.emergentagent.com)
         db: Instância do banco MongoDB
         
     Returns:
@@ -35,9 +35,12 @@ async def get_tenant_from_domain(domain: str, db: AsyncIOMotorDatabase) -> Optio
     # Remove www. se existir
     domain = domain.replace("www.", "")
     
-    # Busca revenda pelo custom_domain
+    # Busca revenda pelo custom_domain OU test_domain (com test_domain_active)
     reseller = await db.resellers.find_one({
-        "custom_domain": domain,
+        "$or": [
+            {"custom_domain": domain},
+            {"test_domain": domain, "test_domain_active": True}
+        ],
         "is_active": True
     })
     
