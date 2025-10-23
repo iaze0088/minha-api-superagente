@@ -234,25 +234,34 @@ async def create_department(
 async def update_department(
     dept_id: str,
     data: DepartmentUpdate,
+    request: Request,
     current_user: dict = Depends(get_current_user)
 ):
     """Atualiza um departamento"""
     if current_user["user_type"] not in ["admin", "reseller"]:
         raise HTTPException(status_code=403, detail="Não autorizado")
     
-    reseller_id = current_user.get("reseller_id")
+    # ISOLAMENTO MULTI-TENANT: Usar função centralizada
+    tenant_filter = get_tenant_filter(request, current_user)
     
     query = {"id": dept_id}
-    if reseller_id:
-        query["reseller_id"] = reseller_id
-    elif current_user["user_type"] != "admin":
-        raise HTTPException(status_code=403, detail="Não autorizado")
+    query.update(tenant_filter)
     
     department = await db.departments.find_one(query)
     if not department:
         raise HTTPException(status_code=404, detail="Departamento não encontrado")
     
     # Se marcar como default, desmarcar os outros
+    # Determinar reseller_id para o filtro
+    from tenant_middleware import get_request_tenant
+    tenant = get_request_tenant(request)
+    user_type = current_user.get("user_type")
+    
+    if user_type == "admin" and tenant.is_master:
+        reseller_id = tenant.reseller_id
+    else:
+        reseller_id = current_user.get("reseller_id")
+    
     if data.is_default:
         query_update = {"reseller_id": reseller_id} if reseller_id else {}
         await db.departments.update_many(query_update, {"$set": {"is_default": False}})
