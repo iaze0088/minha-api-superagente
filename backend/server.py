@@ -2013,11 +2013,19 @@ async def get_notices(request: Request, current_user: dict = Depends(get_current
 
 @api_router.post("/notices")
 async def create_notice(data: NoticeCreate, request: Request, current_user: dict = Depends(get_current_user)):
-    if current_user["user_type"] not in ["admin", "reseller"]:
+    if current_user["user_type"] not in ["admin", "reseller", "agent"]:
         raise HTTPException(status_code=403, detail="Não autorizado")
     
+    # ISOLAMENTO MULTI-TENANT: Determinar reseller_id baseado no contexto
     tenant = get_request_tenant(request)
-    reseller_id = tenant.reseller_id or current_user.get("reseller_id")
+    user_type = current_user.get("user_type")
+    
+    # Admin master: usa tenant do request (None se for master domain)
+    if user_type == "admin" and tenant.is_master:
+        reseller_id = tenant.reseller_id  # None para master, ou revenda específica se acessar via domínio
+    else:
+        # Reseller ou agent: usa reseller_id do token
+        reseller_id = current_user.get("reseller_id")
     
     notice_id = str(uuid.uuid4())
     notice = {
