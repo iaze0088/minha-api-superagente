@@ -2200,19 +2200,27 @@ async def get_tutorials_advanced(request: Request, current_user: dict = Depends(
     return tutorials
 
 @api_router.post("/config/tutorials-advanced")
-async def save_tutorials_advanced(data: dict, current_user: dict = Depends(get_current_user)):
+async def save_tutorials_advanced(data: dict, request: Request, current_user: dict = Depends(get_current_user)):
     """Salva/atualiza tutoriais avançados"""
-    if current_user["user_type"] != "admin":
-        raise HTTPException(status_code=403, detail="Apenas admin")
+    if current_user["user_type"] not in ["admin", "reseller"]:
+        raise HTTPException(status_code=403, detail="Não autorizado")
     
-    from tenant_middleware import get_current_tenant
-    tenant_ctx = get_current_tenant()
-    reseller_id = tenant_ctx.reseller_id
+    # ISOLAMENTO MULTI-TENANT: Determinar reseller_id baseado no contexto
+    tenant = get_request_tenant(request)
+    user_type = current_user.get("user_type")
+    
+    # Admin master: usa tenant do request (None se for master domain)
+    if user_type == "admin" and tenant.is_master:
+        reseller_id = tenant.reseller_id
+    else:
+        # Reseller: usa reseller_id do token
+        reseller_id = current_user.get("reseller_id")
     
     tutorials = data.get("tutorials", [])
     
     # Remove todos os tutoriais existentes desta revenda
-    await db.tutorials_advanced.delete_many({"reseller_id": reseller_id})
+    delete_query = {"reseller_id": reseller_id} if reseller_id else {}
+    await db.tutorials_advanced.delete_many(delete_query)
     
     # Insere novos tutoriais
     if tutorials:
