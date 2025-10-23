@@ -1,0 +1,82 @@
+═══════════════════════════════════════════════════════════════════
+  CREDENCIAIS RÁPIDAS - CYBERTV SUPORTE
+═══════════════════════════════════════════════════════════════════
+
+🔑 ADMIN PRINCIPAL (VOCÊ)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+URL:   https://reseller-sync.preview.emergentagent.com/admin
+Senha: 102030@ab
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+═══════════════════════════════════════════════════════════════════
+  REVENDAS
+═══════════════════════════════════════════════════════════════════
+
+📋 REVENDA #1: michaelrv
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Email:  michaelrv@gmail.com
+Senha:  teste123 (temporária para testes)
+
+DOMÍNIO CUSTOMIZADO (precisa DNS):
+  https://ajuda.vip/admin
+
+DOMÍNIO DE TESTE (funciona agora):
+  https://reseller-7ca75660.preview.emergentagent.com/admin
+
+DNS: ajuda.vip → 34.57.15.54 (Registro A)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+📋 REVENDA #2: Revenda Teste Frontend
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Email:  teste@frontend.com
+Senha:  (senha já foi alterada pelo usuário)
+
+DOMÍNIO DE TESTE:
+  https://reseller-38d79cf5.preview.emergentagent.com/admin
+
+Obs: Não tem domínio customizado configurado
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+📋 REVENDA #3: braia123
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Email:  braia@gmail.com
+Senha:  (senha já foi alterada pelo usuário)
+
+DOMÍNIO CUSTOMIZADO (precisa DNS):
+  https://braia123.iaze.xyz/admin
+
+DOMÍNIO DE TESTE (funciona agora):
+  https://reseller-90e335d2.preview.emergentagent.com/admin
+
+DNS: braia123.iaze.xyz → 34.57.15.54 (Registro A)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+═══════════════════════════════════════════════════════════════════
+  NOTAS IMPORTANTES
+═══════════════════════════════════════════════════════════════════
+
+⚠️  SENHAS DAS REVENDAS #2 e #3:
+    As senhas foram alteradas pelos usuários.
+    Para resetar: Acesse Admin Principal > Revendas > Editar
+
+✅  DOMÍNIOS DE TESTE:
+    Funcionam IMEDIATAMENTE sem configurar DNS
+    Use sempre que os domínios customizados não funcionarem
+
+⚠️  DOMÍNIOS CUSTOMIZADOS:
+    Precisam de DNS configurado:
+    - Registro A: @ → 34.57.15.54
+    - Registro A: www → 34.57.15.54
+
+🔧  REPLICAR CONFIGURAÇÕES:
+    1. Configure no Admin Principal
+    2. Clique "Aplicar para Revendas"
+    3. Todas as revendas recebem automaticamente
+
+═══════════════════════════════════════════════════════════════════
+
+SERVIDOR IP: 34.57.15.54
+DATA: 23/10/2024
