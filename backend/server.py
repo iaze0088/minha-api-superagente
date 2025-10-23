@@ -579,6 +579,11 @@ async def admin_login(data: AdminLogin):
     token = create_token("admin", "admin")
     return TokenResponse(token=token, user_type="admin", user_data={"id": "admin"})
 
+@api_router.post("/auth/agent/test-debug")
+async def test_debug_login(data: dict):
+    """Endpoint de debug temporário"""
+    return {"received": data, "login_type": type(data.get("login")).__name__, "password_type": type(data.get("password")).__name__}
+
 @api_router.post("/auth/agent/login")
 async def agent_login(data: AgentLogin, request: Request):
     try:
