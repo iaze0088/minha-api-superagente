@@ -199,7 +199,17 @@ async def create_department(
     if current_user["user_type"] not in ["admin", "reseller"]:
         raise HTTPException(status_code=403, detail="Não autorizado")
     
-    reseller_id = current_user.get("reseller_id")
+    # ISOLAMENTO MULTI-TENANT: Determinar reseller_id baseado no contexto
+    from tenant_middleware import get_request_tenant
+    tenant = get_request_tenant(request)
+    user_type = current_user.get("user_type")
+    
+    # Admin master: usa tenant do request (None se for master domain)
+    if user_type == "admin" and tenant.is_master:
+        reseller_id = tenant.reseller_id
+    else:
+        # Reseller: usa reseller_id do token
+        reseller_id = current_user.get("reseller_id")
     
     # Se marcar como default, desmarcar os outros
     if data.is_default:
