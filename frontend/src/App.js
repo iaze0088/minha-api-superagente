@@ -43,6 +43,7 @@ function App() {
           
           {/* Revenda */}
           <Route path="/revenda/login" element={<ResellerLogin />} />
+          <Route path="/reseller-login" element={<ResellerLogin />} />
           <Route path="/revenda/dashboard" element={
             <PrivateRoute requiredType="reseller">
               <ResellerDashboard />
