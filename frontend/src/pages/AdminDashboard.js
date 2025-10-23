@@ -150,9 +150,13 @@ const AdminDashboard = () => {
 🔑 *Senha:* ${info.password}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔗 *ACESSO UNIFICADO - Use este link:*
+🔗 *ACESSO UNIFICADO - Use ESTE link:*
 
-🟢 *Login da Revenda:*
+🟢 *Login da Revenda (FUNCIONA AGORA):*
+https://reseller-sync.preview.emergentagent.com/revenda/login
+
+OU
+
 https://reseller-sync.preview.emergentagent.com/reseller-login
 
 📧 Email: ${info.email}
