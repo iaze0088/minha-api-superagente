@@ -1854,12 +1854,8 @@ async def replicate_config_to_resellers(current_user: dict = Depends(get_current
 @api_router.get("/iptv-apps")
 async def get_iptv_apps(request: Request = None, current_user: dict = Depends(get_current_user)):
     """Retorna todos os apps IPTV cadastrados"""
-    tenant = get_request_tenant(request)
-    reseller_id = tenant.reseller_id or current_user.get("reseller_id")
-    
-    query = {}
-    if reseller_id:
-        query["reseller_id"] = reseller_id
+    # ISOLAMENTO MULTI-TENANT: Usar função centralizada
+    query = get_tenant_filter(request, current_user)
     
     apps = await db.iptv_apps.find(query, {"_id": 0}).to_list(None)
     return apps
