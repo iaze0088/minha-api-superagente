@@ -12,6 +12,7 @@ import api from '../lib/api';
 import { clearAuth, getAuth } from '../lib/auth';
 import ResellerDomainManager from '../components/ResellerDomainManager';
 import FirstLoginPasswordChange from '../components/FirstLoginPasswordChange';
+import DNSReminderPopup from '../components/DNSReminderPopup';
 
 const ResellerDashboard = () => {
   const navigate = useNavigate();
