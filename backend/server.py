@@ -581,16 +581,37 @@ async def admin_login(data: AdminLogin):
 
 @api_router.post("/auth/agent/login")
 async def agent_login(data: AgentLogin, request: Request):
+    print(f"\n{'='*70}")
+    print(f"🔑 AGENT LOGIN - Tentativa de login: {data.login}")
+    print(f"{'='*70}")
+    
     # Buscar agente
     agent = await db.agents.find_one({"login": data.login})
     
-    if not agent or not bcrypt.checkpw(data.password.encode(), agent["pass_hash"].encode()):
+    if not agent:
+        print(f"❌ Agent não encontrado: {data.login}")
+        raise HTTPException(status_code=401, detail="Login ou senha inválidos")
+    
+    print(f"✅ Agent encontrado: {agent['name']}")
+    print(f"   Reseller ID: {agent.get('reseller_id')}")
+    
+    # Verificar senha
+    password_check = bcrypt.checkpw(data.password.encode(), agent["pass_hash"].encode())
+    print(f"   Password check: {password_check}")
+    
+    if not password_check:
+        print(f"❌ Senha incorreta")
         raise HTTPException(status_code=401, detail="Login ou senha inválidos")
     
     if not agent.get("is_active", True):
+        print(f"❌ Agent inativo")
         raise HTTPException(status_code=403, detail="Conta desativada")
     
+    print(f"✅ Login bem-sucedido! Gerando token...")
     token = create_token(agent["id"], "agent", agent.get("reseller_id"))
+    print(f"✅ Token gerado com reseller_id: {agent.get('reseller_id')}")
+    print(f"{'='*70}\n")
+    
     return TokenResponse(token=token, user_type="agent", user_data={
         "id": agent["id"],
         "name": agent["name"],
