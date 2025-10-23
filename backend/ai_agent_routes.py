@@ -277,19 +277,18 @@ async def update_department(
 @ai_router.delete("/departments/{dept_id}")
 async def delete_department(
     dept_id: str,
+    request: Request,
     current_user: dict = Depends(get_current_user)
 ):
     """Deleta um departamento"""
     if current_user["user_type"] not in ["admin", "reseller"]:
         raise HTTPException(status_code=403, detail="Não autorizado")
     
-    reseller_id = current_user.get("reseller_id")
+    # ISOLAMENTO MULTI-TENANT: Usar função centralizada
+    tenant_filter = get_tenant_filter(request, current_user)
     
     query = {"id": dept_id}
-    if reseller_id:
-        query["reseller_id"] = reseller_id
-    elif current_user["user_type"] != "admin":
-        raise HTTPException(status_code=403, detail="Não autorizado")
+    query.update(tenant_filter)
     
     result = await db.departments.delete_one(query)
     if result.deleted_count == 0:
