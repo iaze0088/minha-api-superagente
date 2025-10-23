@@ -50,7 +50,7 @@ const ResellerDashboard = () => {
   const loadData = async () => {
     try {
       const [configRes, agentsRes] = await Promise.all([
-        api.get(`/resellers/${userData.id}/config`),
+        api.get('/config'),
         api.get('/agents')
       ]);
       setConfig(configRes.data);
