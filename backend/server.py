@@ -894,28 +894,8 @@ async def upload_user_avatar(file: UploadFile = File(...), current_user: dict = 
 # Agent routes (admin/reseller)
 @api_router.get("/agents")
 async def list_agents(request: Request, current_user: dict = Depends(get_current_user)):
-    tenant = get_request_tenant(request)
-    
-    # Filtro baseado no tenant
-    query = {}
-    
-    # Admin master vê todos, reseller vê apenas seus agentes, agent vê da sua revenda
-    if current_user["user_type"] == "admin" and not tenant.is_master:
-        # Admin master acessando domínio de revenda específica
-        if tenant.reseller_id:
-            query["reseller_id"] = tenant.reseller_id
-    elif current_user["user_type"] == "reseller":
-        # Reseller vê apenas seus agentes
-        query["reseller_id"] = current_user.get("reseller_id")
-    elif current_user["user_type"] == "agent":
-        # CORREÇÃO: Atendente vê apenas agentes da sua revenda
-        reseller_id = current_user.get("reseller_id")
-        if reseller_id:
-            query["reseller_id"] = reseller_id
-    elif current_user["user_type"] == "client":
-        # Client vê lista geral (sem filtro sensível)
-        if tenant.reseller_id:
-            query["reseller_id"] = tenant.reseller_id
+    # ISOLAMENTO MULTI-TENANT: Usar função centralizada
+    query = get_tenant_filter(request, current_user)
     
     agents = await db.agents.find(query, {"_id": 0, "pass_hash": 0}).to_list(None)
     return agents
