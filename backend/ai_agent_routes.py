@@ -8,6 +8,7 @@ import uuid
 from datetime import datetime, timezone
 from models import *
 from motor.motor_asyncio import AsyncIOMotorClient
+from tenant_helpers import get_tenant_filter
 import jwt
 
 # Configuração do MongoDB
