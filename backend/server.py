@@ -2123,14 +2123,13 @@ async def save_auto_responses(data: dict, current_user: dict = Depends(get_curre
 
 # ====== NOVO: Auto-Responder Avançado (Multi-mídia + Delays) ======
 @api_router.get("/config/auto-responder-sequences")
-async def get_auto_responder_sequences(current_user: dict = Depends(get_current_user)):
+async def get_auto_responder_sequences(request: Request, current_user: dict = Depends(get_current_user)):
     """Retorna todas as sequências de auto-responder"""
-    from tenant_middleware import get_current_tenant
-    tenant_ctx = get_current_tenant()
-    reseller_id = tenant_ctx.reseller_id
+    # ISOLAMENTO MULTI-TENANT: Usar função centralizada
+    query = get_tenant_filter(request, current_user)
     
     sequences = await db.auto_responder_sequences.find(
-        {"reseller_id": reseller_id},
+        query,
         {"_id": 0}  # Exclude MongoDB ObjectId
     ).to_list(length=None)
     
