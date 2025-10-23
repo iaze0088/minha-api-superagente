@@ -149,20 +149,20 @@ const AdminDashboard = () => {
 📧 *Email:* ${info.email}
 🔑 *Senha:* ${info.password}
 
-🌐 *Domínio Provisório (Teste):*
-${info.test_domain}
-
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🔗 *Links de Acesso:*
+🔗 *ACESSO UNIFICADO - Use este link:*
 
-🔹 *Painel Admin:*
-${info.urls.admin}
+🟢 *Login da Revenda:*
+https://reseller-sync.preview.emergentagent.com/reseller-login
 
-🔹 *Painel Atendente:*
-${info.urls.atendente}
+📧 Email: ${info.email}
+🔑 Senha: ${info.password}
 
-🔹 *Painel Cliente:*
-${info.urls.cliente}
+⚠️ *Importante:*
+• A revenda deve acessar pelo link acima
+• Fazer login com email e senha
+• Terá 24 horas para configurar domínio próprio
+• Após configurar, avisar você (Master) para ativar
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
