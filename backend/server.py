@@ -17,6 +17,7 @@ import jwt
 import aiofiles
 from models import *
 from tenant_middleware import detect_tenant, get_current_tenant, apply_tenant_filter, TenantContext, tenant_context as global_tenant_context
+from tenant_helpers import get_tenant_filter
 from ai_service import ai_service
 import mimetypes
 import re
