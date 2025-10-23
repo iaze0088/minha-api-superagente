@@ -125,19 +125,18 @@ async def get_ai_agent(
 async def update_ai_agent(
     agent_id: str,
     data: AIAgentUpdate,
+    request: Request,
     current_user: dict = Depends(get_current_user)
 ):
     """Atualiza um agente IA"""
     if current_user["user_type"] not in ["admin", "reseller"]:
         raise HTTPException(status_code=403, detail="Não autorizado")
     
-    reseller_id = current_user.get("reseller_id")
+    # ISOLAMENTO MULTI-TENANT: Usar função centralizada
+    tenant_filter = get_tenant_filter(request, current_user)
     
     query = {"id": agent_id}
-    if reseller_id:
-        query["reseller_id"] = reseller_id
-    elif current_user["user_type"] != "admin":
-        raise HTTPException(status_code=403, detail="Não autorizado")
+    query.update(tenant_filter)
     
     agent = await db.ai_agents.find_one(query)
     if not agent:
