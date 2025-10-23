@@ -228,6 +228,10 @@ async def create_reseller(data: ResellerCreate, current_user: dict = Depends(get
     level = await calculate_level(parent_id, db)
     
     reseller_id = str(uuid.uuid4())
+    
+    # Gerar domínio de teste provisório
+    test_domain = f"reseller-{reseller_id[:8]}.preview.emergentagent.com"
+    
     pass_hash = bcrypt.hashpw(data.password.encode(), bcrypt.gensalt()).decode()
     
     reseller = {
@@ -237,9 +241,12 @@ async def create_reseller(data: ResellerCreate, current_user: dict = Depends(get
         "pass_hash": pass_hash,
         "domain": data.domain or "",
         "custom_domain": "",
+        "test_domain": test_domain,
+        "test_domain_active": True,
         "is_active": True,
         "parent_id": parent_id,
         "level": level,
+        "first_login": True,
         "created_at": datetime.now(timezone.utc).isoformat()
     }
     
@@ -255,9 +262,23 @@ async def create_reseller(data: ResellerCreate, current_user: dict = Depends(get
     }
     await db.reseller_configs.insert_one(config)
     
-    logger.info(f"Reseller created: {data.name} (Level: {level}, Parent: {parent_id})")
+    logger.info(f"✅ Reseller created: {data.name} (Level: {level}, Parent: {parent_id}, Test domain: {test_domain})")
     
-    return {"ok": True, "reseller_id": reseller_id, "level": level}
+    # Retornar todos os dados para o modal
+    return {
+        "ok": True,
+        "reseller_id": reseller_id,
+        "name": data.name,
+        "email": data.email,
+        "password": data.password,
+        "level": level,
+        "test_domain": test_domain,
+        "urls": {
+            "admin": f"https://{test_domain}/admin",
+            "atendente": f"https://{test_domain}/atendente",
+            "cliente": f"https://{test_domain}/"
+        }
+    }
 
 # Update reseller
 @reseller_router.put("/{reseller_id}")
