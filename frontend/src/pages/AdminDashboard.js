@@ -153,11 +153,11 @@ const AdminDashboard = () => {
 🔗 *ACESSO UNIFICADO - Use ESTE link:*
 
 🟢 *Login da Revenda (FUNCIONA AGORA):*
-https://reseller-sync.preview.emergentagent.com/revenda/login
+https://iptv-support-hub.preview.emergentagent.com/revenda/login
 
 OU
 
-https://reseller-sync.preview.emergentagent.com/reseller-login
+https://iptv-support-hub.preview.emergentagent.com/reseller-login
 
 📧 Email: ${info.email}
 🔑 Senha: ${info.password}
@@ -1751,12 +1751,12 @@ https://reseller-sync.preview.emergentagent.com/reseller-login
                   </p>
                   <div className="bg-white rounded-lg p-3 border-2 border-green-300">
                     <a 
-                      href="https://reseller-sync.preview.emergentagent.com/reseller-login" 
+                      href="https://iptv-support-hub.preview.emergentagent.com/reseller-login" 
                       target="_blank" 
                       rel="noopener noreferrer"
                       className="text-sm text-blue-600 hover:text-blue-800 underline font-mono break-all block"
                     >
-                      https://reseller-sync.preview.emergentagent.com/reseller-login
+                      https://iptv-support-hub.preview.emergentagent.com/reseller-login
                     </a>
                   </div>
                   <div className="bg-green-100 rounded-lg p-3">

@@ -4,7 +4,7 @@
 
 🔑 ADMIN PRINCIPAL (VOCÊ)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-URL:   https://reseller-sync.preview.emergentagent.com/admin
+URL:   https://iptv-support-hub.preview.emergentagent.com/admin
 Senha: 102030@ab
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -21,7 +21,7 @@ DOMÍNIO CUSTOMIZADO (precisa DNS):
   https://ajuda.vip/admin
 
 DOMÍNIO DE TESTE (funciona agora):
-  https://reseller-7ca75660.preview.emergentagent.com/admin
+  https://iptv-support-hub.preview.emergentagent.com/admin
 
 DNS: ajuda.vip → 34.57.15.54 (Registro A)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -33,7 +33,7 @@ Email:  teste@frontend.com
 Senha:  (senha já foi alterada pelo usuário)
 
 DOMÍNIO DE TESTE:
-  https://reseller-38d79cf5.preview.emergentagent.com/admin
+  https://iptv-support-hub.preview.emergentagent.com/admin
 
 Obs: Não tem domínio customizado configurado
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -48,7 +48,7 @@ DOMÍNIO CUSTOMIZADO (precisa DNS):
   https://braia123.iaze.xyz/admin
 
 DOMÍNIO DE TESTE (funciona agora):
-  https://reseller-90e335d2.preview.emergentagent.com/admin
+  https://iptv-support-hub.preview.emergentagent.com/admin
 
 DNS: braia123.iaze.xyz → 34.57.15.54 (Registro A)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

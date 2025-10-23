@@ -12,7 +12,7 @@ import uuid
 from typing import Dict, Optional, List
 
 # Backend URL from environment
-BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://reseller-sync.preview.emergentagent.com')
+BACKEND_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://iptv-support-hub.preview.emergentagent.com')
 API_BASE = f"{BACKEND_URL}/api"
 
 # Credenciais do review request

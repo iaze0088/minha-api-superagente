@@ -21,7 +21,7 @@
 
 2. **Cole a URL do seu app:**
    ```
-   https://reseller-sync.preview.emergentagent.com
+   https://iptv-support-hub.preview.emergentagent.com
    ```
    ou sua URL de produção quando fizer deploy
 

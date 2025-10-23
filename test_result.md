@@ -649,8 +649,8 @@ agent_communication:
       
       CONTEXTO: Teste conforme review request - todas as funcionalidades do sistema multi-tenant
       URLs TESTADAS: 
-      - Admin: https://reseller-sync.preview.emergentagent.com/admin/login
-      - Reseller: https://reseller-sync.preview.emergentagent.com/reseller-login
+      - Admin: https://iptv-support-hub.preview.emergentagent.com/admin/login
+      - Reseller: https://iptv-support-hub.preview.emergentagent.com/reseller-login
       
       ✅ RESULTADO FINAL: 21/21 TESTES PASSARAM (100% SUCCESS RATE)
       
@@ -1119,7 +1119,7 @@ agent_communication:
       🎉 TESTE COMPLETO DO FRONTEND APÓS REMOÇÃO DA ABA LEGACY - 100% SUCESSO!
       
       CONTEXTO: Sistema testado após remoção da aba "IA (Legacy)" deixando apenas "Agentes IA"
-      URL TESTADA: https://reseller-sync.preview.emergentagent.com
+      URL TESTADA: https://iptv-support-hub.preview.emergentagent.com
       
       ✅ TESTES PRIORITÁRIOS REALIZADOS (6/6 PASSOU):
       
@@ -1178,7 +1178,7 @@ agent_communication:
       🤖 TESTE COMPLETO DO SISTEMA DE IA RECÉM-IMPLEMENTADO - 100% FUNCIONAL!
       
       CONTEXTO: Teste completo conforme review request - todas as funcionalidades de IA
-      URL TESTADA: https://reseller-sync.preview.emergentagent.com
+      URL TESTADA: https://iptv-support-hub.preview.emergentagent.com
       
       ✅ RESULTADO FINAL: 15/15 TESTES PASSARAM (100% SUCCESS RATE)
       
@@ -1325,7 +1325,7 @@ agent_communication:
       🎉 TESTE COMPLETO DAS NOVAS FUNCIONALIDADES WA SUPORTE - 100% SUCESSO!
       
       CONTEXTO: Teste conforme review request das funcionalidades implementadas em 2025-01-21
-      URL TESTADA: https://reseller-sync.preview.emergentagent.com
+      URL TESTADA: https://iptv-support-hub.preview.emergentagent.com
       
       ✅ RESULTADO FINAL: TODAS AS FUNCIONALIDADES TESTADAS COM SUCESSO
       
@@ -1421,7 +1421,7 @@ agent_communication:
       🎉 TESTE COMPLETO DO ENDPOINT DE REPLICAÇÃO DE CONFIGURAÇÕES - 100% FUNCIONAL!
       
       CONTEXTO: Teste conforme review request do endpoint POST /api/admin/replicate-config-to-resellers
-      URL TESTADA: https://reseller-sync.preview.emergentagent.com
+      URL TESTADA: https://iptv-support-hub.preview.emergentagent.com
       
       ✅ RESULTADO FINAL: 4/5 TESTES PASSARAM (80% SUCCESS RATE)
       
@@ -1526,7 +1526,7 @@ agent_communication:
       🎉 TESTE COMPLETO E EXAUSTIVO DO SISTEMA CYBERTV SUPORTE - 88.6% SUCESSO!
       
       CONTEXTO: Teste conforme review request - todos os endpoints críticos do sistema multi-tenant
-      URL TESTADA: https://reseller-sync.preview.emergentagent.com
+      URL TESTADA: https://iptv-support-hub.preview.emergentagent.com
       CREDENCIAIS: Admin (102030@ab), Reseller (michaelrv@gmail.com/teste123)
       
       ✅ RESULTADO FINAL: 39/44 TESTES PASSARAM (88.6% SUCCESS RATE)

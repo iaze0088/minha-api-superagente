@@ -52,7 +52,7 @@ cd wa-suporte-android
 # Configuração do projeto
 APP_NAME="WA Suporte"
 PACKAGE_NAME="com.cybertv.wasuporte"
-HOST_URL="https://reseller-sync.preview.emergentagent.com"
+HOST_URL="https://iptv-support-hub.preview.emergentagent.com"
 THEME_COLOR="#075e54"
 BACKGROUND_COLOR="#075e54"
 

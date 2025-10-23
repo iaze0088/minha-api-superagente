@@ -271,7 +271,7 @@ async def create_reseller(data: ResellerCreate, current_user: dict = Depends(get
     await db.reseller_configs.insert_one(config)
     
     # URLs completas
-    backend_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://reseller-sync.preview.emergentagent.com')
+    backend_url = os.environ.get('REACT_APP_BACKEND_URL', 'https://iptv-support-hub.preview.emergentagent.com')
     base_url = test_domain
     
     logger.info(f"✅ Reseller criado: {data.name} (Level: {level}, Parent: {parent_id}, Domínio teste: {test_domain})")

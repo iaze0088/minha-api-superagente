@@ -109,11 +109,11 @@
 ## 📋 CREDENCIAIS
 
 ### Admin Principal
-- URL: https://reseller-sync.preview.emergentagent.com/admin
+- URL: https://iptv-support-hub.preview.emergentagent.com/admin
 - Senha: `102030@ab`
 
 ### Reseller (Exemplo)
-- URL: https://reseller-sync.preview.emergentagent.com/reseller-login
+- URL: https://iptv-support-hub.preview.emergentagent.com/reseller-login
 - Email: `michaelrv@gmail.com`
 - Senha: `teste123`
 
@@ -129,7 +129,7 @@
 - PLAYWRIGHT_BROWSERS_PATH: /pw-browsers
 
 ### Frontend (.env)
-- REACT_APP_BACKEND_URL: https://reseller-sync.preview.emergentagent.com
+- REACT_APP_BACKEND_URL: https://iptv-support-hub.preview.emergentagent.com
 - REACT_APP_WS_URL: wss://reseller-sync.preview.emergentagent.com
 
 ### Servidor

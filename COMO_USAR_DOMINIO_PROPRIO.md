@@ -86,7 +86,7 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 ❌ ERRADO:
 ```javascript
-const API_URL = "https://reseller-sync.preview.emergentagent.com";
+const API_URL = "https://iptv-support-hub.preview.emergentagent.com";
 ```
 
 ---

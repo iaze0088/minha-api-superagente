@@ -1,26 +1,24 @@
 <analysis>
-The AI engineer's trajectory involved significantly enhancing the CYBERTV Suporte application. Initially, it focused on successful automation of SS-IPTV configurations, which required extensive debugging, user collaboration for CSS selectors, and fixing URL templates. This automation included handling complex web interactions and device synchronization.
+The AI engineer's work involved developing and debugging several key features for the CYBERTV Suporte application. Initially, successful SS-IPTV automation was achieved, while SmartOne and Duplecast automation failed due to anti-bot measures. The focus then shifted to implementing a system for the Admin Principal to replicate main configurations (logo, AI prompts, auto-responders, tutorial templates, IPTV templates) to all reseller panels, which involved creating a new API endpoint and a frontend button.
 
-Subsequently, attempts to automate SmartOne and Duplecast configurations were made but were ultimately unsuccessful due to robust anti-bot measures like Cloudflare Turnstile and Google reCAPTCHA, which detected the Playwright bot despite implemented stealth techniques. The user then opted to maintain manual configuration for all apps except SS-IPTV.
+Debugging this replication feature was a major task. The Aplicar para Revendas button was unresponsive, initially due to the modal being incorrectly nested within a  component, preventing it from rendering globally. After fixing this, the focus moved to ensuring configurations appeared correctly on reseller panels. This led to correcting a frontend API call in  that was fetching reseller-specific config from the wrong endpoint.
 
-The most recent major feature implemented was a system to replicate main admin configurations (e.g., support logo, AI prompts, auto-responders, tutorial templates) to all reseller panels. This involved both backend and frontend development, including a new API endpoint and a Aplicar para Revendas button. The current task involves debugging this button, which is unresponsive despite no console errors, pointing to a potential React component issue.
+Subsequent development included creating a reseller information modal after creation, implementing a Domain tab for resellers, and a DNS reminder popup. A critical multi-tenant isolation bug was identified and fixed in the  and  endpoints, ensuring agents only see their reseller's data. The current activity is a full multi-tenant security audit using a new helper function to standardize tenant filtering across all critical endpoints.
 </analysis>
 
 <product_requirements>
-The CYBERTV Suporte is a multi-tenant live chat application for Admins, Agents, and Clients, facilitating real-time communication, file uploads, and ticket management. It supports PWA with custom branding, an Agent Dashboard with message previews, AI integration, department management, and a robust multi-tenant reseller system.
+The CYBERTV Suporte application is a multi-tenant live chat platform for Admins, Agents, and Clients, supporting real-time communication, file uploads, and ticket management, with PWA and custom branding. It features an Agent Dashboard, AI integration, and department/reseller management. The primary goal was to automate IPTV application configurations via a Subir Listas feature, successfully implemented for SS-IPTV, but reverted to manual for SmartOne and Duplecast due to anti-bot measures.
 
-Recent work focused on the Subir Listas feature for managing IPTV applications (SSIPTV, SmartOne, Duplex Play, IBO Player, Smart IPTV, Bay TV, Duplecast). The goal was to automate the configuration of these apps for agents. SS-IPTV automation was successfully implemented, allowing automatic playlist addition and category interpretation. However, automation for SmartOne and Duplecast failed due to anti-bot measures (Cloudflare, reCAPTCHA), leading the user to revert these to manual guided configuration.
-
-The latest requirement is to enable the Admin Principal to replicate system configurations (e.g., support logo, AI prompts, auto-responders, tutorial templates, IPTV app templates) to all reseller panels via a Apply to all Revendas button. This replication should *not* affect manual data like agents, departments, clients, or specific reseller domains.
+The main focus became enabling the Admin Principal to replicate system configurations (support logo, AI prompts, auto-responders, tutorial templates, IPTV app templates) to all reseller panels using an Aplicar para Revendas button. This replication must exclude manual data (agents, departments, clients, domains). New requirements included a pop-up with reseller access details upon creation and a Domain tab in the Reseller Dashboard for domain management, featuring a 24-hour DNS configuration reminder. Crucially, strict multi-tenant data isolation is required, ensuring each reseller and their agents only access their own data.
 </product_requirements>
 
 <key_technical_concepts>
 -   **FastAPI**: Python framework for backend APIs and WebSockets.
--   **React**: JavaScript library for user interfaces.
+-   **React**: JavaScript library for building user interfaces.
 -   **MongoDB**: NoSQL database for data storage.
 -   **WebSockets**: Real-time communication for chat and automation logs.
--   **Playwright**: Python library for browser automation (used for IPTV config).
--   **Multi-tenancy**: Architecture supporting data isolation for resellers.
+-   **Playwright**: Python library for browser automation (SS-IPTV config).
+-   **Multi-tenancy**: Architecture supporting data isolation for resellers via  in database queries and JWT tokens.
 </key_technical_concepts>
 
 <code_architecture>
@@ -29,50 +27,79 @@ The application uses a FastAPI backend and a React frontend.
 
 
 -   ****:
-    -   Summary: Defines MongoDB document schemas.
-    -   Changes: Updated  enum to include new IPTV apps: Duplex Play, IBO Player, Smart IPTV, Bay TV, Duplecast.
+    -   Summary: Defines MongoDB document schemas for  and .
+    -   Changes: Added fields like , , ,  to handle reseller domain management.
 -   ****:
     -   Summary: Main FastAPI application for API routes and WebSockets.
     -   Changes:
-        -   Integrated  to handle the  endpoint for IPTV app automation.
-        -   Added a new  endpoint to facilitate the replication of main admin configurations to all resellers.
+        -   Added  for admin-to-reseller configuration replication.
+        -   Added  endpoint to fetch reseller details including  status.
+        -   Implemented a  helper function to standardize multi-tenant data isolation.
+        -   Modified  and  endpoints to explicitly use tenant filtering for agents.
+        -   Updated , ,  for  deactivation.
 -   ****:
-    -   Summary: A newly created service dedicated to handling browser automation tasks for IPTV application configurations using Playwright.
-    -   Changes: Contains specific automation classes like , , and , each tailored to interact with their respective websites. It incorporates retry logic, real-time screenshot capture, and attempts to bypass anti-bot mechanisms (Cloudflare, reCAPTCHA), successfully for SS-IPTV, but not for SmartOne or Duplecast.
+    -   Summary: Handles Playwright browser automation for IPTV application configurations.
+    -   Changes: No direct code changes, but the Playwright browser path issue was resolved via supervisor config.
+-   ****:
+    -   Summary: API routes specific to reseller management.
+    -   Changes: Modified  to return comprehensive reseller details (name, email, password, test_domain, URLs) for the frontend creation modal. Added  to update passwords and set  to .
+-   ****:
+    -   Summary: Middleware to detect reseller context based on domain.
+    -   Changes: Updated  to check both  and  for reseller identification. Also added the main  to .
+-   ****:
+    -   Summary: Central administrative panel.
+    -   Changes:
+        -   Integrated Aplicar para Revendas button and .
+        -   Fixed a critical bug where  was nested incorrectly, moving it to the main component's return.
+        -   Added state and functions for  (post-creation modal).
+        -   Updated the reseller creation modal to display the unified login link .
+-   ****:
+    -   Summary: Agent interface.
+    -   Changes: Display automation buttons only for SS-IPTV, reverted others to manual.
+-   ****:
+    -   Summary: Reseller's administrative panel.
+    -   Changes:
+        -   Implemented  component for forced password changes.
+        -   Corrected the  call for configurations from  to .
+        -   Integrated  component within a Domain tab.
+        -   Integrated  for domain configuration alerts.
+        -   Copied the full tab structure from , adapting and removing admin-specific tabs (like Revendas).
+-   ****:
+    -   Summary: Login page for resellers.
+    -   Changes: No direct code changes, confirmed it already supports email/password login.
+-   ****:
+    -   Summary: Main React application routes.
+    -   Changes: Added  route pointing to  component.
+-   ****:
+    -   Summary: New component for managing reseller domains.
+    -   Changes: Created/updated to provide UI for custom domain entry, DNS instructions, DNS verification, and deactivation of test domains.
+-   ****:
+    -   Summary: New component for displaying DNS configuration reminders.
+    -   Changes: Created to show timed pop-ups for resellers who haven't configured a custom domain within 24 hours.
 -   ****:
     -   Summary: Environment variables for backend configurations.
-    -   Changes: Added  to ensure Playwright can correctly locate and utilize its installed browsers.
--   ****:
-    -   Summary: The central administrative panel for managing application settings.
-    -   Changes:
-        -   Updated the UI to accommodate new IPTV app types, including relevant buttons and selection options.
-        -   Integrated a prominent Aplicar para Revendas button in the header, linked to a  for confirming configuration replication to resellers.
-        -   Addressed and fixed a  due to a duplicate function declaration and a JSX adjacent element error that arose during the implementation of the replication feature, ensuring proper component rendering.
-        -   Added an import for the  icon used by the new replication button.
--   ****:
-    -   Summary: The agent interface for managing client tickets and interactions.
-    -   Changes:
-        -   Enhanced the Subir Listas modal to include a Configuração Automática button and display real-time automation logs for IPTV app setup.
-        -   Modified to display automation buttons only for SS-IPTV, effectively reverting other IPTV apps to manual configuration mode based on user feedback.
--   ****:
-    -   Summary: A new Markdown file providing step-by-step instructions for agents to manually test the IPTV automation features.
-    -   Changes: This file was created to guide user testing, especially when automated processes faced challenges.
+    -   Changes: Added  to ensure Playwright can locate browsers (also configured in supervisor).
 </code_architecture>
 
 <pending_tasks>
--   Debug the unresponsive Aplicar para Revendas button in the Admin Dashboard, which currently does not trigger the  despite no console errors. The AI suspects an issue with the Dialog component's integration.
+- Conduct a full multi-tenant security audit across all backend endpoints.
+- Apply the  helper function to all identified critical endpoints (e.g., , , , , , , , , etc.) to enforce strict data isolation for each reseller and their agents.
 </pending_tasks>
 
 <current_work>
-Immediately before this summary request, the AI engineer was implementing a new feature to allow the Admin Principal to replicate system-wide configurations to all reseller panels. This involved:
-1.  **Backend Development**: Adding a new endpoint  in  that fetches configurations from the main admin (reseller_id = null) and applies them to all active resellers. These configurations include support logo, AI prompts, auto-responders, tutorial templates, and IPTV app templates, while explicitly excluding manual data like agents, departments, clients, and domains.
-2.  **Frontend Development**: Modifying  to include a prominent Aplicar para Revendas button in the header, along with a confirmation modal () and associated state management (, ) and the  function to call the backend endpoint.
+Immediately before this summary request, the AI engineer was addressing a critical multi-tenant isolation bug. The user reported that an agent of a reseller was able to view tickets belonging to the Admin Principal.
 
-During implementation, a  was fixed by removing a duplicate function definition. Another  was resolved by correctly embedding the  within the  component's main JSX return block.
+The AI engineer diagnosed this issue to the  and  endpoints in . Specifically, the logic was correctly filtering for resellers based on  from the tenant or current user but lacked an explicit filter for users with . This omission allowed agents to inadvertently access data outside their designated reseller context.
 
-The current state is that the backend endpoint is ready, and the frontend UI elements (button, modal, logic) are in place. However, the user reported that the Aplicar para Revendas button is visible but completely unresponsive to clicks in the Admin Principal dashboard. The AI engineer is currently investigating this unresponsiveness, noting that no errors are appearing in the browser console, suggesting a potential issue with the React Dialog component's event handling or rendering.
+To rectify this, the AI engineer:
+1.  Modified  in  to include  in the query if the  is agent.
+2.  Applied a similar correction to the  endpoint to ensure agents also only see other agents within their own reseller context.
+3.  Introduced a new helper function  in  to standardize the tenant filtering logic across the application.
+
+The current activity is an AUDITORIA COMPLETA DE SEGURANÇA MULTI-TENANT to systematically review and apply this standardized filtering using the  function to all other critical endpoints (, , , , , , WebSocket connections, etc.) to ensure absolute data isolation. The AI engineer has already started applying this to  and .
 </current_work>
 
 <optional_next_step>
-Investigate why the Aplicar para Revendas button is unresponsive by examining the React  component's integration and event handlers in .
+Complete the multi-tenant security audit by applying the  helper function to all remaining critical backend endpoints.
 </optional_next_step>
+

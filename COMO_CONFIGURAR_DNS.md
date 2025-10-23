@@ -99,11 +99,11 @@ Digite `ajuda.vip` e veja se está apontando para `34.57.15.54`
 
 **Todas as revendas podem acessar por:**
 
-🔗 https://reseller-sync.preview.emergentagent.com/revenda/login
+🔗 https://iptv-support-hub.preview.emergentagent.com/revenda/login
 
 **OU**
 
-🔗 https://reseller-sync.preview.emergentagent.com/reseller-login
+🔗 https://iptv-support-hub.preview.emergentagent.com/reseller-login
 
 **Credenciais de exemplo:**
 - Email: `michaelrv@gmail.com`

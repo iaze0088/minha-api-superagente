@@ -9,7 +9,7 @@
 
 **Acesso Total ao Sistema**
 
-- **URL:** https://reseller-sync.preview.emergentagent.com/admin
+- **URL:** https://iptv-support-hub.preview.emergentagent.com/admin
 - **Senha:** `102030@ab`
 - **Tipo:** Admin Master
 - **Permissões:** 
@@ -52,9 +52,9 @@
 - 🟡 Painel Cliente: https://ajuda.vip/
 
 **Via Domínio de Teste (funciona agora):**
-- 🔵 Painel Admin: https://reseller-7ca75660.preview.emergentagent.com/admin
-- 🟢 Painel Atendente: https://reseller-7ca75660.preview.emergentagent.com/atendente
-- 🟡 Painel Cliente: https://reseller-7ca75660.preview.emergentagent.com/
+- 🔵 Painel Admin: https://iptv-support-hub.preview.emergentagent.com/admin
+- 🟢 Painel Atendente: https://iptv-support-hub.preview.emergentagent.com/atendente
+- 🟡 Painel Cliente: https://iptv-support-hub.preview.emergentagent.com/
 
 **⚙️ Configurações Atuais:**
 - Logo do Suporte: ❌ Não configurado
@@ -96,9 +96,9 @@ TTL: 3600
 - **Domínio de Teste:** `reseller-38d79cf5.preview.emergentagent.com` ✅
 
 **🔗 Links de Acesso:**
-- 🔵 Painel Admin: https://reseller-38d79cf5.preview.emergentagent.com/admin
-- 🟢 Painel Atendente: https://reseller-38d79cf5.preview.emergentagent.com/atendente
-- 🟡 Painel Cliente: https://reseller-38d79cf5.preview.emergentagent.com/
+- 🔵 Painel Admin: https://iptv-support-hub.preview.emergentagent.com/admin
+- 🟢 Painel Atendente: https://iptv-support-hub.preview.emergentagent.com/atendente
+- 🟡 Painel Cliente: https://iptv-support-hub.preview.emergentagent.com/
 
 **⚙️ Configurações Atuais:**
 - Logo do Suporte: ❌ Não configurado
@@ -134,9 +134,9 @@ TTL: 3600
 - 🟡 Painel Cliente: https://braia123.iaze.xyz/
 
 **Via Domínio de Teste (funciona agora):**
-- 🔵 Painel Admin: https://reseller-90e335d2.preview.emergentagent.com/admin
-- 🟢 Painel Atendente: https://reseller-90e335d2.preview.emergentagent.com/atendente
-- 🟡 Painel Cliente: https://reseller-90e335d2.preview.emergentagent.com/
+- 🔵 Painel Admin: https://iptv-support-hub.preview.emergentagent.com/admin
+- 🟢 Painel Atendente: https://iptv-support-hub.preview.emergentagent.com/atendente
+- 🟡 Painel Cliente: https://iptv-support-hub.preview.emergentagent.com/
 
 **⚙️ Configurações Atuais:**
 - Logo do Suporte: ❌ Não configurado
@@ -165,7 +165,7 @@ TTL: 3600
 
 ### Para Você (Admin Principal):
 
-1. **Acesse:** https://reseller-sync.preview.emergentagent.com/admin
+1. **Acesse:** https://iptv-support-hub.preview.emergentagent.com/admin
 2. **Senha:** `102030@ab`
 3. **Configure:** Logo, IA, auto-respostas, tutoriais
 4. **Replique:** Clique em "Aplicar para Revendas" para distribuir para todos
@@ -193,7 +193,7 @@ As senhas das revendas foram alteradas pelos usuários e não temos acesso a ela
 
 ### 1. Resetar Senha pelo Admin Principal:
 ```
-1. Acesse: https://reseller-sync.preview.emergentagent.com/admin
+1. Acesse: https://iptv-support-hub.preview.emergentagent.com/admin
 2. Vá em "Revendas"
 3. Edite a revenda
 4. Defina nova senha
