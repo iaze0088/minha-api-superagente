@@ -2187,14 +2187,13 @@ async def delete_auto_responder_sequence(sequence_id: str, request: Request, cur
 
 # ====== NOVO: Tutorials Avançado (Multi-mídia + Delays) ======
 @api_router.get("/config/tutorials-advanced")
-async def get_tutorials_advanced(current_user: dict = Depends(get_current_user)):
+async def get_tutorials_advanced(request: Request, current_user: dict = Depends(get_current_user)):
     """Retorna todos os tutoriais avançados"""
-    from tenant_middleware import get_current_tenant
-    tenant_ctx = get_current_tenant()
-    reseller_id = tenant_ctx.reseller_id
+    # ISOLAMENTO MULTI-TENANT: Usar função centralizada
+    query = get_tenant_filter(request, current_user)
     
     tutorials = await db.tutorials_advanced.find(
-        {"reseller_id": reseller_id},
+        query,
         {"_id": 0}  # Exclude MongoDB ObjectId
     ).to_list(length=None)
     
