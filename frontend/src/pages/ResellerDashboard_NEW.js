@@ -173,7 +173,7 @@ https://reseller-sync.preview.emergentagent.com/reseller-login
 • Quando ativar o domínio oficial, o domínio de teste será desativado
 
 🚀 *Próximos Passos:*
-1. Acesse o Painel Admin pelo link acima
+1. Acesse o Painel Revenda pelo link acima
 2. Faça login com email e senha fornecidos
 3. Você será solicitado a trocar a senha no primeiro acesso
 4. Configure seu domínio oficial quando estiver pronto
@@ -1774,7 +1774,7 @@ https://reseller-sync.preview.emergentagent.com/reseller-login
               <div className="bg-purple-50 border-2 border-purple-200 rounded-lg p-4">
                 <h3 className="font-bold text-purple-900 mb-2">🚀 Próximos Passos:</h3>
                 <ol className="text-sm text-purple-800 space-y-1 list-decimal ml-5">
-                  <li>Acesse o Painel Admin pelo link acima</li>
+                  <li>Acesse o Painel Revenda pelo link acima</li>
                   <li>Faça login com email e senha fornecidos</li>
                   <li>No primeiro acesso, será solicitado a trocar a senha</li>
                   <li>No menu "Domínio", configure seu domínio oficial quando estiver pronto</li>
