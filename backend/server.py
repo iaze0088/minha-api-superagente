@@ -990,13 +990,25 @@ async def should_ask_whatsapp(user_id: str):
 # Ticket routes
 @api_router.get("/tickets")
 async def list_tickets(status: Optional[str] = None, request: Request = None, current_user: dict = Depends(get_current_user)):
+    # DEBUG: FORÇAR ERRO PARA CONFIRMAR QUE ESTE CÓDIGO ESTÁ SENDO EXECUTADO
+    import sys
+    print(f"\n{'='*80}", file=sys.stderr)
+    print(f"🔍 GET /tickets EXECUTADO!", file=sys.stderr)
+    print(f"   user_type: {current_user.get('user_type')}", file=sys.stderr)
+    print(f"   reseller_id no token: {current_user.get('reseller_id')}", file=sys.stderr)
+    print(f"{'='*80}\n", file=sys.stderr)
+    
     # ISOLAMENTO MULTI-TENANT: Usar função centralizada
     query = get_tenant_filter(request, current_user)
+    
+    print(f"🔍 Query gerado pelo filtro: {query}", file=sys.stderr)
     
     if status:
         query["status"] = status
     
     tickets = await db.tickets.find(query, {"_id": 0}).to_list(None)
+    
+    print(f"🔍 Tickets retornados: {len(tickets)}", file=sys.stderr)
     
     # Enrich with user data and last message info
     for ticket in tickets:
