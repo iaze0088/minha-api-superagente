@@ -1735,59 +1735,37 @@ https://reseller-sync.preview.emergentagent.com/reseller-login
                 </div>
               </div>
 
-              {/* Domínio Provisório */}
-              <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
-                <h3 className="font-bold text-amber-900 mb-3 flex items-center gap-2">
-                  <Globe className="w-5 h-5" />
-                  Domínio Provisório (Teste)
-                </h3>
-                <div className="bg-white rounded p-3 border border-amber-300">
-                  <code className="text-sm text-amber-900 break-all">{resellerInfoModal.data.test_domain}</code>
-                </div>
-                <p className="text-xs text-amber-700 mt-2">
-                  ⚠️ Use este domínio temporário para acessar. Após configurar domínio oficial, este será desativado.
-                </p>
-              </div>
-
-              {/* Links de Acesso */}
+              {/* Acesso Unificado */}
               <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
                 <h3 className="font-bold text-green-900 mb-3 flex items-center gap-2">
                   <ExternalLink className="w-5 h-5" />
-                  Links de Acesso
+                  🔗 Link de Acesso Unificado
                 </h3>
                 <div className="space-y-3">
-                  <div>
-                    <div className="text-sm font-semibold text-green-700 mb-1">🔹 Painel Admin:</div>
+                  <p className="text-sm text-green-800 font-semibold">
+                    A revenda deve usar ESTE link para acessar:
+                  </p>
+                  <div className="bg-white rounded-lg p-3 border-2 border-green-300">
                     <a 
-                      href={resellerInfoModal.data.urls.admin} 
+                      href="https://reseller-sync.preview.emergentagent.com/reseller-login" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-xs text-blue-600 hover:text-blue-800 underline break-all block"
+                      className="text-sm text-blue-600 hover:text-blue-800 underline font-mono break-all block"
                     >
-                      {resellerInfoModal.data.urls.admin}
+                      https://reseller-sync.preview.emergentagent.com/reseller-login
                     </a>
                   </div>
-                  <div>
-                    <div className="text-sm font-semibold text-green-700 mb-1">🔹 Painel Atendente:</div>
-                    <a 
-                      href={resellerInfoModal.data.urls.atendente} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-xs text-blue-600 hover:text-blue-800 underline break-all block"
-                    >
-                      {resellerInfoModal.data.urls.atendente}
-                    </a>
-                  </div>
-                  <div>
-                    <div className="text-sm font-semibold text-green-700 mb-1">🔹 Painel Cliente:</div>
-                    <a 
-                      href={resellerInfoModal.data.urls.cliente} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-xs text-blue-600 hover:text-blue-800 underline break-all block"
-                    >
-                      {resellerInfoModal.data.urls.cliente}
-                    </a>
+                  <div className="bg-green-100 rounded-lg p-3">
+                    <p className="text-xs text-green-800">
+                      <strong>Instruções:</strong>
+                    </p>
+                    <ol className="text-xs text-green-700 mt-1 ml-4 list-decimal space-y-1">
+                      <li>Acesse o link acima</li>
+                      <li>Faça login com o email e senha informados</li>
+                      <li>No primeiro acesso, será solicitado trocar a senha</li>
+                      <li>A revenda terá <strong>24 horas</strong> para configurar domínio próprio</li>
+                      <li>Após configurar o domínio, ela deve <strong>avisar você</strong> para ativar</li>
+                    </ol>
                   </div>
                 </div>
               </div>
