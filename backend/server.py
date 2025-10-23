@@ -1895,15 +1895,14 @@ async def create_iptv_app(data: dict, request: Request = None, current_user: dic
 @api_router.put("/iptv-apps/{app_id}")
 async def update_iptv_app(app_id: str, data: dict, request: Request = None, current_user: dict = Depends(get_current_user)):
     """Atualiza um app IPTV"""
-    if current_user["user_type"] != "admin":
-        raise HTTPException(status_code=403, detail="Apenas admin")
+    if current_user["user_type"] not in ["admin", "reseller"]:
+        raise HTTPException(status_code=403, detail="Não autorizado")
     
-    tenant = get_request_tenant(request)
-    reseller_id = tenant.reseller_id or current_user.get("reseller_id")
+    # ISOLAMENTO MULTI-TENANT: Usar função centralizada
+    tenant_filter = get_tenant_filter(request, current_user)
     
     query = {"id": app_id}
-    if reseller_id:
-        query["reseller_id"] = reseller_id
+    query.update(tenant_filter)
     
     update_data = {}
     if "name" in data:
