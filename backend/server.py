@@ -1999,15 +1999,14 @@ async def automate_iptv_config(app_id: str, data: dict, request: Request = None,
 # Notice routes
 @api_router.get("/notices")
 async def get_notices(request: Request, current_user: dict = Depends(get_current_user)):
-    tenant = get_request_tenant(request)
-    reseller_id = tenant.reseller_id or current_user.get("reseller_id")
+    # ISOLAMENTO MULTI-TENANT: Usar função centralizada
+    tenant_filter = get_tenant_filter(request, current_user)
     
     # Get notices from last 60 days
     cutoff = datetime.now(timezone.utc) - timedelta(days=60)
     
     query = {"created_at": {"$gte": cutoff.isoformat()}}
-    if reseller_id:
-        query["reseller_id"] = reseller_id
+    query.update(tenant_filter)
     
     notices = await db.notices.find(query, {"_id": 0}).sort("created_at", -1).to_list(None)
     return notices
