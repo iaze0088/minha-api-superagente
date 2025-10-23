@@ -2231,19 +2231,18 @@ async def save_tutorials_advanced(data: dict, request: Request, current_user: di
     return {"ok": True, "count": len(tutorials)}
 
 @api_router.delete("/config/tutorials-advanced/{tutorial_id}")
-async def delete_tutorial_advanced(tutorial_id: str, current_user: dict = Depends(get_current_user)):
+async def delete_tutorial_advanced(tutorial_id: str, request: Request, current_user: dict = Depends(get_current_user)):
     """Deleta um tutorial específico"""
-    if current_user["user_type"] != "admin":
-        raise HTTPException(status_code=403, detail="Apenas admin")
+    if current_user["user_type"] not in ["admin", "reseller"]:
+        raise HTTPException(status_code=403, detail="Não autorizado")
     
-    from tenant_middleware import get_current_tenant
-    tenant_ctx = get_current_tenant()
-    reseller_id = tenant_ctx.reseller_id
+    # ISOLAMENTO MULTI-TENANT: Usar função centralizada
+    tenant_filter = get_tenant_filter(request, current_user)
     
-    result = await db.tutorials_advanced.delete_one({
-        "id": tutorial_id,
-        "reseller_id": reseller_id
-    })
+    query = {"id": tutorial_id}
+    query.update(tenant_filter)
+    
+    result = await db.tutorials_advanced.delete_one(query)
     
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Tutorial não encontrado")
