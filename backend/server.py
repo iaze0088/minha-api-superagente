@@ -2167,19 +2167,18 @@ async def save_auto_responder_sequences(data: dict, request: Request, current_us
     return {"ok": True, "count": len(sequences)}
 
 @api_router.delete("/config/auto-responder-sequences/{sequence_id}")
-async def delete_auto_responder_sequence(sequence_id: str, current_user: dict = Depends(get_current_user)):
+async def delete_auto_responder_sequence(sequence_id: str, request: Request, current_user: dict = Depends(get_current_user)):
     """Deleta uma sequência específica"""
-    if current_user["user_type"] != "admin":
-        raise HTTPException(status_code=403, detail="Apenas admin")
+    if current_user["user_type"] not in ["admin", "reseller"]:
+        raise HTTPException(status_code=403, detail="Não autorizado")
     
-    from tenant_middleware import get_current_tenant
-    tenant_ctx = get_current_tenant()
-    reseller_id = tenant_ctx.reseller_id
+    # ISOLAMENTO MULTI-TENANT: Usar função centralizada
+    tenant_filter = get_tenant_filter(request, current_user)
     
-    result = await db.auto_responder_sequences.delete_one({
-        "id": sequence_id,
-        "reseller_id": reseller_id
-    })
+    query = {"id": sequence_id}
+    query.update(tenant_filter)
+    
+    result = await db.auto_responder_sequences.delete_one(query)
     
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Sequência não encontrada")
