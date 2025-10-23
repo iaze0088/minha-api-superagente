@@ -642,7 +642,92 @@ test_plan:
   test_all: false
   test_priority: "high_first"
 
+  - task: "AUDITORIA COMPLETA DE SEGURANÇA MULTI-TENANT"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py, /app/backend/ai_agent_routes.py, /app/backend/tenant_helpers.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: |
+          🔒 AUDITORIA COMPLETA DE SEGURANÇA MULTI-TENANT APLICADA!
+          
+          PROBLEMA CRÍTICO IDENTIFICADO:
+          - Agente de revenda conseguia visualizar tickets do Admin Principal
+          - Endpoints usando filtragem manual inconsistente
+          - Faltava função centralizada de tenant filtering
+          
+          SOLUÇÃO IMPLEMENTADA:
+          1. ✅ Criado /app/backend/tenant_helpers.py com função get_tenant_filter centralizada
+          2. ✅ Aplicado get_tenant_filter em TODOS os endpoints críticos
+          
+          ENDPOINTS AUDITADOS E CORRIGIDOS (20+ endpoints):
+          
+          📋 SERVER.PY:
+          - ✅ GET /tickets (já tinha, confirmado)
+          - ✅ GET /agents (já tinha, confirmado)
+          - ✅ GET /notices (atualizado para usar get_tenant_filter)
+          - ✅ POST /notices (atualizado + permitido agents)
+          - ✅ GET /iptv-apps (atualizado para usar get_tenant_filter)
+          - ✅ POST /iptv-apps (atualizado + permitido resellers)
+          - ✅ PUT /iptv-apps/{id} (atualizado + permitido resellers)
+          - ✅ DELETE /iptv-apps/{id} (atualizado + permitido resellers)
+          - ✅ GET /config/auto-responder-sequences (atualizado para usar get_tenant_filter)
+          - ✅ POST /config/auto-responder-sequences (atualizado + permitido resellers)
+          - ✅ DELETE /config/auto-responder-sequences/{id} (atualizado + permitido resellers)
+          - ✅ GET /config/tutorials-advanced (atualizado para usar get_tenant_filter)
+          - ✅ POST /config/tutorials-advanced (atualizado + permitido resellers)
+          - ✅ DELETE /config/tutorials-advanced/{id} (atualizado + permitido resellers)
+          
+          📋 AI_AGENT_ROUTES.PY:
+          - ✅ GET /api/ai/agents (atualizado para usar get_tenant_filter)
+          - ✅ POST /api/ai/agents (atualizado com determinação correta de reseller_id)
+          - ✅ GET /api/ai/agents/{id} (atualizado para usar get_tenant_filter)
+          - ✅ PUT /api/ai/agents/{id} (atualizado para usar get_tenant_filter)
+          - ✅ DELETE /api/ai/agents/{id} (atualizado para usar get_tenant_filter)
+          - ✅ GET /api/ai/departments (atualizado para usar get_tenant_filter)
+          - ✅ POST /api/ai/departments (atualizado com determinação correta de reseller_id)
+          - ✅ PUT /api/ai/departments/{id} (atualizado para usar get_tenant_filter)
+          - ✅ DELETE /api/ai/departments/{id} (atualizado para usar get_tenant_filter)
+          
+          🔐 FUNÇÃO get_tenant_filter CENTRALIZADA:
+          - Implementada em /app/backend/tenant_helpers.py
+          - Importada em server.py e ai_agent_routes.py
+          - Regras estritas de isolamento:
+            * Admin master: vê TUDO (sem filtro)
+            * Admin via domínio de revenda: vê apenas essa revenda
+            * Reseller: vê apenas seus dados
+            * Agent: vê apenas dados da sua revenda (CRÍTICO!)
+            * Client: vê apenas dados da revenda atual
+          
+          ⚙️ MELHORIAS DE PERMISSÕES:
+          - Resellers agora podem criar/editar/deletar IPTV apps
+          - Resellers agora podem criar/editar/deletar Auto-responders
+          - Resellers agora podem criar/editar/deletar Tutorials
+          - Agents agora podem criar Notices
+          
+          🎯 PRÓXIMA ETAPA:
+          - Testar EXAUSTIVAMENTE com deep_testing_backend_v2
+          - Cenários críticos:
+            1. Agent de revenda A NÃO pode ver dados de revenda B
+            2. Agent NÃO pode ver dados do Admin Principal
+            3. Reseller A NÃO pode ver dados de reseller B
+            4. Admin Master pode ver TUDO
+            5. Admin via domínio de revenda vê apenas essa revenda
+
 agent_communication:
+  - agent: "main"
+    message: |
+      🔒 AUDITORIA COMPLETA DE SEGURANÇA MULTI-TENANT FINALIZADA!
+      
+      Apliquei a função get_tenant_filter centralizada em TODOS os 20+ endpoints críticos.
+      Backend compilou sem erros e está rodando.
+      
+      PRÓXIMO PASSO OBRIGATÓRIO:
+      Testar com deep_testing_backend_v2 para validar o isolamento multi-tenant.
   - agent: "testing"
     message: |
       🎉 TESTE COMPLETO E EXAUSTIVO DO SISTEMA CYBERTV SUPORTE - FRONTEND FINALIZADO!
